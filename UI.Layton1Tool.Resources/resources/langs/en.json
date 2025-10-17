@@ -1,0 +1,64 @@
+{
+  "Name": "English",
+
+  // Application
+  "Application.Title": "Professor Layton 1 Editor",
+
+  // File Menu
+  "Menu.File.Caption": "File",
+  "Menu.File.Open.Caption": "Open",
+  "Menu.File.Open.Shortcut": "Ctrl+O",
+  "Menu.File.Save.Caption": "Save",
+  "Menu.File.Save.Shortcut": "Ctrl+S",
+  "Menu.File.SaveAs.Caption": "Save As...",
+  "Menu.File.SaveAs.Shortcut": "F12",
+  "Menu.File.Validate.Caption": "Validate",
+  "Menu.File.Search.Caption": "Search",
+  "Menu.File.Extract.Caption": "Extract",
+
+  // File History
+  "File.Nds.History.Previous.Shortcut": "Ctrl+Left",
+  "File.Nds.History.Next.Shortcut": "Ctrl+Right",
+
+  // Search
+  "File.Nds.Search.Placeholder": "Search...",
+  "File.Nds.Search.Clear": "Clear",
+
+  // Script
+  "Script.Instruction.Caption": "Instruction Name",
+
+  // Dialog
+  "Dialog.File.Nds.Open.Caption": "Select a NDS ROM...",
+  "Dialog.File.Nds.Open.Filter": "NDS ROM",
+  "Dialog.File.Nds.Save.Caption": "Save a NDS ROM...",
+  "Dialog.File.Nds.Save.Filter": "NDS ROM",
+  "Dialog.File.Extract.Caption": "Save file...",
+  "Dialog.Directory.Extract.Caption": "Save directory...",
+  "Dialog.Directory.Extract.Progress": "Extract files - {0:0.00}%",
+  "Dialog.Validation.Caption": "Validation",
+  "Dialog.Validation.Path": "File",
+  "Dialog.Validation.Error": "Error",
+  "Dialog.Validation.Error.Compression": "Compression",
+  "Dialog.Validation.Error.FileType": "FileType",
+  "Dialog.Validation.Error.Content": "Content",
+  "Dialog.Validation.Progress": "Validate files - {0:0.00}%",
+  "Dialog.Validation.Cancel.Caption": "Cancel",
+  "Dialog.Search.Caption": "Search",
+  "Dialog.Search.Path": "File",
+  "Dialog.Search.SubPath": "Entry",
+  "Dialog.Search.Placeholder.Caption": "Enter search term...",
+  "Dialog.Search.Execute.Caption": "Search",
+  "Dialog.Search.Progress": "Search in files - {0:0.00}%",
+  "Dialog.Search.Cancel.Caption": "Cancel",
+  "Dialog.UnsavedChanges.Caption": "Unsaved changes",
+  "Dialog.UnsavedChanges.Text": "Changes were made to ROMs. Do you want to save those changes?",
+
+  // Status
+  "Status.Nds.Select.Error": "No file was selected.",
+  "Status.Nds.Open.Error": "The file is not a Professor Layton 1 ROM.",
+  "Status.Nds.Save.Error": "Could not write NDS ROM. Undo all changes.",
+  "Status.File.Select.Error": "No file was selected.",
+  "Status.Directory.Select.Error": "No directory was selected.",
+  "Status.File.Open.Error": "File could not be opened.",
+  "Status.Animation.Load.Error": "This animation has inconsistencies."
+}

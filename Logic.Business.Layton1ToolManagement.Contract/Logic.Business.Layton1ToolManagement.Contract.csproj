@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+	<RootNamespace>Logic.Business.Layton1ToolManagement.Contract</RootNamespace>
+	<AssemblyName>Logic.Business.Layton1ToolManagement.Contract</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CrossCutting.Core.Contract\CrossCutting.Core.Contract.csproj" />
+    <ProjectReference Include="..\Logic.Domain.CodeAnalysisManagement.Contract\Logic.Domain.CodeAnalysisManagement.Contract.csproj" />
+    <ProjectReference Include="..\Logic.Domain.Level5Management.Contract\Logic.Domain.Level5Management.Contract.csproj" />
+    <ProjectReference Include="..\Logic.Domain.NintendoManagement.Contract\Logic.Domain.NintendoManagement.Contract.csproj" />
+  </ItemGroup>
+
+</Project>

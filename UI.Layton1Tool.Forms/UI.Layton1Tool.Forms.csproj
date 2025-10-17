@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CrossCutting.Core.Contract\CrossCutting.Core.Contract.csproj" />
+    <ProjectReference Include="..\CrossCutting.Messages\CrossCutting.Messages.csproj" />
+    <ProjectReference Include="..\Logic.Business.Layton1ToolManagement.Contract\Logic.Business.Layton1ToolManagement.Contract.csproj" />
+    <ProjectReference Include="..\Logic.Domain.Level5Management.Contract\Logic.Domain.Level5Management.Contract.csproj" />
+    <ProjectReference Include="..\UI.Layton1Tool.Dialogs.Contract\UI.Layton1Tool.Dialogs.Contract.csproj" />
+    <ProjectReference Include="..\UI.Layton1Tool.Messages\UI.Layton1Tool.Messages.csproj" />
+    <ProjectReference Include="..\UI.Layton1Tool.Forms.Contract\UI.Layton1Tool.Forms.Contract.csproj" />
+    <ProjectReference Include="..\UI.Layton1Tool.Resources.Contract\UI.Layton1Tool.Resources.Contract.csproj" />
+  </ItemGroup>
+
+</Project>

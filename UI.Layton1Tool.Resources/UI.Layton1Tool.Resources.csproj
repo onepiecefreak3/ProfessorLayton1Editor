@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="resources\fonts\roboto.ttf" />
+    <None Remove="resources\images\close.png" />
+    <None Remove="resources\images\save.png" />
+    <None Remove="resources\images\save_as.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="resources\fonts\notojp.ttf">
+      <LogicalName>notojp.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\fonts\roboto.ttf">
+      <LogicalName>roboto.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\images\close.png" />
+    <EmbeddedResource Include="resources\images\save.png" />
+    <EmbeddedResource Include="resources\images\save_as.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="resources\langs\en.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CrossCutting.Core.Contract\CrossCutting.Core.Contract.csproj" />
+    <ProjectReference Include="..\Logic.Business.Layton1ToolManagement.Contract\Logic.Business.Layton1ToolManagement.Contract.csproj" />
+    <ProjectReference Include="..\UI.Layton1Tool.Resources.Contract\UI.Layton1Tool.Resources.Contract.csproj" />
+  </ItemGroup>
+
+</Project>

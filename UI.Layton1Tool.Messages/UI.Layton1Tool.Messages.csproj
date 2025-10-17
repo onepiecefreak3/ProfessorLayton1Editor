@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Imgui.Forms" Version="1.5.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Logic.Business.Layton1ToolManagement.Contract\Logic.Business.Layton1ToolManagement.Contract.csproj" />
+    <ProjectReference Include="..\Logic.Domain.CodeAnalysisManagement.Contract\Logic.Domain.CodeAnalysisManagement.Contract.csproj" />
+    <ProjectReference Include="..\Logic.Domain.Level5Management.Contract\Logic.Domain.Level5Management.Contract.csproj" />
+  </ItemGroup>
+
+</Project>
