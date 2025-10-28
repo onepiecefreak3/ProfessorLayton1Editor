@@ -25,6 +25,8 @@ partial class AnimationPlayer : Component
     private ImageButton _stepForwardButton;
     private Label _frameCounterLabel;
 
+    private int _previousStepCounter = -1;
+
     public override Size GetSize() => Size.WidthAlign;
 
     private void InitializeComponent(ILocalizationProvider localizations, IImageProvider images)
@@ -68,17 +70,17 @@ partial class AnimationPlayer : Component
 
         RenderPlayer(contentRect, animationState);
 
+        if (animationState.StepCounter != _previousStepCounter)
+            RaiseAnimationFrameChanged(animationState);
+
+        _previousStepCounter = animationState.StepCounter;
+
         if (!_isPlaying)
             return;
-
-        int stepCounter = animationState.StepCounter;
 
         float frameSpeed = animationState.FrameSpeed;
         while (frameSpeed > 0)
             frameSpeed -= Step(animationState, frameSpeed);
-
-        if (animationState.StepCounter != stepCounter)
-            RaiseAnimationFrameChanged(animationState);
     }
 
     protected override int GetContentHeight(int parentWidth, int parentHeight, float layoutCorrection = 1)

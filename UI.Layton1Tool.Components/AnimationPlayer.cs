@@ -74,6 +74,8 @@ partial class AnimationPlayer
         _animationState.StepCounter = 0;
         _animationState.ActiveAnimation = activeAnimation;
 
+        _previousStepCounter = -1;
+
         _speedInput.Text = $"{_animationState.FrameSpeed.ToString("0.00", CultureInfo.InvariantCulture)}";
 
         UpdatePlayButtons();
@@ -256,7 +258,7 @@ partial class AnimationPlayer
         AnimationStep step = animationState.ActiveAnimation.Steps[stepIndex];
 
         int frameIndex = step.FrameIndex;
-        if (frameIndex < animationState.Images.Length)
+        if (frameIndex < 0 || frameIndex >= animationState.Images.Length)
             return;
 
         _eventBroker.Raise(new AnimationFrameChangedMessage(this, animationState.Images[frameIndex]));
