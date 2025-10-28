@@ -1,11 +1,11 @@
-﻿using CrossCutting.Core.Contract.Configuration;
-using CrossCutting.Core.Contract.Configuration.DataClasses;
-using Castle.DynamicProxy;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Castle.DynamicProxy;
+using CrossCutting.Core.Contract.Configuration;
+using CrossCutting.Core.Contract.Configuration.DataClasses;
 
 namespace CrossCutting.Core.Configuration.ConfigObjects;
 

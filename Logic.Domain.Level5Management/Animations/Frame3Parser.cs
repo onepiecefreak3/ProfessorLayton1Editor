@@ -3,8 +3,8 @@ using Konnect.Contract.DataClasses.Plugin.File.Image;
 using Konnect.Plugin.File.Image;
 using Logic.Domain.Level5Management.Contract.Animations;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
-using SixLabors.ImageSharp;
 using Logic.Domain.Level5Management.Contract.Enums;
+using SixLabors.ImageSharp;
 
 namespace Logic.Domain.Level5Management.Animations;
 

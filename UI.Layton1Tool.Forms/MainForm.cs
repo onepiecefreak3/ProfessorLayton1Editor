@@ -1,18 +1,20 @@
 ﻿using CrossCutting.Core.Contract.EventBrokerage;
+using ImGui.Forms;
+using ImGui.Forms.Controls;
+using ImGui.Forms.Localization;
 using ImGui.Forms.Modals;
 using ImGui.Forms.Modals.IO;
 using ImGui.Forms.Modals.IO.Windows;
-using Logic.Business.Layton1ToolManagement.Contract;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
-using ImGui.Forms.Controls;
+using Logic.Business.Layton1ToolManagement.Contract.Files;
+using UI.Layton1Tool.Dialogs.Contract;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
-using UI.Layton1Tool.Resources.Contract;
 using UI.Layton1Tool.Forms.DataClasses;
-using ImGui.Forms.Localization;
-using UI.Layton1Tool.Dialogs.Contract;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.Enums;
+using UI.Layton1Tool.Resources.Contract;
+using Veldrid.Sdl2;
 
 namespace UI.Layton1Tool.Forms;
 
@@ -31,9 +33,10 @@ partial class MainForm
     private readonly Dictionary<TabPage, Layton1NdsTabPage> _loadedTabs = [];
 
     public MainForm(IEventBroker eventBroker, ILocalizationProvider localizations, IColorProvider colors, ISettingsProvider settings,
-        ILayton1NdsParser ndsParser, ILayton1NdsComposer ndsComposer, IFormFactory formFactory, IDialogFactory dialogFactory)
+        ILayton1NdsParser ndsParser, ILayton1NdsComposer ndsComposer, IFormFactory formFactory, IDialogFactory dialogFactory,
+        IImageProvider images)
     {
-        InitializeComponent(localizations);
+        InitializeComponent(localizations, images);
 
         _eventBroker = eventBroker;
         _localizations = localizations;
@@ -47,7 +50,8 @@ partial class MainForm
         _fileOpenButton!.Clicked += _fileOpenButton_Clicked;
         _fileValidateButton!.Clicked += _fileValidateButton_Clicked;
         _fileSearchButton!.Clicked += _fileSearchButton_Clicked;
-        _tabControl!.PageRemoved += _tabControl_PageRemoved;
+        _tabControl!.PageRemoving += _tabControl_PageRemoving;
+        _tabControl.PageRemoved += _tabControl_PageRemoved;
         _tabControl.SelectedPageChanged += _tabControl_SelectedPageChanged;
 
         eventBroker.Subscribe<UpdateStatusMessage>(UpdateStatus);
@@ -70,9 +74,11 @@ partial class MainForm
 
         Modal dialog = _dialogFactory.CreateSearchDialog(loadedPage.Rom);
         await dialog.ShowAsync();
+
+        dialog.Destroy();
     }
 
-    private async Task MainForm_Closing(object sender, ImGui.Forms.ClosingEventArgs e)
+    private async Task MainForm_Closing(object sender, ClosingEventArgs e)
     {
         bool hasChanges = _loadedTabs.Keys.Any(t => t.HasChanges);
 
@@ -109,6 +115,33 @@ partial class MainForm
 
         Modal dialog = _dialogFactory.CreateValidationDialog(loadedPage.Rom);
         await dialog.ShowAsync();
+
+        dialog.Destroy();
+    }
+
+    private async Task _tabControl_PageRemoving(object arg1, RemovingEventArgs arg2)
+    {
+        if (!arg2.Page.HasChanges)
+            return;
+
+        DialogResult result = await MessageBox.ShowYesNoCancelAsync(_localizations.DialogUnsavedChangesCaption,
+            _localizations.DialogUnsavedChangesText);
+
+        switch (result)
+        {
+            case DialogResult.Cancel:
+                arg2.Cancel = true;
+                break;
+
+            case DialogResult.Yes:
+                {
+                    if (!_loadedTabs.TryGetValue(_tabControl.SelectedPage, out Layton1NdsTabPage? loadedPage))
+                        return;
+
+                    await Save(loadedPage, false);
+                    break;
+                }
+        }
     }
 
     private void _tabControl_PageRemoved(object? sender, RemoveEventArgs e)
@@ -142,11 +175,13 @@ partial class MainForm
         }
 
         loadedPage.Stream.Close();
+
+        loadedPage.Page.Content.Destroy();
     }
 
-    private void MainForm_DragDrop(object? sender, Veldrid.Sdl2.DragDropEvent[] e)
+    private void MainForm_DragDrop(object? sender, DragDropEvent[] e)
     {
-        foreach (Veldrid.Sdl2.DragDropEvent evt in e)
+        foreach (DragDropEvent evt in e)
             OpenNdsFile(evt.File);
     }
 
@@ -198,7 +233,7 @@ partial class MainForm
         {
             Title = _localizations.DialogFileNdsOpenCaption,
             Filters = [new FileFilter(_localizations.DialogFileNdsOpenFilter, ".nds")],
-            InitialDirectory = _settings.GetOpenDirectory(),
+            InitialDirectory = _settings.OpenDirectory,
         };
 
         DialogResult result = await ofd.ShowAsync();
@@ -210,7 +245,7 @@ partial class MainForm
 
         string? directory = Path.GetDirectoryName(ofd.Files[0]);
         if (directory is not null)
-            _settings.SetOpenDirectory(directory);
+            _settings.OpenDirectory = directory;
 
         return ofd.Files[0];
     }
@@ -221,7 +256,7 @@ partial class MainForm
         {
             Title = _localizations.DialogFileNdsSaveCaption,
             Filters = [new FileFilter(_localizations.DialogFileNdsSaveFilter, ".nds")],
-            InitialDirectory = _settings.GetSaveDirectory()
+            InitialDirectory = _settings.SaveDirectory
         };
 
         DialogResult result = await ofd.ShowAsync();
@@ -233,7 +268,7 @@ partial class MainForm
 
         string? directory = Path.GetDirectoryName(ofd.Files[0]);
         if (directory is not null)
-            _settings.SetSaveDirectory(directory);
+            _settings.SaveDirectory = directory;
 
         return ofd.Files[0];
     }

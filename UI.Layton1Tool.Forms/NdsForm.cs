@@ -6,13 +6,15 @@ using ImGui.Forms.Localization;
 using ImGui.Forms.Modals;
 using ImGui.Forms.Modals.IO;
 using ImGui.Forms.Modals.IO.Windows;
-using Logic.Business.Layton1ToolManagement.Contract;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
+using Logic.Business.Layton1ToolManagement.Contract.Files;
 using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
 using Logic.Domain.Level5Management.Contract.DataClasses.Archives;
 using Logic.Domain.Level5Management.Contract.Enums;
+using Logic.Domain.NintendoManagement.Contract.DataClasses.Font;
+using Logic.Domain.NintendoManagement.Contract.DataClasses.Image;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using UI.Layton1Tool.Forms.Contract;
@@ -74,9 +76,25 @@ partial class NdsForm
         eventBroker.Subscribe<Layton1NdsFileParsedMessage>(ProcessParsedFile);
         eventBroker.Subscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
         eventBroker.Subscribe<GdsModifiedMessage>(ProcessModifiedGds);
+        eventBroker.Subscribe<FontModifiedMessage>(ProcessModifiedFont);
         eventBroker.Subscribe<SelectedNdsFileChangedMessage>(ProcessSelectedFileChanged);
 
         UpdateTreeView(ndsInfo);
+    }
+
+    public override void Destroy()
+    {
+        _textForm.Destroy();
+        _pcmForm.Destroy();
+        _gdsForm.Destroy();
+        _imageForm.Destroy();
+        _animForm.Destroy();
+        _fontForm.Destroy();
+
+        _eventBroker.Unsubscribe<Layton1NdsFileParsedMessage>(ProcessParsedFile);
+        _eventBroker.Unsubscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
+        _eventBroker.Unsubscribe<GdsModifiedMessage>(ProcessModifiedGds);
+        _eventBroker.Unsubscribe<SelectedNdsFileChangedMessage>(ProcessSelectedFileChanged);
     }
 
     private async void _saveAsButton_Clicked(object? sender, EventArgs e)
@@ -251,15 +269,28 @@ partial class NdsForm
 
     private void ProcessModifiedGds(GdsModifiedMessage message)
     {
-        if (_selectedFile is null)
+        if (message.Source != _gdsForm)
             return;
 
-        if (message.Source != _gdsForm)
+        ProcessModifiedFile(message.Script);
+    }
+
+    private void ProcessModifiedFont(FontModifiedMessage message)
+    {
+        if (message.Source != _fontForm)
+            return;
+
+        ProcessModifiedFile(message.Font);
+    }
+
+    private void ProcessModifiedFile(object fileData)
+    {
+        if (_selectedFile is null)
             return;
 
         try
         {
-            _fileManager.Compose(_selectedFile, message.Script);
+            _fileManager.Compose(_selectedFile, fileData);
         }
         catch (Exception)
         {
@@ -348,8 +379,8 @@ partial class NdsForm
         switch (fileType)
         {
             case FileType.Bgx:
-                RaiseBgxUpdated((Image<Rgba32>)data!);
-                _contentPanel.Content = _bgxForm;
+                RaiseImageUpdated((Image<Rgba32>)data!);
+                _contentPanel.Content = _imageForm;
                 break;
 
             case FileType.Gds:
@@ -374,6 +405,16 @@ partial class NdsForm
                 _contentPanel.Content = _animForm;
                 break;
 
+            case FileType.Font:
+                RaiseFontUpdated((NftrData)data!);
+                _contentPanel.Content = _fontForm;
+                break;
+
+            case FileType.Banner:
+                RaiseImageUpdated(((BannerData)data!).Image);
+                _contentPanel.Content = _imageForm;
+                break;
+
             default:
                 _contentPanel.Content = null!;
                 break;
@@ -384,9 +425,9 @@ partial class NdsForm
         return true;
     }
 
-    private void RaiseBgxUpdated(Image<Rgba32> image)
+    private void RaiseImageUpdated(Image<Rgba32> image)
     {
-        _eventBroker.Raise(new SelectedBgxChangedMessage(_ndsInfo.Rom, image));
+        _eventBroker.Raise(new SelectedImageChangedMessage(_ndsInfo.Rom, image));
     }
 
     private void RaiseGdsUpdated(CodeUnitSyntax script)
@@ -407,6 +448,11 @@ partial class NdsForm
     private void RaiseAnimationsUpdated(AnimationSequences animations)
     {
         _eventBroker.Raise(new SelectedAnimationsChangedMessage(_ndsInfo.Rom, animations));
+    }
+
+    private void RaiseFontUpdated(NftrData font)
+    {
+        _eventBroker.Raise(new SelectedFontChangedMessage(_ndsInfo.Rom, font));
     }
 
     private void UpdateTreeView(Layton1NdsInfo ndsInfo)
@@ -579,7 +625,7 @@ partial class NdsForm
         var sfd = new WindowsSaveFileDialog
         {
             Title = _localizations.DialogFileExtractCaption,
-            InitialDirectory = _settings.GetExtractDirectory(),
+            InitialDirectory = _settings.ExtractDirectory,
             InitialFileName = Path.GetFileName(file.Path)
         };
 
@@ -589,7 +635,7 @@ partial class NdsForm
 
         string? saveDir = Path.GetDirectoryName(sfd.Files[0]);
         if (!string.IsNullOrEmpty(saveDir))
-            _settings.SetExtractDirectory(saveDir);
+            _settings.ExtractDirectory=saveDir;
 
         return sfd.Files[0];
     }
@@ -599,7 +645,7 @@ partial class NdsForm
         var sfd = new SelectFolderDialog
         {
             Caption = _localizations.DialogDirectoryExtractCaption,
-            Directory = _settings.GetExtractDirectory()
+            Directory = _settings.ExtractDirectory
         };
 
         DialogResult result = await sfd.ShowAsync();

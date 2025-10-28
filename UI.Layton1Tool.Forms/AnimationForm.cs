@@ -1,10 +1,9 @@
 ﻿using CrossCutting.Core.Contract.EventBrokerage;
 using ImGui.Forms.Controls.Tree;
-using ImGui.Forms.Resources;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
 using Logic.Domain.Level5Management.Contract.Enums;
+using UI.Layton1Tool.Components.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
-using UI.Layton1Tool.Forms.DataClasses;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Resources.Contract;
 
@@ -13,26 +12,40 @@ namespace UI.Layton1Tool.Forms;
 partial class AnimationForm
 {
     private readonly Layton1NdsInfo _ndsInfo;
+    private readonly IEventBroker _eventBroker;
 
-    private AnimationState? _animationState;
+    private AnimationSequences? _animationSequences;
 
-    public AnimationForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILocalizationProvider localizations)
+    public AnimationForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILocalizationProvider localizations, IComponentFactory components)
     {
-        InitializeComponent(localizations);
+        InitializeComponent(ndsInfo, localizations, components);
 
         _ndsInfo = ndsInfo;
+        _eventBroker = eventBroker;
 
         _fileTree!.SelectedNodeChanged += _fileTree_SelectedNodeChanged;
 
         eventBroker.Subscribe<SelectedAnimationsChangedMessage>(UpdateAnimations);
     }
 
+    public override void Destroy()
+    {
+        _eventBroker.Unsubscribe<SelectedAnimationsChangedMessage>(UpdateAnimations);
+    }
+
     private void _fileTree_SelectedNodeChanged(object? sender, EventArgs e)
     {
-        if (_animationState is null)
+        if (_animationSequences is null)
             return;
 
-        UpdateAnimation(_animationState, _fileTree.SelectedNode.Data);
+        if (_fileTree.SelectedNode is null)
+            return;
+
+        int index = Array.IndexOf(_animationSequences.Sequences, _fileTree.SelectedNode.Data);
+        if (index < 0)
+            return;
+
+        UpdateAnimation(_animationSequences, index);
     }
 
     private void UpdateAnimations(SelectedAnimationsChangedMessage message)
@@ -40,24 +53,13 @@ partial class AnimationForm
         if (message.Rom != _ndsInfo.Rom)
             return;
 
-        var loadedImages = new ImageResource[message.AnimationSequences.Frames.Length];
-        for (var i = 0; i < loadedImages.Length; i++)
-            loadedImages[i] = ImageResource.FromImage(message.AnimationSequences.Frames[i].Image);
+        _animationSequences = message.AnimationSequences;
 
-        var animationState = new AnimationState
-        {
-            Animations = message.AnimationSequences,
-            Images = loadedImages
-        };
+        UpdateFileTree(_animationSequences.Sequences);
+        UpdateError(_animationSequences);
 
-        UpdateFileTree(animationState.Animations.Sequences);
-        UpdateError(animationState.Animations);
-
-        if (animationState.Animations.Sequences.Length > 0)
-            UpdateAnimation(animationState, animationState.Animations.Sequences[0]);
-
-        _animationState = animationState;
-        _zoomableImage.Image = null;
+        if (_animationSequences.Sequences.Length > 0)
+            UpdateAnimation(_animationSequences, 0);
     }
 
     private void UpdateFileTree(AnimationSequence[] animations)
@@ -69,19 +71,11 @@ partial class AnimationForm
 
         if (_fileTree.Nodes.Count > 0)
             _fileTree.SelectedNode = _fileTree.Nodes[0];
-
-        _zoomableImage.Reset();
-        _zoomableImage.Zoom(2f);
     }
 
-    private void UpdateAnimation(AnimationState state, AnimationSequence activeAnimation)
+    private void UpdateAnimation(AnimationSequences sequences, int index)
     {
-        if (state.ActiveAnimation == activeAnimation)
-            return;
-
-        state.FrameCounter = 0;
-        state.StepCounter = 0;
-        state.ActiveAnimation = activeAnimation;
+        _eventBroker.Raise(new SelectedAnimationChangedMessage(_ndsInfo.Rom, sequences, index));
     }
 
     private void UpdateError(AnimationSequences sequences)

@@ -14,7 +14,7 @@ internal class KernelLoader
 
     public KernelLoader()
     {
-        AssemblyLoadContext.Default.Unloading += (a) =>
+        AssemblyLoadContext.Default.Unloading += a =>
         {
             _bootstrapper?.DeactivatingAll();
             _bootstrapper?.DeactivatedAll();

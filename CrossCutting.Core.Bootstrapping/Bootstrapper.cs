@@ -1,9 +1,9 @@
-﻿using CrossCutting.Core.Contract.Bootstrapping;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CrossCutting.Core.Contract.Bootstrapping;
 using CrossCutting.Core.Contract.Configuration;
 using CrossCutting.Core.Contract.DependencyInjection;
 using CrossCutting.Core.Contract.EventBrokerage;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CrossCutting.Core.Bootstrapping;
 

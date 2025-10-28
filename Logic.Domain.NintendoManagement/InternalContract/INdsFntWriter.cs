@@ -1,4 +1,4 @@
-﻿using Logic.Domain.NintendoManagement.Contract.DataClasses;
+﻿using Logic.Domain.NintendoManagement.Contract.DataClasses.Archive;
 
 namespace Logic.Domain.NintendoManagement.InternalContract;
 

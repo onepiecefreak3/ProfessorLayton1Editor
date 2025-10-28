@@ -24,8 +24,6 @@ public interface ILocalizationProvider
     LocalizedString FileNdsSearchPlaceholder { get; }
     LocalizedString FileNdsSearchClear { get; }
 
-    LocalizedString ScriptInstructionCaption { get; }
-
     LocalizedString DialogFileNdsOpenCaption { get; }
     LocalizedString DialogFileNdsOpenFilter { get; }
     LocalizedString DialogFileNdsSaveCaption { get; }
@@ -48,6 +46,11 @@ public interface ILocalizationProvider
     LocalizedString DialogSearchCancelCaption { get; }
     LocalizedString DialogUnsavedChangesCaption { get; }
     LocalizedString DialogUnsavedChangesText { get; }
+    LocalizedString DialogFontRemoveCaption { get; }
+    LocalizedString DialogFontRemoveText { get; }
+    LocalizedString DialogFontRemappingCaption { get; }
+    LocalizedString DialogFontRemappingText { get; }
+    LocalizedString DialogFontRemappingRemap { get; }
 
     LocalizedString StatusNdsSelectError { get; }
     LocalizedString StatusNdsOpenError { get; }
@@ -56,4 +59,51 @@ public interface ILocalizationProvider
     LocalizedString StatusDirectorySelectError { get; }
     LocalizedString StatusFileOpenError { get; }
     LocalizedString StatusAnimationLoadError { get; }
+
+    LocalizedString ImageMenuExportPng { get; }
+    LocalizedString ImageExportText { get; }
+
+    LocalizedString AnimationSpeedInputCaption { get; }
+
+    LocalizedString FontSearchPlaceholder { get; }
+    LocalizedString FontPreviewPlaceholder { get; }
+    LocalizedString FontPreviewExport { get; }
+    LocalizedString FontPreviewSettings { get; }
+    LocalizedString FontGenerateCaption { get; }
+    LocalizedString FontGenerateEditCaption { get; }
+    LocalizedString FontGenerateRemoveCaption { get; }
+    LocalizedString FontGenerateRemappingCaption { get; }
+
+    LocalizedString FontPreviewSettingsCaption { get; }
+    LocalizedString FontPreviewSettingsShowDebug { get; }
+    LocalizedString FontPreviewSettingsSpacing { get; }
+    LocalizedString FontPreviewSettingsLineHeight { get; }
+    LocalizedString FontPreviewSettingsAlignment { get; }
+    LocalizedString FontPreviewSettingsAlignmentLeft { get; }
+    LocalizedString FontPreviewSettingsAlignmentCenter { get; }
+    LocalizedString FontPreviewSettingsAlignmentRight { get; }
+
+    LocalizedString FontGenerateDefaultCharacters { get; }
+
+    LocalizedString DialogFontGenerateCaption { get; }
+    LocalizedString DialogFontEditCaption { get; }
+    LocalizedString DialogFontGenerateFamily { get; }
+    LocalizedString DialogFontGenerateStyle { get; }
+    LocalizedString DialogFontGenerateSize { get; }
+    LocalizedString DialogFontGenerateBaseline { get; }
+    LocalizedString DialogFontGenerateGlyphHeight { get; }
+    LocalizedString DialogFontGenerateSpaceWidth { get; }
+    LocalizedString DialogFontGenerateCharacters { get; }
+    LocalizedString DialogFontGenerateCharactersReplace { get; }
+    LocalizedString DialogFontGenerateStyleBold { get; }
+    LocalizedString DialogFontGenerateStyleItalic { get; }
+    LocalizedString DialogFontGenerateLoad { get; }
+    LocalizedString DialogFontGenerateLoadCaption { get; }
+    LocalizedString DialogFontGenerateSave { get; }
+    LocalizedString DialogFontGenerateSaveCaption { get; }
+    LocalizedString DialogFontGenerateProfile { get; }
+    LocalizedString DialogFontGenerateGenerate { get; }
+    LocalizedString DialogFontEditEdit { get; }
+    LocalizedString DialogFontGeneratePaddingLeft { get; }
+    LocalizedString DialogFontGeneratePaddingRight { get; }
 }

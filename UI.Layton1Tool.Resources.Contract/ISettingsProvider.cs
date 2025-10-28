@@ -2,15 +2,10 @@
 
 public interface ISettingsProvider
 {
-    string GetLocale();
-    void SetLocale(string locale);
-
-    string GetOpenDirectory();
-    void SetOpenDirectory(string directory);
-
-    string GetSaveDirectory();
-    void SetSaveDirectory(string directory);
-
-    string GetExtractDirectory();
-    void SetExtractDirectory(string directory);
+    string Locale { get; set; }
+    string OpenDirectory { get; set; }
+    string SaveDirectory { get; set; }
+    string ExtractDirectory { get; set; }
+    string PreviewDirectory { get; set; }
+    bool ReplaceFontCharacters { get; set; }
 }

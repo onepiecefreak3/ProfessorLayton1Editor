@@ -1,6 +1,6 @@
+using CrossCutting.Core.Contract.DependencyInjection;
 using CrossCutting.Core.Contract.EventBrokerage;
 using CrossCutting.Core.Contract.Messages;
-using CrossCutting.Core.Contract.DependencyInjection;
 using ImGui.Forms;
 using ImGui.Forms.Localization;
 using Layton1Tool;
@@ -22,6 +22,6 @@ var app = new Application(localizer);
 var formFactory = kernel.Get<IFormFactory>();
 
 Form form = formFactory.CreateMainForm();
-form.DefaultFont = fontFactory.GetDefaultFont();
+form.DefaultFont = fontFactory.GetApplicationFont(15);
 
 app.Execute(form);

@@ -59,13 +59,13 @@ internal class Localizer : BaseLocalizer
 
     protected override string InitializeLocale()
     {
-        return _settings.GetLocale();
+        return _settings.Locale;
     }
 
     protected override void SetCurrentLocale(string locale)
     {
         base.SetCurrentLocale(locale);
 
-        _settings.SetLocale(locale);
+        _settings.Locale = locale;
     }
 }

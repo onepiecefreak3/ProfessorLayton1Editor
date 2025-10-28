@@ -30,15 +30,17 @@ public class Layton1ToolFormsActivator : IComponentActivator
     {
         kernel.Register<IFormFactory, FormFactory>(ActivationScope.Unique);
         kernel.Register<IPositionManager, PositionManager>(ActivationScope.Unique);
+        kernel.Register<IUnicodeCharacterParser, UnicodeCharacterParser>(ActivationScope.Unique);
         kernel.Register<IFileHistory, FileHistory>();
 
         kernel.RegisterToSelf<MainForm>();
         kernel.RegisterToSelf<NdsForm>();
-        kernel.RegisterToSelf<BgxForm>();
+        kernel.RegisterToSelf<ImageForm>();
         kernel.RegisterToSelf<GdsForm>();
         kernel.RegisterToSelf<PcmForm>();
         kernel.RegisterToSelf<AnimationForm>();
         kernel.RegisterToSelf<TextForm>();
+        kernel.RegisterToSelf<FontForm>();
 
         kernel.RegisterConfiguration<Layton1ToolFormsConfiguration>();
     }

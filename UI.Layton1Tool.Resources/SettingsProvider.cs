@@ -1,46 +1,49 @@
-﻿using UI.Layton1Tool.Resources.Contract;
+﻿using CrossCutting.Core.Contract.Settings;
 
 namespace UI.Layton1Tool.Resources;
 
-class SettingsProvider(CrossCutting.Core.Contract.Settings.ISettingsProvider settings) : ISettingsProvider
+class SettingsProvider(ISettingsProvider settings) : Contract.ISettingsProvider
 {
-    public string GetLocale()
+    private const string LocaleName_ = "Layton1Tool.Settings.Locale";
+    private const string OpenDirectoryName_ = "Layton1Tool.Settings.OpenDirectory";
+    private const string SaveDirectoryName_ = "Layton1Tool.Settings.SaveDirectory";
+    private const string ExtractDirectoryName_ = "Layton1Tool.Settings.NdsDirectory";
+    private const string PreviewDirectoryName_ = "Layton1Tool.Settings.PreviewDirectory";
+    private const string ReplaceFontCharactersName_ = "Layton1Tool.Settings.ReplaceFontCharacters";
+
+    public string Locale
     {
-        return settings.Get("Layton1Tool.Settings.Locale", string.Empty);
+        get => settings.Get(LocaleName_, string.Empty);
+        set => settings.Set(LocaleName_, value);
     }
 
-    public void SetLocale(string locale)
+    public string OpenDirectory
     {
-        settings.Set("Layton1Tool.Settings.Locale", locale);
+        get => settings.Get(OpenDirectoryName_, string.Empty);
+        set => settings.Set(OpenDirectoryName_, value);
     }
 
-    public string GetOpenDirectory()
+    public string SaveDirectory
     {
-        return settings.Get("Layton1Tool.Settings.OpenDirectory", string.Empty);
+        get => settings.Get(SaveDirectoryName_, string.Empty);
+        set => settings.Set(SaveDirectoryName_, value);
     }
 
-    public void SetOpenDirectory(string directory)
+    public string ExtractDirectory
     {
-        settings.Set("Layton1Tool.Settings.OpenDirectory", directory);
+        get => settings.Get(ExtractDirectoryName_, string.Empty);
+        set => settings.Set(ExtractDirectoryName_, value);
     }
 
-    public string GetSaveDirectory()
+    public string PreviewDirectory
     {
-        return settings.Get("Layton1Tool.Settings.SaveDirectory", string.Empty);
+        get => settings.Get(PreviewDirectoryName_, string.Empty);
+        set => settings.Set(PreviewDirectoryName_, value);
     }
 
-    public void SetSaveDirectory(string directory)
+    public bool ReplaceFontCharacters
     {
-        settings.Set("Layton1Tool.Settings.SaveDirectory", directory);
-    }
-
-    public string GetExtractDirectory()
-    {
-        return settings.Get("Layton1Tool.Settings.NdsDirectory", string.Empty);
-    }
-
-    public void SetExtractDirectory(string directory)
-    {
-        settings.Set("Layton1Tool.Settings.NdsDirectory", directory);
+        get => settings.Get(ReplaceFontCharactersName_, false);
+        set => settings.Set(ReplaceFontCharactersName_, value);
     }
 }

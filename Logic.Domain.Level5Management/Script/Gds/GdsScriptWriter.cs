@@ -44,8 +44,9 @@ class GdsScriptWriter(IGdsScriptComposer composer) : IGdsScriptWriter
                 case 3:
                     var stringValue = (string)argument.value!;
 
-                    writer.Write((short)(stringValue.Length + 1));
-                    writer.WriteString(stringValue, SjisEncoding);
+                    byte[] stringBytes = SjisEncoding.GetBytes(stringValue + '\0');
+                    writer.Write((short)stringBytes.Length);
+                    writer.Write(stringBytes);
                     break;
 
                 case 8:

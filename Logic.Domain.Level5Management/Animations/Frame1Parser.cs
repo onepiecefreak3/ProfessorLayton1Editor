@@ -1,12 +1,13 @@
-﻿using Kanvas.Encoding;
-using Kanvas;
+﻿using Kanvas;
+using Kanvas.Encoding;
+using Komponent.Contract.Enums;
+using Konnect.Contract.DataClasses.Plugin.File.Image;
 using Konnect.Plugin.File.Image;
 using Logic.Domain.Level5Management.Contract.Animations;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
+using Logic.Domain.Level5Management.Contract.Enums;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Konnect.Contract.DataClasses.Plugin.File.Image;
-using Logic.Domain.Level5Management.Contract.Enums;
 using SixLabors.ImageSharp.Processing;
 
 namespace Logic.Domain.Level5Management.Animations;
@@ -35,7 +36,7 @@ class Frame1Parser(IFrame1Reader reader) : IFrame1Parser
 
         var definition = new EncodingDefinition();
         definition.AddPaletteEncoding(0, new Rgba(5, 5, 5, "BGR"));
-        definition.AddIndexEncoding(3, ImageFormats.I4(Komponent.Contract.Enums.BitOrder.LeastSignificantBitFirst), [0]);
+        definition.AddIndexEncoding(3, ImageFormats.I4(BitOrder.LeastSignificantBitFirst), [0]);
         definition.AddIndexEncoding(4, ImageFormats.I8(), [0]);
 
         foreach (var frame in container.ImageEntries)

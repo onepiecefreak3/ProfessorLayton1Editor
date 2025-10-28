@@ -36,11 +36,12 @@ partial class NdsForm : Component
     private TreeView<Layton1NdsFile?> _fileTree;
     private Panel _contentPanel;
 
-    private Component _bgxForm;
+    private Component _imageForm;
     private Component _gdsForm;
     private Component _pcmForm;
     private Component _animForm;
     private Component _textForm;
+    private Component _fontForm;
 
     public override Size GetSize() => Size.Parent;
 
@@ -56,11 +57,12 @@ partial class NdsForm : Component
 
     private void InitializeComponent(Layton1NdsInfo ndsInfo, IFormFactory formFactory, ILocalizationProvider localizations, IImageProvider images)
     {
-        _bgxForm = formFactory.CreateBgxForm(ndsInfo);
+        _imageForm = formFactory.CreateImageForm(ndsInfo);
         _gdsForm = formFactory.CreateGdsForm(ndsInfo);
         _pcmForm = formFactory.CreatePcmForm(ndsInfo);
         _animForm = formFactory.CreateAnimationForm(ndsInfo);
         _textForm = formFactory.CreateTextForm(ndsInfo);
+        _fontForm = formFactory.CreateFontForm(ndsInfo);
 
         _extractButton = new MenuBarButton(localizations.MenuFileExtractCaption);
         _fileContextMenu = new ContextMenu { Items = { _extractButton } };

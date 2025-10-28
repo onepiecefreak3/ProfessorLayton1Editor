@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NLog;
 using NLog.Config;
 using NLog.Targets;
 
@@ -15,28 +16,28 @@ public class Configuration
     {
         LoggingConfiguration config = new LoggingConfiguration();
         FileTarget fileLogTarget = new FileTarget();
-        fileLogTarget.Layout = GetValue<string>("CrossCutting.Core.Logging.NLogAdapter", "FileLayout", "${longdate}|${level:uppercase=true}|${logger}|${message}");
-        fileLogTarget.FileName = GetValue<string>("CrossCutting.Core.Logging.NLogAdapter", "FileName", "logs/iDxLog.log");
-        fileLogTarget.ArchiveFileName = GetValue<string>("CrossCutting.Core.Logging.NLogAdapter", "ArchiveFileName", "logs/iDxLog.{#}.log");
+        fileLogTarget.Layout = GetValue("CrossCutting.Core.Logging.NLogAdapter", "FileLayout", "${longdate}|${level:uppercase=true}|${logger}|${message}");
+        fileLogTarget.FileName = GetValue("CrossCutting.Core.Logging.NLogAdapter", "FileName", "logs/iDxLog.log");
+        fileLogTarget.ArchiveFileName = GetValue("CrossCutting.Core.Logging.NLogAdapter", "ArchiveFileName", "logs/iDxLog.{#}.log");
         fileLogTarget.ArchiveAboveSize = GetValue<long>("CrossCutting.Core.Logging.NLogAdapter", "ArchiveAboveSize", -1);
-        fileLogTarget.MaxArchiveFiles = GetValue<int>("CrossCutting.Core.Logging.NLogAdapter", "MaxArchiveFiles", 0);
-        fileLogTarget.KeepFileOpen = GetValue<bool>("CrossCutting.Core.Logging.NLogAdapter", "KeepFileOpen", true);
-        string encoding = GetValue<string>("CrossCutting.Core.Logging.NLogAdapter", "Encoding", "utf8");
+        fileLogTarget.MaxArchiveFiles = GetValue("CrossCutting.Core.Logging.NLogAdapter", "MaxArchiveFiles", 0);
+        fileLogTarget.KeepFileOpen = GetValue("CrossCutting.Core.Logging.NLogAdapter", "KeepFileOpen", true);
+        string encoding = GetValue("CrossCutting.Core.Logging.NLogAdapter", "Encoding", "utf8");
         fileLogTarget.Encoding = StringToEncoding(encoding);
-        string archiveNumbering = GetValue<string>("CrossCutting.Core.Logging.NLogAdapter", "ArchiveNumbering", "DateAndSequence");
+        string archiveNumbering = GetValue("CrossCutting.Core.Logging.NLogAdapter", "ArchiveNumbering", "DateAndSequence");
         fileLogTarget.ArchiveNumbering = StringToArchiveNumberingMode(archiveNumbering);
-        fileLogTarget.ArchiveDateFormat = GetValue<string>("CrossCutting.Core.Logging.NLogAdapter", "ArchiveDateFormat", "yyyy-MM-dd");
+        fileLogTarget.ArchiveDateFormat = GetValue("CrossCutting.Core.Logging.NLogAdapter", "ArchiveDateFormat", "yyyy-MM-dd");
 
         ColoredConsoleTarget consoleLogTarget = new ColoredConsoleTarget();
-        consoleLogTarget.Layout = GetValue<string>("CrossCutting.Core.Logging.NLogAdapter", "ConsoleLayout", "${longdate}|${level:uppercase=true}|${logger}|${message}");
+        consoleLogTarget.Layout = GetValue("CrossCutting.Core.Logging.NLogAdapter", "ConsoleLayout", "${longdate}|${level:uppercase=true}|${logger}|${message}");
 
-        string fileLogLevel = GetValue<string>("CrossCutting.Core.Logging.NLogAdapter", "FileLogLevel", "Error");
-        string consoleLogLevel = GetValue<string>("CrossCutting.Core.Logging.NLogAdapter", "ConsoleLogLevel", "Error");
+        string fileLogLevel = GetValue("CrossCutting.Core.Logging.NLogAdapter", "FileLogLevel", "Error");
+        string consoleLogLevel = GetValue("CrossCutting.Core.Logging.NLogAdapter", "ConsoleLogLevel", "Error");
 
-        config.AddRule(StringToLogLevel(fileLogLevel), NLog.LogLevel.Fatal, fileLogTarget);
-        config.AddRule(StringToLogLevel(consoleLogLevel), NLog.LogLevel.Fatal, consoleLogTarget);
+        config.AddRule(StringToLogLevel(fileLogLevel), LogLevel.Fatal, fileLogTarget);
+        config.AddRule(StringToLogLevel(consoleLogLevel), LogLevel.Fatal, consoleLogTarget);
 
-        NLog.LogManager.Configuration = config;
+        LogManager.Configuration = config;
     }
 
     private static ArchiveNumberingMode StringToArchiveNumberingMode(string value)
@@ -51,18 +52,18 @@ public class Configuration
         };
     }
 
-    private static NLog.LogLevel StringToLogLevel(string value)
+    private static LogLevel StringToLogLevel(string value)
     {
         return value.ToLower() switch
         {
-            "trace" => NLog.LogLevel.Trace,
-            "debug" => NLog.LogLevel.Debug,
-            "info" => NLog.LogLevel.Info,
-            "warn" => NLog.LogLevel.Warn,
-            "error" => NLog.LogLevel.Error,
-            "fatal" => NLog.LogLevel.Fatal,
-            "off" => NLog.LogLevel.Off,
-            _ => NLog.LogLevel.Error
+            "trace" => LogLevel.Trace,
+            "debug" => LogLevel.Debug,
+            "info" => LogLevel.Info,
+            "warn" => LogLevel.Warn,
+            "error" => LogLevel.Error,
+            "fatal" => LogLevel.Fatal,
+            "off" => LogLevel.Off,
+            _ => LogLevel.Error
         };
     }
 

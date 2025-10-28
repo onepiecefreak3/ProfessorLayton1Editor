@@ -1,236 +1,320 @@
 {
-  "5": {
-    "Name": "fade_out",
-    "Description": "Fades the top and bottom screen out to black.",
-    "Parameters": []
-  },
-  "11": {
-    "Name": "draw_image_bottom",
-    "Description": "Draws an image on the bottom screen.",
-    "Parameters": [
-      {
-        "Name": "file",
-        "Type": "string",
-        "Description": "The file name of the image to load from '/data/bg/*.arc'."
-      },
-      {
-        "Name": "unk",
-        "Type": "int",
-        "Description": "Unkown"
-      }
-    ]
-  },
-  "12": {
-    "Name": "draw_image_top",
-    "Description": "Draws an image on the top screen.",
-    "Parameters": [
-      {
-        "Name": "file",
-        "Type": "string",
-        "Description": "The file name of the image to load from '/data/bg/*.arc'."
-      },
-      {
-        "Name": "unk",
-        "Type": "int",
-        "Description": "Unkown"
-      }
-    ]
-  },
-  "15": {
-    "Name": "fade_in",
-    "Description": "Fades the top and bottom screen in from black.",
-    "Parameters": []
-  },
-  "67": {
-    "Name": "set_room_text",
-    "Description": "Sets up an area in a 'room' that triggers descriptive text.",
-    "Parameters": [
-      {
-        "Name": "speakerId",
-        "Type": "int",
-        "Description": "The ID of the speaker icon on the descriptive text.\n1 - Layton\n2 - Luke\n3 - Hint Coin\nOther values default to Layton"
-      },
-      {
-        "Name": "x",
-        "Type": "int",
-        "Description": "The x position of the area."
-      },
-      {
-        "Name": "y",
-        "Type": "int",
-        "Description": "The y position of the area."
-      },
-      {
-        "Name": "width",
-        "Type": "int",
-        "Description": "The width of the area."
-      },
-      {
-        "Name": "height",
-        "Type": "int",
-        "Description": "The height of the area."
-      },
-      {
-        "Name": "textId",
-        "Type": "int",
-        "Description": "The ID of the text to show from tobj.pcm in the format 't_[id].txt'."
-      },
-      {
-        "Name": "unk",
-        "Type": "int",
-        "Description": "Unknown"
-      }
-    ]
-  },
-  "80": {
-    "Name": "unk1",
-    "Description": "Unknown",
-    "Parameters": [
-      {
-        "Name": "x",
-        "Type": "int",
-        "Description": "The x position of the area."
-      },
-      {
-        "Name": "y",
-        "Type": "int",
-        "Description": "The y position of the area."
-      },
-      {
-        "Name": "width",
-        "Type": "int",
-        "Description": "The width of the area."
-      },
-      {
-        "Name": "height",
-        "Type": "int",
-        "Description": "The height of the area."
-      },
-      {
-        "Name": "unk1",
-        "Type": "int",
-        "Description": "Unknown"
-      },
-      {
-        "Name": "unk2",
-        "Type": "int",
-        "Description": "Unknown"
-      }
-    ]
-  },
-  "90": {
-    "Name": "set_room_map",
-    "Description": "",
-    "Parameters": [
-      {
-        "Name": "mapTextId",
-        "Type": "int",
-        "Description": "The ID of the map name to show from storytext.pcm in the format 'map[id].txt'."
-      },
-      {
-        "Name": "mapId",
-        "Type": "int",
-        "Description": "The ID of the map to show from '/data/bg/map_[id].arc'."
-      },
-      {
-        "Name": "x",
-        "Type": "int",
-        "Description": "The x position of the character icon."
-      },
-      {
-        "Name": "y",
-        "Type": "int",
-        "Description": "The y position of the character icon."
-      },
-      {
-        "Name": "unk3",
-        "Type": "int",
-        "Description": "Unknown"
-      }
-    ]
-  },
-  "92": {
-    "Name": "set_room_animation",
-    "Description": "Sets up an animation in a 'room' that plays as part of the environment.",
-    "Parameters": [
-      {
-        "Name": "x",
-        "Type": "int",
-        "Description": "The x position of the animation."
-      },
-      {
-        "Name": "y",
-        "Type": "int",
-        "Description": "The y position of the animation."
-      },
-      {
-        "Name": "file",
-        "Type": "string",
-        "Description": "The file name of the animations to load from '/data/ani/*.arc'.\nPlays the 'gfx' animation in the file."
-      }
-    ]
-  },
-  "186": {
-    "Name": "set_puzzle_name",
-    "Description": "Sets the name of a puzzle.",
-    "Parameters": [
-      {
-        "Name": "puzzleId",
-        "Type": "int",
-        "Description": "The ID of the puzzle."
-      },
-      {
-        "Name": "name",
-        "Type": "string",
-        "Description": "The name of the puzzle."
-      }
-    ]
-  },
-  "195": {
-    "Name": "set_puzzle_picarat",
-    "Description": "Sets the picarat of a puzzle.",
-    "Parameters": [
-      {
-        "Name": "puzzleId",
-        "Type": "int",
-        "Description": "The ID of the puzzle."
-      },
-      {
-        "Name": "maxPicarat",
-        "Type": "int",
-        "Description": "The maximum picarat earnable by the puzzle."
-      },
-      {
-        "Name": "picaratFailure1",
-        "Type": "int",
-        "Description": "The picarat earnable by the puzzle after the first failure."
-      },
-      {
-        "Name": "picaratFailure2",
-        "Type": "int",
-        "Description": "The picarat earnable by the puzzle after the second failure."
-      }
-    ]
-  },
-  "220": {
-    "Name": "set_puzzle_info",
-    "Description": "Sets the type and location of a puzzle.",
-    "Parameters": [
-      {
-        "Name": "puzzleId",
-        "Type": "int",
-        "Description": "The ID of the puzzle."
-      },
-      {
-        "Name": "type",
-        "Type": "string",
-        "Description": "The type of puzzle."
-      },
-      {
-        "Name": "lcoation",
-        "Type": "string",
-        "Description": "The location the puzzle is encountered."
-      }
-    ]
+  "A5FP": {
+    "5": {
+      "Name": "fade_out",
+      "Description": "Fades the top and bottom screen out to black.",
+      "Parameters": []
+    },
+    "11": {
+      "Name": "draw_image_bottom",
+      "Description": "Draws an image on the bottom screen.",
+      "Parameters": [
+        {
+          "Name": "file",
+          "Type": "string",
+          "Description": "The file name of the image to load from '/data/bg/*.arc'."
+        },
+        {
+          "Name": "unk",
+          "Type": "int",
+          "Description": "Unkown"
+        }
+      ]
+    },
+    "12": {
+      "Name": "draw_image_top",
+      "Description": "Draws an image on the top screen.",
+      "Parameters": [
+        {
+          "Name": "file",
+          "Type": "string",
+          "Description": "The file name of the image to load from '/data/bg/*.arc'."
+        },
+        {
+          "Name": "unk",
+          "Type": "int",
+          "Description": "Unkown"
+        }
+      ]
+    },
+    "15": {
+      "Name": "fade_in",
+      "Description": "Fades the top and bottom screen in from black.",
+      "Parameters": []
+    },
+    "34": {
+      "Name": "set_room_movevment",
+      "Description": "Sets up a movement to another 'room'.",
+      "Parameters": [
+        {
+          "Name": "arrowId",
+          "Type": "int",
+          "Description": "The ID of the arrow to show from 'data/ani/exit_[id].arc'."
+        },
+        {
+          "Name": "x",
+          "Type": "int",
+          "Description": "The x position of the movement arrow."
+        },
+        {
+          "Name": "y",
+          "Type": "int",
+          "Description": "The y position of the movement arrow."
+        },
+        {
+          "Name": "unk1",
+          "Type": "int",
+          "Description": "Unknown"
+        },
+        {
+          "Name": "unk2",
+          "Type": "int",
+          "Description": "Unknown"
+        },
+        {
+          "Name": "roomId",
+          "Type": "int",
+          "Description": "The ID of the 'room' to move to."
+        },
+        {
+          "Name": "unk3",
+          "Type": "int",
+          "Description": "Unknown"
+        },
+        {
+          "Name": "unk4",
+          "Type": "int",
+          "Description": "Unknown"
+        }
+      ]
+    },
+    "67": {
+      "Name": "set_room_text",
+      "Description": "Sets up an area in a 'room' that triggers descriptive text.",
+      "Parameters": [
+        {
+          "Name": "speakerId",
+          "Type": "int",
+          "Description": "The ID of the speaker icon on the descriptive text.\nLoads icon animation from '/data/ani/room_tobjp.arc'."
+        },
+        {
+          "Name": "x",
+          "Type": "int",
+          "Description": "The x position of the area."
+        },
+        {
+          "Name": "y",
+          "Type": "int",
+          "Description": "The y position of the area."
+        },
+        {
+          "Name": "width",
+          "Type": "int",
+          "Description": "The width of the area."
+        },
+        {
+          "Name": "height",
+          "Type": "int",
+          "Description": "The height of the area."
+        },
+        {
+          "Name": "textId",
+          "Type": "int",
+          "Description": "The ID of the text to show from tobj.pcm in the format 't_[id].txt'."
+        },
+        {
+          "Name": "unk",
+          "Type": "int",
+          "Description": "Unknown"
+        }
+      ]
+    },
+    "80": {
+      "Name": "set_room_event_object",
+      "Description": "Sets up event objects in a 'room'.",
+      "Parameters": [
+        {
+          "Name": "x",
+          "Type": "int",
+          "Description": "The x position of the object and event trigger."
+        },
+        {
+          "Name": "y",
+          "Type": "int",
+          "Description": "The y position of the object and event trigger."
+        },
+        {
+          "Name": "width",
+          "Type": "int",
+          "Description": "The width of the event trigger. Object width is derived from the animation."
+        },
+        {
+          "Name": "height",
+          "Type": "int",
+          "Description": "The height of the event trigger. Object height is derived from the animation."
+        },
+        {
+          "Name": "objectId",
+          "Type": "int",
+          "Description": "The ID of the object to show from '/data/ani/obj_[id].arc'."
+        },
+        {
+          "Name": "eventId",
+          "Type": "int",
+          "Description": "The ID of the event to execute from '/data/script/event/e[id].gds'."
+        }
+      ]
+    },
+    "90": {
+      "Name": "set_room_map",
+      "Description": "Sets up the map view in a 'room' on the top screen.",
+      "Parameters": [
+        {
+          "Name": "mapTextId",
+          "Type": "int",
+          "Description": "The ID of the map name to show from storytext.pcm in the format 'map[id].txt'."
+        },
+        {
+          "Name": "mapId",
+          "Type": "int",
+          "Description": "The ID of the map to show from '/data/bg/map_[id].arc'."
+        },
+        {
+          "Name": "x",
+          "Type": "int",
+          "Description": "The x position of the character icon."
+        },
+        {
+          "Name": "y",
+          "Type": "int",
+          "Description": "The y position of the character icon."
+        },
+        {
+          "Name": "unk3",
+          "Type": "int",
+          "Description": "Unknown"
+        }
+      ]
+    },
+    "92": {
+      "Name": "set_room_animation",
+      "Description": "Sets up an animation in a 'room' that plays as part of the environment.",
+      "Parameters": [
+        {
+          "Name": "x",
+          "Type": "int",
+          "Description": "The x position of the animation."
+        },
+        {
+          "Name": "y",
+          "Type": "int",
+          "Description": "The y position of the animation."
+        },
+        {
+          "Name": "file",
+          "Type": "string",
+          "Description": "The file name of the animations to load from '/data/ani/*.arc'.\nPlays the 'gfx' animation in the file."
+        }
+      ]
+    },
+    "104": {
+      "Name": "set_room_hint_coin",
+      "Description": "Sets a hint coin in a 'room'.",
+      "Parameters": [
+        {
+          "Name": "coinId",
+          "Type": "int",
+          "Description": "The ID of the coin in the 'room'."
+        },
+        {
+          "Name": "x",
+          "Type": "int",
+          "Description": "The x position of the hint coin area."
+        },
+        {
+          "Name": "y",
+          "Type": "int",
+          "Description": "The y position of the hint coin area."
+        },
+        {
+          "Name": "width",
+          "Type": "int",
+          "Description": "The width of the hint coin area."
+        },
+        {
+          "Name": "height",
+          "Type": "int",
+          "Description": "The height of the hint coin area."
+        },
+        {
+          "Name": "unk1",
+          "Type": "int",
+          "Description": "Unknown"
+        }
+      ]
+    },
+    "186": {
+      "Name": "set_puzzle_name",
+      "Description": "Sets the name of a puzzle.",
+      "Parameters": [
+        {
+          "Name": "puzzleId",
+          "Type": "int",
+          "Description": "The ID of the puzzle."
+        },
+        {
+          "Name": "name",
+          "Type": "string",
+          "Description": "The name of the puzzle."
+        }
+      ]
+    },
+    "195": {
+      "Name": "set_puzzle_picarat",
+      "Description": "Sets the picarat of a puzzle.",
+      "Parameters": [
+        {
+          "Name": "puzzleId",
+          "Type": "int",
+          "Description": "The ID of the puzzle."
+        },
+        {
+          "Name": "maxPicarat",
+          "Type": "int",
+          "Description": "The maximum picarat earnable by the puzzle."
+        },
+        {
+          "Name": "picaratFailure1",
+          "Type": "int",
+          "Description": "The picarat earnable by the puzzle after the first failure."
+        },
+        {
+          "Name": "picaratFailure2",
+          "Type": "int",
+          "Description": "The picarat earnable by the puzzle after the second failure."
+        }
+      ]
+    },
+    "220": {
+      "Name": "set_puzzle_info",
+      "Description": "Sets the type and location of a puzzle.",
+      "Parameters": [
+        {
+          "Name": "puzzleId",
+          "Type": "int",
+          "Description": "The ID of the puzzle."
+        },
+        {
+          "Name": "type",
+          "Type": "string",
+          "Description": "The type of puzzle."
+        },
+        {
+          "Name": "location",
+          "Type": "string",
+          "Description": "The location the puzzle is encountered."
+        }
+      ]
+    }
   }
 }

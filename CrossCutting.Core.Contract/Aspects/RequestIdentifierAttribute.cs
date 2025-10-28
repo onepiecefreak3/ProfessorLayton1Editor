@@ -2,7 +2,7 @@
 
 namespace CrossCutting.Core.Contract.Aspects;
 
-[AttributeUsage(AttributeTargets.Constructor, Inherited = true)]
+[AttributeUsage(AttributeTargets.Constructor)]
 public class RequestIdentifierAttribute : Attribute
 {
     public string PropertyName { get; }

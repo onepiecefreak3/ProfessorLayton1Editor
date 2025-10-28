@@ -2,7 +2,7 @@
 
 namespace CrossCutting.Core.Contract.Aspects;
 
-[AttributeUsage(AttributeTargets.Interface | AttributeTargets.Method | AttributeTargets.Assembly, Inherited = true)]
+[AttributeUsage(AttributeTargets.Interface | AttributeTargets.Method | AttributeTargets.Assembly)]
 public class MapExceptionAttribute : Attribute
 {
     public Type TargetException { get; }

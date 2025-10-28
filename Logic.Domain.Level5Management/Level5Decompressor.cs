@@ -12,7 +12,7 @@ namespace Logic.Domain.Level5Management;
 
 class Level5Decompressor : ILevel5Decompressor
 {
-    public CompressionMethod PeekCompressionMethod(Stream input)
+    public CompressionType PeekCompressionMethod(Stream input)
     {
         var buffer = new byte[4];
         _ = input.Read(buffer);
@@ -20,40 +20,40 @@ class Level5Decompressor : ILevel5Decompressor
 
         int method = BinaryPrimitives.ReadInt32LittleEndian(buffer);
 
-        if (!Enum.IsDefined(typeof(CompressionMethod), method))
+        if (!Enum.IsDefined(typeof(CompressionType), method))
             throw new InvalidOperationException("Stream is not compressed with a Level5 method.");
 
-        return (CompressionMethod)method;
+        return (CompressionType)method;
     }
 
-    public void Compress(Stream input, Stream output, CompressionMethod method)
+    public void Compress(Stream input, Stream output, CompressionType type)
     {
         output.Position += 4;
 
         ICompression compression;
-        switch (method)
+        switch (type)
         {
-            case CompressionMethod.Lz10:
+            case CompressionType.Lz10:
                 compression = Compressions.Nintendo.Lz10.Build();
                 break;
 
-            case CompressionMethod.Huffman4:
+            case CompressionType.Huffman4:
                 compression = new CompressionConfigurationBuilder()
                     .Decode.With(() => new HuffmanDecoder(4, NibbleOrder.LowNibbleFirst))
                     .Encode.With(() => new HuffmanEncoder(4, NibbleOrder.LowNibbleFirst))
                     .Build();
                 break;
 
-            case CompressionMethod.Huffman8:
+            case CompressionType.Huffman8:
                 compression = Compressions.Nintendo.Huffman8Bit.Build();
                 break;
 
-            case CompressionMethod.Rle:
+            case CompressionType.Rle:
                 compression = Compressions.Nintendo.Rle.Build();
                 break;
 
             default:
-                throw new InvalidOperationException($"Unknown compression method {method}.");
+                throw new InvalidOperationException($"Unknown compression method {type}.");
         }
 
         compression.Compress(input, output);
@@ -61,33 +61,33 @@ class Level5Decompressor : ILevel5Decompressor
 
     public void Decompress(Stream input, Stream output)
     {
-        CompressionMethod method = PeekCompressionMethod(input);
+        CompressionType type = PeekCompressionMethod(input);
         input.Position += 4;
 
         ICompression compression;
-        switch (method)
+        switch (type)
         {
-            case CompressionMethod.Lz10:
+            case CompressionType.Lz10:
                 compression = Compressions.Nintendo.Lz10.Build();
                 break;
 
-            case CompressionMethod.Huffman4:
+            case CompressionType.Huffman4:
                 compression = new CompressionConfigurationBuilder()
                     .Decode.With(() => new HuffmanDecoder(4, NibbleOrder.LowNibbleFirst))
                     .Encode.With(() => new HuffmanEncoder(4, NibbleOrder.LowNibbleFirst))
                     .Build();
                 break;
 
-            case CompressionMethod.Huffman8:
+            case CompressionType.Huffman8:
                 compression = Compressions.Nintendo.Huffman8Bit.Build();
                 break;
 
-            case CompressionMethod.Rle:
+            case CompressionType.Rle:
                 compression = Compressions.Nintendo.Rle.Build();
                 break;
 
             default:
-                throw new InvalidOperationException($"Unknown compression method {method}.");
+                throw new InvalidOperationException($"Unknown compression method {type}.");
         }
 
         compression.Decompress(input, output);

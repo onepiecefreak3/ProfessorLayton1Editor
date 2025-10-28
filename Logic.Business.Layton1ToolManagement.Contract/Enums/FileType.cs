@@ -11,5 +11,6 @@ public enum FileType
     Text,
     Movie,
     Font,
+    Banner,
     Binary
 }

@@ -9,8 +9,20 @@
   <ItemGroup>
     <None Remove="resources\fonts\roboto.ttf" />
     <None Remove="resources\images\close.png" />
+    <None Remove="resources\images\font_edit.png" />
+    <None Remove="resources\images\font_remap.png" />
+    <None Remove="resources\images\font_remove.png" />
+    <None Remove="resources\images\frame_backward.png" />
+    <None Remove="resources\images\frame_forward.png" />
+    <None Remove="resources\images\image_export.png" />
+    <None Remove="resources\images\layton1tool.png" />
+    <None Remove="resources\images\pause.png" />
+    <None Remove="resources\images\play.png" />
     <None Remove="resources\images\save.png" />
     <None Remove="resources\images\save_as.png" />
+    <None Remove="resources\images\settings.png" />
+    <None Remove="resources\images\step_backward.png" />
+    <None Remove="resources\images\step_forward.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,8 +33,20 @@
       <LogicalName>roboto.ttf</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="resources\images\close.png" />
+    <EmbeddedResource Include="resources\images\font_edit.png" />
+    <EmbeddedResource Include="resources\images\font_remap.png" />
+    <EmbeddedResource Include="resources\images\font_remove.png" />
+    <EmbeddedResource Include="resources\images\frame_backward.png" />
+    <EmbeddedResource Include="resources\images\frame_forward.png" />
+    <EmbeddedResource Include="resources\images\image_export.png" />
+    <EmbeddedResource Include="resources\images\layton1tool.png" />
+    <EmbeddedResource Include="resources\images\pause.png" />
+    <EmbeddedResource Include="resources\images\play.png" />
     <EmbeddedResource Include="resources\images\save.png" />
     <EmbeddedResource Include="resources\images\save_as.png" />
+    <EmbeddedResource Include="resources\images\settings.png" />
+    <EmbeddedResource Include="resources\images\step_backward.png" />
+    <EmbeddedResource Include="resources\images\step_forward.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Builder;
+using Autofac.Core.Lifetime;
 using Autofac.Extensions.DependencyInjection;
 using Castle.DynamicProxy;
 using CrossCutting.Core.Contract.Bootstrapping;
@@ -220,7 +221,7 @@ public sealed class KernelAdapter : ICoCoKernel
         if (lastScope == null)
             throw new NullReferenceException("No base scope for request available.");
 
-        return new Scope(lastScope.BeginLifetimeScope(Autofac.Core.Lifetime.MatchingScopeLifetimeTags.RequestLifetimeScopeTag));
+        return new Scope(lastScope.BeginLifetimeScope(MatchingScopeLifetimeTags.RequestLifetimeScopeTag));
     }
 
     #region CallbackReflection

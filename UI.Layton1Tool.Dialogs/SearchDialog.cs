@@ -1,13 +1,15 @@
-﻿using ImGui.Forms.Controls.Lists;
-using Logic.Business.Layton1ToolManagement.Contract;
+﻿using System.Text.RegularExpressions;
+using CrossCutting.Core.Contract.EventBrokerage;
+using ImGui.Forms.Controls.Lists;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
-using System.Text.RegularExpressions;
-using CrossCutting.Core.Contract.EventBrokerage;
+using Logic.Business.Layton1ToolManagement.Contract.Files;
+using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
+using Logic.Domain.CodeAnalysisManagement.Contract.Level5;
 using Logic.Domain.Level5Management.Contract.DataClasses.Archives;
-using UI.Layton1Tool.Resources.Contract;
 using UI.Layton1Tool.Dialogs.DataClasses;
 using UI.Layton1Tool.Messages;
+using UI.Layton1Tool.Resources.Contract;
 
 namespace UI.Layton1Tool.Dialogs;
 
@@ -20,10 +22,11 @@ partial class SearchDialog
     private readonly IEventBroker _eventBroker;
     private readonly ILayton1NdsFileManager _fileManager;
     private readonly ILayton1PcmFileManager _pcmManager;
+    private readonly ILevel5ScriptComposer _scriptComposer;
     private readonly ILocalizationProvider _localizations;
 
     public SearchDialog(Layton1NdsRom ndsRom, IEventBroker eventBroker, ILayton1NdsFileManager fileManager, ILayton1PcmFileManager pcmManager,
-        ILocalizationProvider localizations, IColorProvider colors)
+        ILevel5ScriptComposer scriptComposer, ILocalizationProvider localizations, IColorProvider colors)
     {
         InitializeComponent(localizations, colors);
 
@@ -32,6 +35,7 @@ partial class SearchDialog
         _eventBroker = eventBroker;
         _fileManager = fileManager;
         _pcmManager = pcmManager;
+        _scriptComposer = scriptComposer;
         _localizations = localizations;
 
         _inputText!.TextChanged += _inputText_TextChanged;
@@ -49,7 +53,7 @@ partial class SearchDialog
 
         _eventBroker.Raise(new SelectedNdsFileChangedMessage(_ndsRom, row.Data.File));
 
-        if(row.Data.SubFile is null)
+        if (row.Data.SubFile is null)
             return;
 
         _eventBroker.Raise(new SelectedPcmFileChangedMessage(_ndsRom, row.Data.SubFile));
@@ -110,6 +114,17 @@ partial class SearchDialog
                     var text = (string?)_fileManager.Parse(file, fileType);
 
                     if (IsMatchText(text, matchRegex))
+                        _matchTable.Rows.Add(new DataTableRow<SearchResult>(new SearchResult { File = file }));
+
+                    break;
+
+                case FileType.Gds:
+                    var syntax = (CodeUnitSyntax?)_fileManager.Parse(file, fileType);
+                    if (syntax is null)
+                        continue;
+
+                    string composedSyntax = _scriptComposer.ComposeCodeUnit(syntax);
+                    if (IsMatchText(composedSyntax, matchRegex))
                         _matchTable.Rows.Add(new DataTableRow<SearchResult>(new SearchResult { File = file }));
 
                     break;

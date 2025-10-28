@@ -3,8 +3,8 @@ using Kanvas.Encoding;
 using Kanvas.Swizzle;
 using Konnect.Contract.DataClasses.Plugin.File.Image;
 using Konnect.Plugin.File.Image;
-using Logic.Domain.Level5Management.Contract.Images;
 using Logic.Domain.Level5Management.Contract.DataClasses.Images;
+using Logic.Domain.Level5Management.Contract.Images;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 

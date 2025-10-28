@@ -1,60 +1,50 @@
-﻿using Logic.Domain.NintendoManagement.Contract;
-using Logic.Domain.NintendoManagement.Contract.Enums;
-using System.Buffers.Binary;
-using Kompression;
+﻿using Kompression;
 using Kompression.Contract;
+using Logic.Domain.NintendoManagement.Contract;
+using Logic.Domain.NintendoManagement.Contract.Enums;
 
 namespace Logic.Domain.NintendoManagement;
 
 class NintendoDecompressor : INintendoDecompressor
 {
-    public int PeekDecompressedSize(Stream input)
-    {
-        var sizeMethodBuffer = new byte[4];
-        _ = input.Read(sizeMethodBuffer, 0, 4);
-        input.Position -= 4;
-
-        return (int)(BinaryPrimitives.ReadUInt32LittleEndian(sizeMethodBuffer) >> 8);
-    }
-
-    public CompressionMethod PeekCompressionMethod(Stream input)
+    public CompressionType PeekCompressionMethod(Stream input)
     {
         int method = input.ReadByte();
         input.Position--;
 
-        if (!Enum.IsDefined(typeof(CompressionMethod), method))
+        if (!Enum.IsDefined(typeof(CompressionType), method))
             throw new InvalidOperationException("Stream is not compressed with a Nintendo method.");
 
-        return (CompressionMethod)method;
+        return (CompressionType)method;
     }
 
-    public void Compress(Stream input, Stream output, CompressionMethod method)
+    public void Compress(Stream input, Stream output, CompressionType type)
     {
         ICompression compression;
-        switch (method)
+        switch (type)
         {
-            case CompressionMethod.Lz10:
+            case CompressionType.Lz10:
                 compression = Compressions.Nintendo.Lz10.Build();
                 break;
 
-            case CompressionMethod.Lz11:
+            case CompressionType.Lz11:
                 compression = Compressions.Nintendo.Lz11.Build();
                 break;
 
-            case CompressionMethod.Huffman4:
+            case CompressionType.Huffman4:
                 compression = Compressions.Nintendo.Huffman4Bit.Build();
                 break;
 
-            case CompressionMethod.Huffman8:
+            case CompressionType.Huffman8:
                 compression = Compressions.Nintendo.Huffman8Bit.Build();
                 break;
 
-            case CompressionMethod.Rle:
+            case CompressionType.Rle:
                 compression = Compressions.Nintendo.Rle.Build();
                 break;
 
             default:
-                throw new InvalidOperationException($"Unknown compression method {method}.");
+                throw new InvalidOperationException($"Unknown compression method {type}.");
         }
 
         compression.Compress(input, output);
@@ -62,35 +52,45 @@ class NintendoDecompressor : INintendoDecompressor
 
     public void Decompress(Stream input, Stream output)
     {
-        CompressionMethod method = PeekCompressionMethod(input);
+        CompressionType type = PeekCompressionMethod(input);
 
         ICompression compression;
-        switch (method)
+        switch (type)
         {
-            case CompressionMethod.Lz10:
+            case CompressionType.Lz10:
                 compression = Compressions.Nintendo.Lz10.Build();
                 break;
 
-            case CompressionMethod.Lz11:
+            case CompressionType.Lz11:
                 compression = Compressions.Nintendo.Lz11.Build();
                 break;
 
-            case CompressionMethod.Huffman4:
+            case CompressionType.Huffman4:
                 compression = Compressions.Nintendo.Huffman4Bit.Build();
                 break;
 
-            case CompressionMethod.Huffman8:
+            case CompressionType.Huffman8:
                 compression = Compressions.Nintendo.Huffman8Bit.Build();
                 break;
 
-            case CompressionMethod.Rle:
+            case CompressionType.Rle:
                 compression = Compressions.Nintendo.Rle.Build();
                 break;
 
             default:
-                throw new InvalidOperationException($"Unknown compression method {method}.");
+                throw new InvalidOperationException($"Unknown compression method {type}.");
         }
 
         compression.Decompress(input, output);
+    }
+
+    public void DecompressOverlay(Stream input, Stream output)
+    {
+        Compressions.Nintendo.BackwardLz77.Build().Decompress(input, output);
+    }
+
+    public void CompressOverlay(Stream input, Stream output)
+    {
+        Compressions.Nintendo.BackwardLz77.Build().Compress(input, output);
     }
 }

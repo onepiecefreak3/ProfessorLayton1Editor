@@ -1,10 +1,9 @@
-﻿using CrossCutting.Core.Contract.Configuration;
-using CrossCutting.Core.Contract.Configuration.DataClasses;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-
+using CrossCutting.Core.Contract.Configuration;
+using CrossCutting.Core.Contract.Configuration.DataClasses;
 
 namespace CrossCutting.Core.Configuration.File;
 

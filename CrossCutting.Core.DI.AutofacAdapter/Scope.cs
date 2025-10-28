@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Autofac;
 using Autofac.Core;
 using Autofac.Core.Lifetime;
+using Autofac.Core.Resolving;
 using Castle.Core.Logging;
 using CrossCutting.Core.Contract.DependencyInjection;
 
@@ -65,7 +66,7 @@ public class Scope : IScope
 
     #region Logging
 
-    private void Scope_ResolveOperationBeginning(object sender, Autofac.Core.Resolving.ResolveOperationBeginningEventArgs e)
+    private void Scope_ResolveOperationBeginning(object sender, ResolveOperationBeginningEventArgs e)
     {
         e.ResolveOperation.ResolveRequestBeginning += ResolveOperation_ResolveRequestBeginning;
         e.ResolveOperation.CurrentOperationEnding += ResolveOperation_CurrentOperationEnding;
@@ -75,14 +76,14 @@ public class Scope : IScope
         _logger.Debug($"Scope ({scopeHash}) resolve operation beginning.");
     }
 
-    private void ResolveOperation_CurrentOperationEnding(object sender, Autofac.Core.Resolving.ResolveOperationEndingEventArgs e)
+    private void ResolveOperation_CurrentOperationEnding(object sender, ResolveOperationEndingEventArgs e)
     {
         ISharingLifetimeScope scope = e.ResolveOperation.CurrentScope;
         string scopeHash = scope.Equals(scope.RootLifetimeScope) ? "RootLifetimeScope" : GetHash();
         _logger.Debug($"Scope ({scopeHash}) resolve operation completed.");
     }
 
-    private void ResolveOperation_ResolveRequestBeginning(object sender, Autofac.Core.Resolving.ResolveRequestBeginningEventArgs e)
+    private void ResolveOperation_ResolveRequestBeginning(object sender, ResolveRequestBeginningEventArgs e)
     {
         e.RequestContext.RequestCompleting += RequestContext_RequestCompleting;
 
@@ -92,7 +93,7 @@ public class Scope : IScope
         _logger.Debug($"Scope ({scopeHash}) resolve request beginning. (Service: {serviceName})");
     }
 
-    private void RequestContext_RequestCompleting(object sender, Autofac.Core.Resolving.ResolveRequestCompletingEventArgs e)
+    private void RequestContext_RequestCompleting(object sender, ResolveRequestCompletingEventArgs e)
     {
         ISharingLifetimeScope scope = e.RequestContext.ActivationScope;
         string scopeHash = scope.Equals(scope.RootLifetimeScope) ? "RootLifetimeScope" : GetHash();

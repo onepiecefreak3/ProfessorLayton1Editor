@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CrossCutting.Core.Contract\CrossCutting.Core.Contract.csproj" />
+    <ProjectReference Include="..\UI.Layton1Tool.Components.Contract\UI.Layton1Tool.Components.Contract.csproj" />
     <ProjectReference Include="..\UI.Layton1Tool.Dialogs.Contract\UI.Layton1Tool.Dialogs.Contract.csproj" />
     <ProjectReference Include="..\UI.Layton1Tool.Messages\UI.Layton1Tool.Messages.csproj" />
     <ProjectReference Include="..\UI.Layton1Tool.Resources.Contract\UI.Layton1Tool.Resources.Contract.csproj" />

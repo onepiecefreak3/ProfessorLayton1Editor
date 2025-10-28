@@ -12,9 +12,14 @@ class FontFactory : IFontFactory
         ImGui.Forms.Factories.FontFactory.RegisterFromResource("Roboto", "roboto.ttf", FontGlyphRange.Latin);
     }
 
-    public FontResource GetDefaultFont()
+    public FontResource GetApplicationFont(int size)
     {
-        FontResource notoFont = ImGui.Forms.Factories.FontFactory.Get("NotoJp", 15);
-        return ImGui.Forms.Factories.FontFactory.Get("Roboto", 15, notoFont);
+        FontResource notoFont = ImGui.Forms.Factories.FontFactory.Get("NotoJp", size);
+        return ImGui.Forms.Factories.FontFactory.Get("Roboto", size, notoFont);
+    }
+
+    public FontResource GetHexadecimalFont(int size)
+    {
+        return ImGui.Forms.Factories.FontFactory.GetDefault(size);
     }
 }

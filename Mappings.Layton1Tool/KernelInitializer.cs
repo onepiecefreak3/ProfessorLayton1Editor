@@ -18,6 +18,7 @@ using Logic.Business.Layton1ToolManagement;
 using Logic.Domain.CodeAnalysisManagement;
 using Logic.Domain.Level5Management;
 using Logic.Domain.NintendoManagement;
+using UI.Layton1Tool.Components;
 using UI.Layton1Tool.Dialogs;
 using UI.Layton1Tool.Forms;
 using UI.Layton1Tool.Resources;
@@ -63,6 +64,7 @@ public class KernelInitializer : IKernelInitializer
         kernel.RegisterComponent<NintendoManagementActivator>();
         kernel.RegisterComponent<Layton1ToolFormsActivator>();
         kernel.RegisterComponent<Layton1ToolDialogsActivator>();
+        kernel.RegisterComponent<Layton1ToolComponentsActivator>();
         kernel.RegisterComponent<Layton1ToolResourcesActivator>();
     }
 }

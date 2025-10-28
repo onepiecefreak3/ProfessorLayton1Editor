@@ -9,6 +9,7 @@ internal class GdsScriptParser(IGdsScriptReader reader) : IGdsScriptParser
     public GdsScriptFile Parse(Stream input)
     {
         GdsArgument[] arguments = reader.Read(input);
+
         return Parse(arguments);
     }
 
@@ -70,7 +71,7 @@ internal class GdsScriptParser(IGdsScriptReader reader) : IGdsScriptParser
 
     private GdsJumpTarget[] ParseJumpTargets(GdsArgument[] arguments)
     {
-        var result = new List<GdsJumpTarget>();
+        var jumpsTargets = new List<GdsArgument>();
 
         Dictionary<int, GdsArgument> lookup = arguments.ToDictionary(x => x.offset, y => y);
         foreach (GdsArgument argument in arguments)
@@ -81,9 +82,17 @@ internal class GdsScriptParser(IGdsScriptReader reader) : IGdsScriptParser
             if (!lookup.TryGetValue((int)argument.value!, out GdsArgument? jumpTarget))
                 throw new InvalidOperationException($"Could not determine target of jump at position {argument.offset}.");
 
+            jumpsTargets.Add(jumpTarget);
+        }
+
+        var result = new List<GdsJumpTarget>();
+
+        var jumpIndex = 0;
+        foreach (GdsArgument jumpTarget in jumpsTargets.OrderBy(j => j.offset))
+        {
             result.Add(new GdsJumpTarget
             {
-                Label = $"@{result.Count:000}@",
+                Label = $"@{jumpIndex++:000}@",
                 Offset = jumpTarget.offset
             });
         }

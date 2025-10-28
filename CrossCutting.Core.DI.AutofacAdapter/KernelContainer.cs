@@ -1,4 +1,5 @@
-﻿using CrossCutting.Core.Contract.DependencyInjection;
+﻿using Autofac;
+using CrossCutting.Core.Contract.DependencyInjection;
 
 namespace CrossCutting.Core.DI.AutofacAdapter;
 
@@ -15,7 +16,7 @@ public class KernelContainer : IKernelContainer
             {
                 if (s_innerKernel == null)
                 {
-                    s_innerKernel = new KernelAdapter(new Autofac.ContainerBuilder());
+                    s_innerKernel = new KernelAdapter(new ContainerBuilder());
                     s_innerKernel.RegisterInstance(s_innerKernel);
                 }
 

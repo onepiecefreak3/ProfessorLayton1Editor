@@ -11,5 +11,6 @@ public enum CompressionType
     NintendoLz11,
     NintendoHuffman4Bit,
     NintendoHuffman8Bit,
-    NintendoRle
+    NintendoRle,
+    NintendoOverlay
 }

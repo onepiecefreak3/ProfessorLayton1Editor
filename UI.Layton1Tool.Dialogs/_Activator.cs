@@ -31,6 +31,9 @@ public class Layton1ToolDialogsActivator : IComponentActivator
 
         kernel.RegisterToSelf<ValidationDialog>();
         kernel.RegisterToSelf<SearchDialog>();
+        kernel.RegisterToSelf<FontPreviewSettingsDialog>();
+        kernel.RegisterToSelf<FontGenerationDialog>();
+        kernel.RegisterToSelf<FontRemappingDialog>();
 
         kernel.RegisterConfiguration<Layton1ToolDialogsConfiguration>();
     }

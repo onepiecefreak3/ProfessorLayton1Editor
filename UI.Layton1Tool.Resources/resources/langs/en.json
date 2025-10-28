@@ -24,9 +24,6 @@
   "File.Nds.Search.Placeholder": "Search...",
   "File.Nds.Search.Clear": "Clear",
 
-  // Script
-  "Script.Instruction.Caption": "Instruction Name",
-
   // Dialog
   "Dialog.File.Nds.Open.Caption": "Select a NDS ROM...",
   "Dialog.File.Nds.Open.Filter": "NDS ROM",
@@ -52,6 +49,11 @@
   "Dialog.Search.Cancel.Caption": "Cancel",
   "Dialog.UnsavedChanges.Caption": "Unsaved changes",
   "Dialog.UnsavedChanges.Text": "Changes were made to ROMs. Do you want to save those changes?",
+  "Dialog.Font.Remove.Caption": "Remove Characters",
+  "Dialog.Font.Remove.Text": "Do you want to remove the selected font characters?",
+  "Dialog.Font.Remapping.Caption": "Remap Characters",
+  "Dialog.Font.Remapping.Text": "Choose a continuous range of characters to remap with:",
+  "Dialog.Font.Remapping.Remap": "Remap",
 
   // Status
   "Status.Nds.Select.Error": "No file was selected.",
@@ -60,5 +62,58 @@
   "Status.File.Select.Error": "No file was selected.",
   "Status.Directory.Select.Error": "No directory was selected.",
   "Status.File.Open.Error": "File could not be opened.",
-  "Status.Animation.Load.Error": "This animation has inconsistencies."
+  "Status.Animation.Load.Error": "This animation has inconsistencies.",
+
+  // Menu
+  "Image.Menu.Export.Png": "Export PNG...",
+  "Image.Export.Text": "Export image",
+
+  // Animation Player
+  "Animation.Speed.Input.Caption": "Enter speed...",
+
+  // Font Form
+  "Font.Search.Placeholder": "Search: ¥, \\uFFE3",
+  "Font.Preview.Placeholder": "Preview",
+  "Font.Preview.Export": "Export preview",
+  "Font.Preview.Settings": "Settings",
+  "Font.Generate.Caption": "Generate Font",
+  "Font.Generate.Edit.Caption": "Edit Characters",
+  "Font.Generate.Remove.Caption": "Remove Characters",
+  "Font.Generate.Remapping.Caption": "Remap Characters",
+
+  // Font Preview Settings
+  "Font.Preview.Settings.Caption": "Preview Settings",
+  "Font.Preview.Settings.ShowDebug": "Show debug boxes",
+  "Font.Preview.Settings.Spacing": "Spacing",
+  "Font.Preview.Settings.LineHeight": "Line height",
+  "Font.Preview.Settings.Alignment": "Alignment",
+  "Font.Preview.Settings.Alignment.Left": "Left",
+  "Font.Preview.Settings.Alignment.Center": "Center",
+  "Font.Preview.Settings.Alignment.Right": "Right",
+
+  // Font Generation
+  "Font.Generate.DefaultCharacters": "abcdefghijklmnopqrstuvwxyz\nABCDEFGHIJKLMNOPQRSTUVWXYZ\n0123456789",
+
+  // Font Generation Dialog
+  "Dialog.Font.Generate.Caption": "Generate Font",
+  "Dialog.Font.Edit.Caption": "Edit Characters",
+  "Dialog.Font.Generate.Family": "Font Family",
+  "Dialog.Font.Generate.Style": "Font Style",
+  "Dialog.Font.Generate.Size": "Font Size",
+  "Dialog.Font.Generate.Baseline": "Baseline",
+  "Dialog.Font.Generate.GlyphHeight": "Glyph Height",
+  "Dialog.Font.Generate.SpaceWidth": "Space Width",
+  "Dialog.Font.Generate.Characters": "Characters",
+  "Dialog.Font.Generate.Characters.Replace": "Replace characters when loading profile",
+  "Dialog.Font.Generate.Style.Bold": "Bold",
+  "Dialog.Font.Generate.Style.Italic": "Italic",
+  "Dialog.Font.Generate.Load": "Load",
+  "Dialog.Font.Generate.Load.Caption": "Load font profile...",
+  "Dialog.Font.Generate.Save": "Save",
+  "Dialog.Font.Generate.Save.Caption": "Save font profile...",
+  "Dialog.Font.Generate.Profile": "Font Profile",
+  "Dialog.Font.Generate.Generate": "Generate",
+  "Dialog.Font.Edit.Edit": "Edit",
+  "Dialog.Font.Generate.Padding.Left": "Left Padding",
+  "Dialog.Font.Generate.Padding.Right": "Right Padding"
 }

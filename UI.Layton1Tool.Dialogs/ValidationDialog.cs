@@ -1,17 +1,18 @@
-﻿using Logic.Business.Layton1ToolManagement.Contract;
-using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
+﻿using CrossCutting.Core.Contract.EventBrokerage;
 using ImGui.Forms.Controls.Lists;
-using UI.Layton1Tool.Resources.Contract;
-using ImGui.Forms.Modals.IO.Windows;
-using ImGui.Forms.Modals;
-using CrossCutting.Core.Contract.EventBrokerage;
 using ImGui.Forms.Localization;
+using ImGui.Forms.Modals;
 using ImGui.Forms.Modals.IO;
+using ImGui.Forms.Modals.IO.Windows;
+using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
+using Logic.Business.Layton1ToolManagement.Contract.Files;
+using Logic.Business.Layton1ToolManagement.Contract.Validation;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
 using Logic.Domain.Level5Management.Contract.Enums;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.Enums;
+using UI.Layton1Tool.Resources.Contract;
 
 namespace UI.Layton1Tool.Dialogs;
 
@@ -210,7 +211,7 @@ partial class ValidationDialog
         var sfd = new WindowsSaveFileDialog
         {
             Title = _localizations.DialogFileExtractCaption,
-            InitialDirectory = _settings.GetExtractDirectory(),
+            InitialDirectory = _settings.ExtractDirectory,
             InitialFileName = Path.GetFileName(file.Path)
         };
 
@@ -220,7 +221,7 @@ partial class ValidationDialog
 
         string? saveDir = Path.GetDirectoryName(sfd.Files[0]);
         if (!string.IsNullOrEmpty(saveDir))
-            _settings.SetExtractDirectory(saveDir);
+            _settings.ExtractDirectory=saveDir;
 
         return sfd.Files[0];
     }
@@ -230,7 +231,7 @@ partial class ValidationDialog
         var sfd = new SelectFolderDialog
         {
             Caption = _localizations.DialogDirectoryExtractCaption,
-            Directory = _settings.GetExtractDirectory()
+            Directory = _settings.ExtractDirectory
         };
 
         DialogResult result = await sfd.ShowAsync();

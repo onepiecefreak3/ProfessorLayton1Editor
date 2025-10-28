@@ -1,4 +1,5 @@
-﻿using Logic.Domain.Level5Management.Contract.DataClasses.Script.Gds;
+﻿using System.Text;
+using Logic.Domain.Level5Management.Contract.DataClasses.Script.Gds;
 using Logic.Domain.Level5Management.Contract.Script.Gds;
 using Logic.Domain.Level5Management.DataClasses.Script.Gds;
 
@@ -6,6 +7,8 @@ namespace Logic.Domain.Level5Management.Script.Gds;
 
 class GdsScriptComposer : IGdsScriptComposer
 {
+    private static readonly Encoding SjisEncoding = Encoding.GetEncoding("Shift-JIS");
+
     public GdsArgument[] Compose(GdsScriptFile script)
     {
         GdsJumpTarget[] jumpTargets = CreateJumpTargets(script);
@@ -133,7 +136,7 @@ class GdsScriptComposer : IGdsScriptComposer
         switch (argument.Type)
         {
             case GdsScriptArgumentType.String:
-                return ((string)argument.Value!).Length + 5;
+                return SjisEncoding.GetByteCount((string)argument.Value!) + 5;
 
             case GdsScriptArgumentType.Int:
             case GdsScriptArgumentType.Float:

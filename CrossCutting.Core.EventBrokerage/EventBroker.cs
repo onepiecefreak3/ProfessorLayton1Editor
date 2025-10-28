@@ -32,6 +32,33 @@ public class EventBroker : IEventBroker
         AddSubscription<TMessage>(filter, handler, null);
     }
 
+    public void Unsubscribe<TMessage>(Action<TMessage> handler)
+    {
+        RemoveSubscription<TMessage>(handler);
+    }
+
+    public void Unsubscribe<TMessage>(Func<TMessage, Task> handler)
+    {
+        RemoveSubscription<TMessage>(handler);
+    }
+
+    private void RemoveSubscription<TMessage>(Delegate handler)
+    {
+        Type messageType = typeof(TMessage);
+
+        if (!_messageSubscriptions.TryGetValue(messageType, out List<Subscription> subscriptions))
+            return;
+
+        ArgumentNullException.ThrowIfNull(handler);
+
+        subscriptions = subscriptions.Where(s => s.Handler != handler).ToList();
+
+        if (subscriptions.Count <= 0)
+            _messageSubscriptions.Remove(messageType);
+        else
+            _messageSubscriptions[messageType] = subscriptions;
+    }
+
     private void AddSubscription<TMessage>(Delegate? filter, Delegate handler, Type? handlerType)
     {
         ArgumentNullException.ThrowIfNull(handler);

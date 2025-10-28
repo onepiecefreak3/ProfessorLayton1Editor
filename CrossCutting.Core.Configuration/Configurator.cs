@@ -1,9 +1,9 @@
-﻿using CrossCutting.Core.Contract.Configuration;
-using CrossCutting.Core.Contract.Configuration.DataClasses;
-using CrossCutting.Core.Contract.Configuration.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CrossCutting.Core.Contract.Configuration;
+using CrossCutting.Core.Contract.Configuration.DataClasses;
+using CrossCutting.Core.Contract.Configuration.Exceptions;
 
 namespace CrossCutting.Core.Configuration;
 
@@ -37,7 +37,7 @@ public sealed class Configurator : IConfigurator
         if (!Contains(category, key))
             throw new KeyOrCategoryNotFoundException(category, key);
 
-        T value = Get<T>(category, key, default(T));
+        T value = Get(category, key, default(T));
         return value;
     }
 

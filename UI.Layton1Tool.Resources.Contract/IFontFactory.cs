@@ -6,5 +6,7 @@ public interface IFontFactory
 {
     void RegisterFonts();
 
-    FontResource GetDefaultFont();
+    FontResource GetApplicationFont(int size);
+
+    FontResource GetHexadecimalFont(int size);
 }

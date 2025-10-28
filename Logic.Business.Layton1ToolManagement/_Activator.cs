@@ -3,8 +3,17 @@ using CrossCutting.Core.Contract.Configuration;
 using CrossCutting.Core.Contract.DependencyInjection;
 using CrossCutting.Core.Contract.DependencyInjection.DataClasses;
 using CrossCutting.Core.Contract.EventBrokerage;
-using Logic.Business.Layton1ToolManagement.Contract;
-using Logic.Business.Layton1ToolManagement.InternalContract;
+using Logic.Business.Layton1ToolManagement.Compression;
+using Logic.Business.Layton1ToolManagement.Contract.Files;
+using Logic.Business.Layton1ToolManagement.Contract.Scripts;
+using Logic.Business.Layton1ToolManagement.Contract.Validation;
+using Logic.Business.Layton1ToolManagement.Files;
+using Logic.Business.Layton1ToolManagement.InternalContract.Compression;
+using Logic.Business.Layton1ToolManagement.InternalContract.Files;
+using Logic.Business.Layton1ToolManagement.InternalContract.Scripts;
+using Logic.Business.Layton1ToolManagement.InternalContract.Validation;
+using Logic.Business.Layton1ToolManagement.Scripts;
+using Logic.Business.Layton1ToolManagement.Validation;
 
 namespace Logic.Business.Layton1ToolManagement;
 
@@ -38,6 +47,7 @@ public class Layton1ToolManagementActivator : IComponentActivator
         kernel.Register<ILayton1FileTypeDetector, Layton1FileTypeDetector>(ActivationScope.Unique);
         kernel.Register<ILayton1Compressor, Layton1Compressor>(ActivationScope.Unique);
         kernel.Register<ILayton1FileParser, Layton1FileParser>(ActivationScope.Unique);
+        kernel.Register<ILayton1FileComposer, Layton1FileComposer>(ActivationScope.Unique);
 
         kernel.Register<ILayton1ScriptFileConverter, Layton1ScriptFileConverter>(ActivationScope.Unique);
         kernel.Register<ILayton1ScriptCodeUnitConverter, Layton1ScriptCodeUnitConverter>(ActivationScope.Unique);

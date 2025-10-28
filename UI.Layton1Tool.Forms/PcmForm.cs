@@ -9,17 +9,25 @@ namespace UI.Layton1Tool.Forms;
 partial class PcmForm
 {
     private readonly Layton1NdsInfo _ndsInfo;
+    private readonly IEventBroker _eventBroker;
 
     public PcmForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker)
     {
         InitializeComponent();
 
         _ndsInfo = ndsInfo;
+        _eventBroker = eventBroker;
 
         _fileTree!.SelectedNodeChanged += _fileTree_SelectedNodeChanged;
 
         eventBroker.Subscribe<SelectedPcmChangedMessage>(UpdateArchive);
         eventBroker.Subscribe<SelectedPcmFileChangedMessage>(UpdateSelectedFile);
+    }
+
+    public override void Destroy()
+    {
+        _eventBroker.Unsubscribe<SelectedPcmChangedMessage>(UpdateArchive);
+        _eventBroker.Unsubscribe<SelectedPcmFileChangedMessage>(UpdateSelectedFile);
     }
 
     private void _fileTree_SelectedNodeChanged(object? sender, EventArgs e)

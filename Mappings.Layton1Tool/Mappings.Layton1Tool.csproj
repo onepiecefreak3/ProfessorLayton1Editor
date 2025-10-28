@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Logic.Domain.CodeAnalysisManagement\Logic.Domain.CodeAnalysisManagement.csproj" />
     <ProjectReference Include="..\Logic.Domain.Level5Management\Logic.Domain.Level5Management.csproj" />
     <ProjectReference Include="..\Logic.Domain.NintendoManagement\Logic.Domain.NintendoManagement.csproj" />
+    <ProjectReference Include="..\UI.Layton1Tool.Components\UI.Layton1Tool.Components.csproj" />
     <ProjectReference Include="..\UI.Layton1Tool.Dialogs\UI.Layton1Tool.Dialogs.csproj" />
     <ProjectReference Include="..\UI.Layton1Tool.Forms\UI.Layton1Tool.Forms.csproj" />
     <ProjectReference Include="..\UI.Layton1Tool.Resources\UI.Layton1Tool.Resources.csproj" />

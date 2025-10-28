@@ -1,4 +1,4 @@
-﻿using Logic.Domain.NintendoManagement.Contract.DataClasses;
+﻿using Logic.Domain.NintendoManagement.Contract.DataClasses.Archive;
 
 namespace Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 

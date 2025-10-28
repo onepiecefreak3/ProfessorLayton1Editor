@@ -12,6 +12,8 @@ public interface IEventBroker
     void Subscribe<THandler, TMessage>(Func<THandler, TMessage, Task> handler, Func<TMessage, bool>? filter = null);
     void Subscribe<TMessage>(Action<TMessage> handler, Func<TMessage, bool>? filter = null);
     void Subscribe<TMessage>(Func<TMessage, Task> handler, Func<TMessage, bool>? filter = null);
+    void Unsubscribe<TMessage>(Action<TMessage> handler);
+    void Unsubscribe<TMessage>(Func<TMessage, Task> handler);
     void Raise<TMessage>(TMessage message);
     Task RaiseAsync<TMessage>(TMessage message);
     void SetResolverCallback(Func<Type, object> resolverCallback);

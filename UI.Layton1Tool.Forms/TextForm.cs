@@ -7,14 +7,21 @@ namespace UI.Layton1Tool.Forms;
 partial class TextForm
 {
     private readonly Layton1NdsInfo _ndsInfo;
+    private readonly IEventBroker _eventBroker;
 
     public TextForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker)
     {
         InitializeComponent();
 
         _ndsInfo = ndsInfo;
+        _eventBroker = eventBroker;
 
         eventBroker.Subscribe<SelectedTextChangedMessage>(UpdateText);
+    }
+
+    public override void Destroy()
+    {
+        _eventBroker.Unsubscribe<SelectedTextChangedMessage>(UpdateText);
     }
 
     private void UpdateText(SelectedTextChangedMessage message)

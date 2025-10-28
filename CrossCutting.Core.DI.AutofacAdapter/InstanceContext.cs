@@ -18,7 +18,7 @@ public class InstanceContext : IInstanceContext
 {
     private static readonly Lazy<InstanceContext> s_lazyInstanceContext = new Lazy<InstanceContext>(() => new InstanceContext());
 
-    private static readonly Dictionary<Type, Type> s_interceptorAttributeMap = new Dictionary<Type, Type>()
+    private static readonly Dictionary<Type, Type> s_interceptorAttributeMap = new Dictionary<Type, Type>
     {
         { typeof(MapExceptionAttribute), typeof(ExceptionMapInterceptor) }
     };
@@ -49,13 +49,13 @@ public class InstanceContext : IInstanceContext
 
         _resolvedParameterCache.Add(
             typeof(IScope),
-            (t) => new ResolvedParameter(
+            t => new ResolvedParameter(
                 (p, c) => p.ParameterType == typeof(IScope),
                 (p, c) => new Scope(_scopes.Last())));
 
         _resolvedParameterCache.Add(
             typeof(ILifetimeScope),
-            (t) => new ResolvedParameter(
+            t => new ResolvedParameter(
                 (p, c) => p.ParameterType == typeof(ILifetimeScope),
                 (p, c) => _scopes.Last()));
     }

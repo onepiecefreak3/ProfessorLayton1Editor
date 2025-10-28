@@ -4,7 +4,8 @@ using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Controls.Tree;
 using ImGui.Forms.Models;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
-using UI.Layton1Tool.Forms.DataClasses;
+using UI.Layton1Tool.Components.Contract;
+using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
 using Rectangle = Veldrid.Rectangle;
 using Size = ImGui.Forms.Models.Size;
@@ -17,7 +18,7 @@ partial class AnimationForm : Component
     private StackLayout _fileLayout;
 
     private TreeView<AnimationSequence> _fileTree;
-    private ZoomablePictureBox _zoomableImage;
+    private Component _animationPlayer;
 
     private Label _errorLabel;
 
@@ -26,44 +27,12 @@ partial class AnimationForm : Component
     protected override void UpdateInternal(Rectangle contentRect)
     {
         _mainLayout.Update(contentRect);
-
-        AnimationState? animationState = _animationState;
-
-        if (animationState is not null)
-            StepAnimation(animationState);
     }
 
-    private void StepAnimation(AnimationState animationState)
-    {
-        if (animationState.ActiveAnimation is null)
-            return;
-
-        int stepIndex = animationState.StepCounter;
-        if (stepIndex >= animationState.ActiveAnimation.Steps.Length)
-            return;
-
-        AnimationStep step = animationState.ActiveAnimation.Steps[stepIndex];
-
-        int frameIndex = step.FrameIndex;
-        if (frameIndex >= animationState.Images.Length)
-            return;
-
-        _zoomableImage.Image = animationState.Images[frameIndex];
-
-        animationState.FrameCounter++;
-
-        if (animationState.FrameCounter < step.FrameCounter)
-            return;
-
-        animationState.StepCounter = step.NextStepIndex;
-        animationState.FrameCounter = 0;
-    }
-
-    private void InitializeComponent(ILocalizationProvider localizations)
+    private void InitializeComponent(Layton1NdsInfo ndsInfo, ILocalizationProvider localizations, IComponentFactory components)
     {
         _fileTree = new TreeView<AnimationSequence> { Size = new Size(SizeValue.Relative(.3f), SizeValue.Parent) };
-        _zoomableImage = new ZoomablePictureBox { ShowBorder = true, ShowImageBorder = true };
-        _zoomableImage.Zoom(2f);
+        _animationPlayer = components.CreateAnimationViewer(ndsInfo);
 
         _errorLabel = new Label(localizations.StatusAnimationLoadError);
 
@@ -75,7 +44,7 @@ partial class AnimationForm : Component
             Items =
             {
                 _fileTree,
-                _zoomableImage
+                _animationPlayer
             }
         };
 

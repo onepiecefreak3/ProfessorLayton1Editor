@@ -1,9 +1,10 @@
-﻿using ImGui.Forms;
-using ImGui.Forms.Controls.Menu;
-using ImGui.Forms.Models.IO;
-using System.Numerics;
+﻿using System.Numerics;
+using ImGui.Forms;
 using ImGui.Forms.Controls;
 using ImGui.Forms.Controls.Layouts;
+using ImGui.Forms.Controls.Menu;
+using ImGui.Forms.Models.IO;
+using ImGui.Forms.Resources;
 using UI.Layton1Tool.Resources.Contract;
 using Veldrid;
 
@@ -22,7 +23,7 @@ partial class MainForm : Form
     private TabControl _tabControl;
     private Label _statusLabel;
 
-    private void InitializeComponent(ILocalizationProvider localizations)
+    private void InitializeComponent(ILocalizationProvider localizations, IImageProvider images)
     {
         _fileValidateButton = new MenuBarButton { Text = localizations.MenuFileValidateCaption, Enabled = false };
         _fileSearchButton = new MenuBarButton { Text = localizations.MenuFileSearchCaption, Enabled = false };
@@ -70,6 +71,8 @@ partial class MainForm : Form
 
         MenuBar = _mainMenuBar;
         Content = _contentLayout;
+
+        Icon = images.Icon;
     }
 
     private void ToggleStatus(bool toggle)
