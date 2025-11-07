@@ -6,5 +6,7 @@ namespace Logic.Business.Layton1ToolManagement.Contract.Files;
 public interface ILayton1PcmFileManager
 {
     FileType Detect(PcmFile file);
+
     object? Parse(PcmFile file, FileType type);
+    void Compose(PcmFile file, object content, FileType type);
 }

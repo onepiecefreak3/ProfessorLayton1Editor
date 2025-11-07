@@ -4,6 +4,7 @@ using CrossCutting.Core.Contract.DependencyInjection;
 using CrossCutting.Core.Contract.DependencyInjection.DataClasses;
 using CrossCutting.Core.Contract.EventBrokerage;
 using Logic.Business.Layton1ToolManagement.Compression;
+using Logic.Business.Layton1ToolManagement.Contract;
 using Logic.Business.Layton1ToolManagement.Contract.Files;
 using Logic.Business.Layton1ToolManagement.Contract.Scripts;
 using Logic.Business.Layton1ToolManagement.Contract.Validation;
@@ -51,10 +52,12 @@ public class Layton1ToolManagementActivator : IComponentActivator
 
         kernel.Register<ILayton1ScriptFileConverter, Layton1ScriptFileConverter>(ActivationScope.Unique);
         kernel.Register<ILayton1ScriptCodeUnitConverter, Layton1ScriptCodeUnitConverter>(ActivationScope.Unique);
-        kernel.Register<ILayton1ScriptConverter, Layton1ScriptConverter>(ActivationScope.Unique);
 
         kernel.Register<ILayton1ScriptInstructionDescriptionProvider, Layton1ScriptInstructionDescriptionProvider>(ActivationScope.Unique);
         kernel.Register<ILayton1ScriptInstructionManager, Layton1ScriptInstructionManager>(ActivationScope.Unique);
+
+        kernel.Register<ILayton1PuzzleIdProvider, Layton1PuzzleIdProvider>(ActivationScope.Unique);
+        kernel.Register<ILayton1PathProvider, Layton1PathProvider>(ActivationScope.Unique);
 
         kernel.RegisterConfiguration<Layton1ToolManagementConfiguration>();
     }

@@ -11,6 +11,7 @@ using UI.Layton1Tool.Dialogs.Contract;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Forms.DataClasses;
+using UI.Layton1Tool.Forms.Enums;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.Enums;
 using UI.Layton1Tool.Resources.Contract;
@@ -48,6 +49,7 @@ partial class MainForm
         _dialogFactory = dialogFactory;
 
         _fileOpenButton!.Clicked += _fileOpenButton_Clicked;
+        _fileViewButton!.SelectedItemChanged += _fileViewButton_SelectedItemChanged;
         _fileValidateButton!.Clicked += _fileValidateButton_Clicked;
         _fileSearchButton!.Clicked += _fileSearchButton_Clicked;
         _tabControl!.PageRemoving += _tabControl_PageRemoving;
@@ -64,6 +66,30 @@ partial class MainForm
         Closing += MainForm_Closing;
     }
 
+    private void _fileViewButton_SelectedItemChanged(object? sender, EventArgs e)
+    {
+        if (_tabControl.SelectedPage is null)
+            return;
+
+        if (!_loadedTabs.TryGetValue(_tabControl.SelectedPage, out Layton1NdsTabPage? loadedPage))
+            return;
+
+        if (_filesViewButton.Checked)
+        {
+            loadedPage.Form.Type = FormType.Nds;
+            loadedPage.Form.NdsForm ??= _formFactory.CreateNdsForm(loadedPage.Info);
+            loadedPage.Form.PuzzleForm?.SetTabInactive();
+            loadedPage.Page.Content = loadedPage.Form.NdsForm;
+        }
+        else if (_puzzlesViewButton.Checked)
+        {
+            loadedPage.Form.Type = FormType.Puzzle;
+            loadedPage.Form.PuzzleForm ??= _formFactory.CreatePuzzleForm(loadedPage.Info);
+            loadedPage.Form.NdsForm?.SetTabInactive();
+            loadedPage.Page.Content = loadedPage.Form.PuzzleForm;
+        }
+    }
+
     private async void _fileSearchButton_Clicked(object? sender, EventArgs e)
     {
         if (_tabControl.SelectedPage is null)
@@ -72,7 +98,7 @@ partial class MainForm
         if (!_loadedTabs.TryGetValue(_tabControl.SelectedPage, out Layton1NdsTabPage? loadedPage))
             return;
 
-        Modal dialog = _dialogFactory.CreateSearchDialog(loadedPage.Rom);
+        Modal dialog = _dialogFactory.CreateSearchDialog(loadedPage.Info.Rom);
         await dialog.ShowAsync();
 
         dialog.Destroy();
@@ -99,10 +125,25 @@ partial class MainForm
         if (_tabControl.SelectedPage is null)
             return;
 
-        bool isLoaded = _loadedTabs.ContainsKey(_tabControl.SelectedPage);
+        bool isLoaded = _loadedTabs.TryGetValue(_tabControl.SelectedPage, out Layton1NdsTabPage? loadedPage);
 
+        _fileViewButton.Enabled = isLoaded;
         _fileValidateButton.Enabled = isLoaded;
         _fileSearchButton.Enabled = isLoaded;
+
+        if (!isLoaded)
+            return;
+
+        switch (loadedPage!.Form.Type)
+        {
+            case FormType.Nds:
+                _filesViewButton.Checked = true;
+                break;
+
+            case FormType.Puzzle:
+                _puzzlesViewButton.Checked = true;
+                break;
+        }
     }
 
     private async void _fileValidateButton_Clicked(object? sender, EventArgs e)
@@ -113,7 +154,7 @@ partial class MainForm
         if (!_loadedTabs.TryGetValue(_tabControl.SelectedPage, out Layton1NdsTabPage? loadedPage))
             return;
 
-        Modal dialog = _dialogFactory.CreateValidationDialog(loadedPage.Rom);
+        Modal dialog = _dialogFactory.CreateValidationDialog(loadedPage.Info.Rom);
         await dialog.ShowAsync();
 
         dialog.Destroy();
@@ -150,7 +191,7 @@ partial class MainForm
             return;
 
         _loadedTabs.Remove(loadedPage.Page);
-        _loadedFiles.Remove(loadedPage.Path);
+        _loadedFiles.Remove(loadedPage.Info.Path);
 
         _tabControl.RemovePage(loadedPage.Page);
 
@@ -158,20 +199,29 @@ partial class MainForm
         {
             if (_tabControl.Pages.Count <= 0)
             {
+                _fileViewButton.Enabled = false;
                 _fileValidateButton.Enabled = false;
                 _fileSearchButton.Enabled = false;
             }
             else
             {
                 _tabControl.SelectedPage = _tabControl.Pages[0];
+                _fileViewButton.Enabled = _loadedTabs.ContainsKey(_tabControl.SelectedPage);
                 _fileValidateButton.Enabled = _loadedTabs.ContainsKey(_tabControl.SelectedPage);
                 _fileSearchButton.Enabled = _loadedTabs.ContainsKey(_tabControl.SelectedPage);
             }
         }
         else
         {
+            _fileViewButton.Enabled = _loadedTabs.ContainsKey(_tabControl.SelectedPage);
             _fileValidateButton.Enabled = _loadedTabs.ContainsKey(_tabControl.SelectedPage);
             _fileSearchButton.Enabled = _loadedTabs.ContainsKey(_tabControl.SelectedPage);
+        }
+
+        foreach (var file in loadedPage.Info.Rom.Files)
+        {
+            file.DataStream.Close();
+            file.DecompressedStream?.Close();
         }
 
         loadedPage.Stream.Close();
@@ -224,6 +274,8 @@ partial class MainForm
         _tabControl.AddPage(loadedPage.Page);
         _tabControl.SelectedPage = loadedPage.Page;
 
+        _filesViewButton.Checked = true;
+
         UpdateStatus(string.Empty, Status.Info);
     }
 
@@ -232,7 +284,7 @@ partial class MainForm
         var ofd = new WindowsOpenFileDialog
         {
             Title = _localizations.DialogFileNdsOpenCaption,
-            Filters = [new FileFilter(_localizations.DialogFileNdsOpenFilter, ".nds")],
+            Filters = [new FileFilter(_localizations.DialogFileNdsOpenFilter, "nds")],
             InitialDirectory = _settings.OpenDirectory,
         };
 
@@ -250,13 +302,14 @@ partial class MainForm
         return ofd.Files[0];
     }
 
-    private async Task<string?> SelectSaveFile()
+    private async Task<string?> SelectSaveFile(string originalFilePath)
     {
         var ofd = new WindowsSaveFileDialog
         {
             Title = _localizations.DialogFileNdsSaveCaption,
-            Filters = [new FileFilter(_localizations.DialogFileNdsSaveFilter, ".nds")],
-            InitialDirectory = _settings.SaveDirectory
+            Filters = [new FileFilter(_localizations.DialogFileNdsSaveFilter, "nds")],
+            InitialDirectory = _settings.SaveDirectory,
+            InitialFileName = Path.GetFileName(originalFilePath)
         };
 
         DialogResult result = await ofd.ShowAsync();
@@ -289,17 +342,22 @@ partial class MainForm
     private Layton1NdsTabPage CreateTabPage(Stream ndsStream, Layton1NdsRom ndsRom, string ndsPath)
     {
         var ndsInfo = new Layton1NdsInfo { Path = ndsPath, Rom = ndsRom };
-        var tabPage = new TabPage(_formFactory.CreateNdsForm(ndsInfo))
+        var ndsForm = _formFactory.CreateNdsForm(ndsInfo);
+        var tabPage = new TabPage(ndsForm)
         {
             Title = Path.GetFileName(ndsPath)
         };
 
         return new Layton1NdsTabPage
         {
-            Path = ndsPath,
+            Info = ndsInfo,
             Stream = ndsStream,
-            Rom = ndsRom,
-            Page = tabPage
+            Page = tabPage,
+            Form = new Layton1NdsForm
+            {
+                Type = FormType.Nds,
+                NdsForm = ndsForm
+            }
         };
     }
 
@@ -319,25 +377,31 @@ partial class MainForm
 
         if (isSaveAs)
         {
-            finalPath = await SelectSaveFile();
+            finalPath = await SelectSaveFile(tabPage.Info.Path);
             if (finalPath is null)
                 return;
 
-            outputPath = tabPage.Path == finalPath ? Path.GetTempFileName() : finalPath;
+            outputPath = tabPage.Info.Path == finalPath ? Path.GetTempFileName() : finalPath;
         }
         else
         {
-            finalPath = tabPage.Path;
+            finalPath = tabPage.Info.Path;
             outputPath = Path.GetTempFileName();
         }
 
         Stream output = File.Create(outputPath);
-        _ndsComposer.Compose(tabPage.Rom, output);
+        _ndsComposer.Compose(tabPage.Info.Rom, output);
+
+        foreach (var file in tabPage.Info.Rom.Files)
+        {
+            file.DataStream.Close();
+            file.DecompressedStream?.Close();
+        }
 
         output.Close();
         tabPage.Stream.Close();
 
-        if (tabPage.Path == finalPath)
+        if (tabPage.Info.Path == finalPath)
         {
             try
             {
@@ -349,19 +413,21 @@ partial class MainForm
                 UpdateStatus(_localizations.StatusNdsSaveError, Status.Error, e);
                 File.Delete(outputPath);
 
-                finalPath = tabPage.Path;
+                finalPath = tabPage.Info.Path;
             }
         }
 
-        Layton1NdsRom originalRom = tabPage.Rom;
+        _loadedFiles.Remove(tabPage.Info.Path);
+        _loadedFiles[finalPath] = tabPage;
 
-        tabPage.Path = finalPath;
         tabPage.Stream = File.OpenRead(finalPath);
-        tabPage.Rom = _ndsParser.Parse(tabPage.Stream);
+        tabPage.Info.Path = finalPath;
+        tabPage.Info.Rom = _ndsParser.Parse(tabPage.Stream);
 
+        tabPage.Page.Title = Path.GetFileName(finalPath);
         tabPage.Page.HasChanges = false;
 
-        RaiseNdsFileSaved(originalRom, tabPage.Path, tabPage.Rom);
+        RaiseNdsFileSaved(tabPage.Info.Rom);
     }
 
     private void UpdateStatus(UpdateStatusMessage message)
@@ -398,8 +464,8 @@ partial class MainForm
         await Save(tabPage, message.IsSaveAs);
     }
 
-    private void RaiseNdsFileSaved(Layton1NdsRom originalRom, string romPath, Layton1NdsRom ndsRom)
+    private void RaiseNdsFileSaved(Layton1NdsRom ndsRom)
     {
-        _eventBroker.Raise(new NdsFileSavedMessage(originalRom, romPath, ndsRom));
+        _eventBroker.Raise(new NdsFileSavedMessage(ndsRom));
     }
 }

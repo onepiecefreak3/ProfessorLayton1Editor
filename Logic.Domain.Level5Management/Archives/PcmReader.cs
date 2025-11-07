@@ -1,23 +1,24 @@
 ﻿using Komponent.IO;
 using Logic.Domain.Level5Management.Contract.Archives;
 using Logic.Domain.Level5Management.Contract.DataClasses.Archives;
+using Logic.Domain.Level5Management.DataClasses.Archives;
 
 namespace Logic.Domain.Level5Management.Archives;
 
 class PcmReader : IPcmReader
 {
-    public PcmContainer Read(Stream input)
+    public PcmFile[] Read(Stream input)
     {
         using var reader = new BinaryReaderX(input, true);
 
         PcmHeader header = ReadHeader(reader);
         PcmEntry[] entries = ReadEntries(reader, header.fileCount);
 
-        return new PcmContainer
+        return entries.Select(e => new PcmFile
         {
-            Header = header,
-            Entries = entries
-        };
+            Name = e.fileName,
+            Data = e.fileData
+        }).ToArray();
     }
 
     private PcmHeader ReadHeader(BinaryReaderX reader)

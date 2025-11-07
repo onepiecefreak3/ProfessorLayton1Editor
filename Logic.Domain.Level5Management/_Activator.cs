@@ -44,7 +44,7 @@ public class Level5ManagementActivator : IComponentActivator
         kernel.Register<IBgxParser, BgxParser>(ActivationScope.Unique);
 
         kernel.Register<IPcmReader, PcmReader>(ActivationScope.Unique);
-        kernel.Register<IPcmParser, PcmParser>(ActivationScope.Unique);
+        kernel.Register<IPcmWriter, PcmWriter>(ActivationScope.Unique);
 
         kernel.Register<IFrame1Reader, Frame1Reader>(ActivationScope.Unique);
         kernel.Register<IFrame1Parser, Frame1Parser>(ActivationScope.Unique);

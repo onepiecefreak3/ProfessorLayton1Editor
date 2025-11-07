@@ -51,7 +51,7 @@ public class CommandLineConfigurationRepository : IConfigurationRepository
 
     private bool IsOptionValue(string arg)
     {
-        return arg.StartsWith("--") || arg.StartsWith('-');
+        return arg.StartsWith("--", StringComparison.Ordinal) || arg.StartsWith('-');
     }
 
     private void AssertIsOption(string arg)

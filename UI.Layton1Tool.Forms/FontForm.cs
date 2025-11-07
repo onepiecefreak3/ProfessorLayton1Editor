@@ -13,6 +13,8 @@ using Kaligraphy.DataClasses.Rendering;
 using Kaligraphy.Layout;
 using Konnect.Contract.DataClasses.Plugin.File.Font;
 using Konnect.Plugin.File.Font;
+using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
+using Logic.Business.Layton1ToolManagement.Contract.Files;
 using Logic.Domain.NintendoManagement.Contract.DataClasses.Font;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -32,6 +34,7 @@ partial class FontForm : Component
     private readonly Layton1NdsInfo _ndsInfo;
     private readonly IUnicodeCharacterParser _unicodeParser;
     private readonly IEventBroker _eventBroker;
+    private readonly ILayton1NdsFileManager _fileManager;
     private readonly IComponentFactory _components;
     private readonly IDialogFactory _dialogs;
     private readonly ILocalizationProvider _localizations;
@@ -42,15 +45,17 @@ partial class FontForm : Component
     private Image<Rgba32>? _generatedPreview;
 
     private NftrData? _fontData;
+    private Layton1NdsFile? _selectedFile;
 
-    public FontForm(Layton1NdsInfo ndsInfo, IUnicodeCharacterParser unicodeParser, IEventBroker eventBroker, IComponentFactory components,
-        IDialogFactory dialogs, ILocalizationProvider localizations, ISettingsProvider settings, IImageProvider images)
+    public FontForm(Layton1NdsInfo ndsInfo, IUnicodeCharacterParser unicodeParser, IEventBroker eventBroker, ILayton1NdsFileManager fileManager,
+        IComponentFactory components, IDialogFactory dialogs, ILocalizationProvider localizations, ISettingsProvider settings, IImageProvider images)
     {
         InitializeComponent(_previewSettings, components, dialogs, localizations, images);
 
         _ndsInfo = ndsInfo;
         _unicodeParser = unicodeParser;
         _eventBroker = eventBroker;
+        _fileManager = fileManager;
         _components = components;
         _dialogs = dialogs;
         _localizations = localizations;
@@ -67,7 +72,8 @@ partial class FontForm : Component
         _exportBtn!.Clicked += _exportBtn_Clicked;
         _settingsBtn!.Clicked += _settingsBtn_Clicked;
 
-        eventBroker.Subscribe<SelectedFontChangedMessage>(ProcessSelectedFontChanged);
+        eventBroker.Subscribe<FileContentModifiedMessage>(ProcessFileContentModified);
+        eventBroker.Subscribe<SelectedFileChangedMessage>(ProcessSelectedFontChanged);
         eventBroker.Subscribe<SelectedGlyphElementChangedMessage>(ProcessSelectedGlyphElementChanged);
 
         RaiseUpdateCharacterInfoZoom(20f);
@@ -84,18 +90,37 @@ partial class FontForm : Component
         _glyphBox.Destroy();
         _previewSettingsDialog.Destroy();
 
+        _eventBroker.Unsubscribe<FileContentModifiedMessage>(ProcessFileContentModified);
+        _eventBroker.Unsubscribe<SelectedFileChangedMessage>(ProcessSelectedFontChanged);
         _eventBroker.Unsubscribe<SelectedGlyphElementChangedMessage>(ProcessSelectedGlyphElementChanged);
     }
 
-    private void ProcessSelectedFontChanged(SelectedFontChangedMessage message)
+    private void ProcessFileContentModified(FileContentModifiedMessage message)
     {
-        if (message.Rom != _ndsInfo.Rom)
+        if (message.Source == this)
             return;
 
-        if (_fontData == message.Font)
+        if (message.File != _selectedFile)
             return;
 
-        _fontData = message.Font;
+        UpdateFont(message.File, message.Content);
+    }
+
+    private void ProcessSelectedFontChanged(SelectedFileChangedMessage message)
+    {
+        UpdateFont(message.File, message.Content);
+    }
+
+    private void UpdateFont(Layton1NdsFile file, object? content)
+    {
+        if (content is not NftrData font)
+            return;
+
+        if (file.Rom != _ndsInfo.Rom)
+            return;
+
+        _fontData = font;
+        _selectedFile = file;
 
         ResetState();
     }
@@ -123,9 +148,9 @@ partial class FontForm : Component
         _eventBroker.Raise(new SelectedCharacterInfoChangedMessage(_glyphBox, charInfo));
     }
 
-    private void RaiseFontModified(NftrData fontData)
+    private void RaiseFileContentModified(Layton1NdsFile file, NftrData font)
     {
-        _eventBroker.Raise(new FontModifiedMessage(this, fontData));
+        _eventBroker.Raise(new FileContentModifiedMessage(this, file, font));
     }
 
     private async void _settingsBtn_Clicked(object? sender, EventArgs e)
@@ -177,7 +202,7 @@ partial class FontForm : Component
 
     private async void _generateBtn_Clicked(object? sender, EventArgs e)
     {
-        if (_fontData is null)
+        if (_fontData is null || _selectedFile is null)
             return;
 
         var generationDialog = _dialogs.CreateFontGenerationDialog(_fontData, FontGenerationType.Create);
@@ -188,14 +213,16 @@ partial class FontForm : Component
         if (result is not DialogResult.Ok)
             return;
 
-        RaiseFontModified(_fontData);
+        _fileManager.Compose(_selectedFile, _fontData);
+
+        RaiseFileContentModified(_selectedFile, _fontData);
 
         ResetState();
     }
 
     private async void _editBtn_Clicked(object? sender, EventArgs e)
     {
-        if (_fontData is null)
+        if (_fontData is null || _selectedFile is null)
             return;
 
         string selectedCharacters = string.Concat(_selectedCharacters.Select(c => c.CodePoint));
@@ -208,14 +235,16 @@ partial class FontForm : Component
         if (result is not DialogResult.Ok)
             return;
 
-        RaiseFontModified(_fontData);
+        _fileManager.Compose(_selectedFile, _fontData);
+
+        RaiseFileContentModified(_selectedFile, _fontData);
 
         UpdateState();
     }
 
     private async void _removeBtn_Clicked(object? sender, EventArgs e)
     {
-        if (_selectedCharacters.Count <= 0 || _fontData is null)
+        if (_selectedCharacters.Count <= 0 || _fontData is null || _selectedFile is null)
             return;
 
         DialogResult result = await MessageBox.ShowYesNoAsync(_localizations.DialogFontRemoveCaption, _localizations.DialogFontRemoveText);
@@ -252,14 +281,16 @@ partial class FontForm : Component
 
         _lastSelectedElement = null;
 
-        RaiseFontModified(_fontData);
+        _fileManager.Compose(_selectedFile, _fontData);
+
+        RaiseFileContentModified(_selectedFile, _fontData);
 
         UpdateState();
     }
 
     private async void _remapBtn_Clicked(object? sender, EventArgs e)
     {
-        if (_fontData is null)
+        if (_fontData is null || _selectedFile is null)
             return;
 
         var selectedCharacters = _selectedCharacters.OrderBy(c => c.CodePoint).ToArray();
@@ -272,7 +303,9 @@ partial class FontForm : Component
         if (result is not DialogResult.Ok)
             return;
 
-        RaiseFontModified(_fontData);
+        _fileManager.Compose(_selectedFile, _fontData);
+
+        RaiseFileContentModified(_selectedFile, _fontData);
 
         UpdateState();
     }

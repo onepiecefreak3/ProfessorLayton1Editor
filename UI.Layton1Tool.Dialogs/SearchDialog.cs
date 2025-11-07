@@ -1,12 +1,14 @@
-﻿using System.Text.RegularExpressions;
-using CrossCutting.Core.Contract.EventBrokerage;
+﻿using CrossCutting.Core.Contract.EventBrokerage;
 using ImGui.Forms.Controls.Lists;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
 using Logic.Business.Layton1ToolManagement.Contract.Files;
-using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
+using Logic.Business.Layton1ToolManagement.Contract.Scripts;
 using Logic.Domain.CodeAnalysisManagement.Contract.Level5;
 using Logic.Domain.Level5Management.Contract.DataClasses.Archives;
+using Logic.Domain.Level5Management.Contract.DataClasses.Script.Gds;
+using System.Text.RegularExpressions;
+using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
 using UI.Layton1Tool.Dialogs.DataClasses;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Resources.Contract;
@@ -22,11 +24,14 @@ partial class SearchDialog
     private readonly IEventBroker _eventBroker;
     private readonly ILayton1NdsFileManager _fileManager;
     private readonly ILayton1PcmFileManager _pcmManager;
+    private readonly ILayton1ScriptFileConverter _scriptFileConverter;
+    private readonly ILevel5ScriptWhitespaceNormalizer _whitespaceNormalizer;
     private readonly ILevel5ScriptComposer _scriptComposer;
     private readonly ILocalizationProvider _localizations;
 
     public SearchDialog(Layton1NdsRom ndsRom, IEventBroker eventBroker, ILayton1NdsFileManager fileManager, ILayton1PcmFileManager pcmManager,
-        ILevel5ScriptComposer scriptComposer, ILocalizationProvider localizations, IColorProvider colors)
+        ILayton1ScriptFileConverter scriptFileConverter, ILevel5ScriptWhitespaceNormalizer whitespaceNormalizer, ILevel5ScriptComposer scriptComposer,
+        ILocalizationProvider localizations, IColorProvider colors)
     {
         InitializeComponent(localizations, colors);
 
@@ -35,6 +40,8 @@ partial class SearchDialog
         _eventBroker = eventBroker;
         _fileManager = fileManager;
         _pcmManager = pcmManager;
+        _scriptFileConverter = scriptFileConverter;
+        _whitespaceNormalizer = whitespaceNormalizer;
         _scriptComposer = scriptComposer;
         _localizations = localizations;
 
@@ -119,12 +126,16 @@ partial class SearchDialog
                     break;
 
                 case FileType.Gds:
-                    var syntax = (CodeUnitSyntax?)_fileManager.Parse(file, fileType);
-                    if (syntax is null)
+                    var script = (GdsScriptFile?)_fileManager.Parse(file, fileType);
+                    if (script is null)
                         continue;
 
-                    string composedSyntax = _scriptComposer.ComposeCodeUnit(syntax);
-                    if (IsMatchText(composedSyntax, matchRegex))
+                    CodeUnitSyntax codeUnit = _scriptFileConverter.CreateCodeUnit(script, _ndsRom.GameCode);
+                    _whitespaceNormalizer.NormalizeCodeUnit(codeUnit);
+
+                    string scriptText = _scriptComposer.ComposeCodeUnit(codeUnit);
+
+                    if (IsMatchText(scriptText, matchRegex))
                         _matchTable.Rows.Add(new DataTableRow<SearchResult>(new SearchResult { File = file }));
 
                     break;

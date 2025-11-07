@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using Logic.Business.Layton1ToolManagement.Contract.Scripts;
 using Logic.Business.Layton1ToolManagement.InternalContract.Scripts;
 using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses;
 using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
@@ -216,7 +217,7 @@ internal class Layton1ScriptCodeUnitConverter(ILayton1ScriptInstructionDescripti
         if (literal.Literal.RawKind != (int)SyntaxTokenKind.NumericLiteral)
             throw CreateException($"Invalid literal {(SyntaxTokenKind)literal.Literal.RawKind}.", literal.Location, SyntaxTokenKind.NumericLiteral);
 
-        return literal.Literal.Text.StartsWith("0x") ?
+        return literal.Literal.Text.StartsWith("0x", StringComparison.Ordinal) ?
             int.Parse(literal.Literal.Text[2..], NumberStyles.HexNumber) :
             int.Parse(literal.Literal.Text);
     }

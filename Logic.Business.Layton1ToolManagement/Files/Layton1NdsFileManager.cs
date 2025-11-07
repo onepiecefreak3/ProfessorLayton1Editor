@@ -1,4 +1,5 @@
-﻿using CrossCutting.Core.Contract.EventBrokerage;
+﻿using System.Diagnostics.CodeAnalysis;
+using CrossCutting.Core.Contract.EventBrokerage;
 using CrossCutting.Messages;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
@@ -15,6 +16,17 @@ class Layton1NdsFileManager(
     ILayton1FileParser fileParser,
     ILayton1FileComposer fileComposer) : ILayton1NdsFileManager
 {
+    public bool TryGet(Layton1NdsRom rom, string path, [NotNullWhen(true)] out Layton1NdsFile? file)
+    {
+        file = rom.Files.FirstOrDefault(f => f.Path == path);
+        return file is not null;
+    }
+
+    public FileType Detect(Layton1NdsFile file)
+    {
+        return detector.Detect(file);
+    }
+
     public void Compress(Layton1NdsFile file)
     {
         compressor.Compress(file);
@@ -32,6 +44,19 @@ class Layton1NdsFileManager(
         return file.DecompressedStream ?? file.DataStream;
     }
 
+    public void SetUncompressedStream(Layton1NdsFile file, Stream input)
+    {
+        if (file.DecompressedStream == input)
+            return;
+
+        if (file.CompressionType is CompressionType.None)
+            file.DataStream = input;
+        else
+            file.DecompressedStream = input;
+
+        file.IsChanged = true;
+    }
+
     public object? Parse(Layton1NdsFile file, out FileType type)
     {
         Decompress(file);
@@ -45,7 +70,7 @@ class Layton1NdsFileManager(
     {
         Decompress(file);
 
-        object? data = fileParser.Parse(GetUncompressedStream(file), type, file.Rom.GameCode);
+        object? data = fileParser.Parse(GetUncompressedStream(file), type);
 
         if (data is null)
             return null;
@@ -61,7 +86,7 @@ class Layton1NdsFileManager(
 
         FileType type = Detect(file);
 
-        Stream? output = fileComposer.Compose(content, type, file.Rom.GameCode);
+        Stream? output = fileComposer.Compose(content, type);
         if (output is null)
             return;
 
@@ -73,10 +98,5 @@ class Layton1NdsFileManager(
             file.DecompressedStream = output;
 
         file.IsChanged = true;
-    }
-
-    public FileType Detect(Layton1NdsFile file)
-    {
-        return detector.Detect(file);
     }
 }

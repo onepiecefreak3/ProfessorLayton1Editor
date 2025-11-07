@@ -7,7 +7,8 @@ class SettingsProvider(ISettingsProvider settings) : Contract.ISettingsProvider
     private const string LocaleName_ = "Layton1Tool.Settings.Locale";
     private const string OpenDirectoryName_ = "Layton1Tool.Settings.OpenDirectory";
     private const string SaveDirectoryName_ = "Layton1Tool.Settings.SaveDirectory";
-    private const string ExtractDirectoryName_ = "Layton1Tool.Settings.NdsDirectory";
+    private const string ExtractDirectoryName_ = "Layton1Tool.Settings.Extract.Directory";
+    private const string ImportDirectoryName_ = "Layton1Tool.Settings.Import.Directory";
     private const string PreviewDirectoryName_ = "Layton1Tool.Settings.PreviewDirectory";
     private const string ReplaceFontCharactersName_ = "Layton1Tool.Settings.ReplaceFontCharacters";
 
@@ -33,6 +34,12 @@ class SettingsProvider(ISettingsProvider settings) : Contract.ISettingsProvider
     {
         get => settings.Get(ExtractDirectoryName_, string.Empty);
         set => settings.Set(ExtractDirectoryName_, value);
+    }
+
+    public string ImportDirectory
+    {
+        get => settings.Get(ImportDirectoryName_, string.Empty);
+        set => settings.Set(ImportDirectoryName_, value);
     }
 
     public string PreviewDirectory

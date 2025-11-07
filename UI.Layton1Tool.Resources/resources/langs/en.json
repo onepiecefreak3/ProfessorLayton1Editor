@@ -12,9 +12,13 @@
   "Menu.File.Save.Shortcut": "Ctrl+S",
   "Menu.File.SaveAs.Caption": "Save As...",
   "Menu.File.SaveAs.Shortcut": "F12",
+  "Menu.File.View.Caption": "View",
+  "Menu.File.View.Files.Caption": "Files",
+  "Menu.File.View.Puzzles.Caption": "Puzzles",
   "Menu.File.Validate.Caption": "Validate",
   "Menu.File.Search.Caption": "Search",
-  "Menu.File.Extract.Caption": "Extract",
+  "Menu.File.Extract.Caption": "Export",
+  "Menu.File.Import.Caption": "Import",
 
   // File History
   "File.Nds.History.Previous.Shortcut": "Ctrl+Left",
@@ -24,12 +28,34 @@
   "File.Nds.Search.Placeholder": "Search...",
   "File.Nds.Search.Clear": "Clear",
 
+  // Puzzle Language
+  "Puzzle.Language.English.Text": "English",
+  "Puzzle.Language.German.Text": "German",
+  "Puzzle.Language.Spanish.Text": "Spanish",
+  "Puzzle.Language.French.Text": "French",
+  "Puzzle.Language.Italian.Text": "Italian",
+  "Puzzle.Language.Korean.Text": "Korean",
+  "Puzzle.Language.Japanese.Text": "Japanese",
+
+  // Puzzle Info
+  "Puzzle.Info.InternalId.Text": "ID",
+  "Puzzle.Info.Number.Text": "Number",
+  "Puzzle.Info.Title.Text": "Title",
+  "Puzzle.Info.Location.Text": "Location",
+  "Puzzle.Info.Type.Text": "Type",
+  "Puzzle.Info.Picarat.Text": "Picarat",
+  "Puzzle.Info.Description.Text": "Description",
+  "Puzzle.Info.Correct.Text": "Correct",
+  "Puzzle.Info.Incorrect.Text": "Incorrect",
+  "Puzzle.Info.Hints.Text": "Hints",
+
   // Dialog
   "Dialog.File.Nds.Open.Caption": "Select a NDS ROM...",
   "Dialog.File.Nds.Open.Filter": "NDS ROM",
   "Dialog.File.Nds.Save.Caption": "Save a NDS ROM...",
   "Dialog.File.Nds.Save.Filter": "NDS ROM",
   "Dialog.File.Extract.Caption": "Save file...",
+  "Dialog.File.Import.Caption": "Open file...",
   "Dialog.Directory.Extract.Caption": "Save directory...",
   "Dialog.Directory.Extract.Progress": "Extract files - {0:0.00}%",
   "Dialog.Validation.Caption": "Validation",

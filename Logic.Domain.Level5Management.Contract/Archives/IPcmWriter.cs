@@ -2,8 +2,7 @@
 
 namespace Logic.Domain.Level5Management.Contract.Archives;
 
-public interface IPcmParser
+public interface IPcmWriter
 {
-    PcmFile[] Parse(Stream input);
-    PcmFile[] Parse(PcmContainer container);
+    void Write(PcmFile[] files, Stream output);
 }

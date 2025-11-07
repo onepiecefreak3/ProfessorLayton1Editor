@@ -4,5 +4,5 @@ namespace Logic.Domain.Level5Management.Contract.Archives;
 
 public interface IPcmReader
 {
-    PcmContainer Read(Stream input);
+    PcmFile[] Read(Stream input);
 }

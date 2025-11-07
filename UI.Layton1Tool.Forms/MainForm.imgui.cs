@@ -4,7 +4,6 @@ using ImGui.Forms.Controls;
 using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Controls.Menu;
 using ImGui.Forms.Models.IO;
-using ImGui.Forms.Resources;
 using UI.Layton1Tool.Resources.Contract;
 using Veldrid;
 
@@ -12,11 +11,16 @@ namespace UI.Layton1Tool.Forms;
 
 partial class MainForm : Form
 {
-    private MainMenuBar? _mainMenuBar;
-    private MenuBarMenu? _fileMenuItem;
+    private MainMenuBar _mainMenuBar;
+    private MenuBarMenu _fileMenuItem;
+    private MenuBarRadio _fileViewButton;
     private MenuBarButton _fileValidateButton;
     private MenuBarButton _fileSearchButton;
+
     private MenuBarButton _fileOpenButton;
+
+    private MenuBarCheckBox _filesViewButton;
+    private MenuBarCheckBox _puzzlesViewButton;
 
     private StackLayout _contentLayout;
 
@@ -33,6 +37,18 @@ partial class MainForm : Form
             KeyAction = new KeyCommand(ModifierKeys.Control, Key.O, localizations.MenuFileOpenShortcut)
         };
 
+        _filesViewButton = new MenuBarCheckBox(localizations.MenuFileViewFilesCaption);
+        _puzzlesViewButton = new MenuBarCheckBox(localizations.MenuFileViewPuzzlesCaption);
+        _fileViewButton = new MenuBarRadio(localizations.MenuFileViewCaption)
+        {
+            CheckItems =
+            {
+                _filesViewButton,
+                _puzzlesViewButton
+            },
+            Enabled = false
+        };
+
         _fileMenuItem = new MenuBarMenu
         {
             Text = localizations.MenuFileCaption,
@@ -47,6 +63,7 @@ partial class MainForm : Form
             Items =
             {
                 _fileMenuItem,
+                _fileViewButton,
                 _fileValidateButton,
                 _fileSearchButton
             }

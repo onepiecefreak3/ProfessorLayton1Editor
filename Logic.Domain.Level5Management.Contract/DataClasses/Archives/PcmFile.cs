@@ -2,6 +2,6 @@
 
 public class PcmFile
 {
-    public required string FileName { get; set; }
-    public required Stream FileData { get; set; }
+    public required string Name { get; set; }
+    public required Stream Data { get; set; }
 }

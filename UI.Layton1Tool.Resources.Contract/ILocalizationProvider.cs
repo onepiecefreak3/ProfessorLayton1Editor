@@ -14,9 +14,13 @@ public interface ILocalizationProvider
     LocalizedString MenuFileSaveShortcut { get; }
     LocalizedString MenuFileSaveAsCaption { get; }
     LocalizedString MenuFileSaveAsShortcut { get; }
+    LocalizedString MenuFileViewCaption { get; }
+    LocalizedString MenuFileViewFilesCaption { get; }
+    LocalizedString MenuFileViewPuzzlesCaption { get; }
     LocalizedString MenuFileValidateCaption { get; }
     LocalizedString MenuFileSearchCaption { get; }
     LocalizedString MenuFileExtractCaption { get; }
+    LocalizedString MenuFileImportCaption { get; }
 
     LocalizedString FileNdsHistoryPreviousShortcut { get; }
     LocalizedString FileNdsHistoryNextShortcut { get; }
@@ -24,11 +28,31 @@ public interface ILocalizationProvider
     LocalizedString FileNdsSearchPlaceholder { get; }
     LocalizedString FileNdsSearchClear { get; }
 
+    LocalizedString PuzzleLanguageEnglishText { get; }
+    LocalizedString PuzzleLanguageGermanText { get; }
+    LocalizedString PuzzleLanguageSpanishText { get; }
+    LocalizedString PuzzleLanguageFrenchText { get; }
+    LocalizedString PuzzleLanguageItalianText { get; }
+    LocalizedString PuzzleLanguageKoreanText { get; }
+    LocalizedString PuzzleLanguageJapaneseText { get; }
+
+    LocalizedString PuzzleInfoInternalIdText { get; }
+    LocalizedString PuzzleInfoNumberText { get; }
+    LocalizedString PuzzleInfoTitleText { get; }
+    LocalizedString PuzzleInfoLocationText { get; }
+    LocalizedString PuzzleInfoTypeText { get; }
+    LocalizedString PuzzleInfoPicaratText { get; }
+    LocalizedString PuzzleInfoDescriptionText { get; }
+    LocalizedString PuzzleInfoCorrectText { get; }
+    LocalizedString PuzzleInfoIncorrectText { get; }
+    LocalizedString PuzzleInfoHintsText { get; }
+
     LocalizedString DialogFileNdsOpenCaption { get; }
     LocalizedString DialogFileNdsOpenFilter { get; }
     LocalizedString DialogFileNdsSaveCaption { get; }
     LocalizedString DialogFileNdsSaveFilter { get; }
     LocalizedString DialogFileExtractCaption { get; }
+    LocalizedString DialogFileImportCaption { get; }
     LocalizedString DialogDirectoryExtractCaption { get; }
     LocalizedString DialogDirectoryExtractProgress(float completion);
     LocalizedString DialogValidationCaption { get; }

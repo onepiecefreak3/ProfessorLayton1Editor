@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using CrossCutting.Core.Contract.EventBrokerage;
+﻿using CrossCutting.Core.Contract.EventBrokerage;
 using CrossCutting.Messages;
 using ImGui.Forms.Controls.Tree;
 using ImGui.Forms.Localization;
@@ -9,14 +8,9 @@ using ImGui.Forms.Modals.IO.Windows;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
 using Logic.Business.Layton1ToolManagement.Contract.Files;
-using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
-using Logic.Domain.Level5Management.Contract.DataClasses.Archives;
 using Logic.Domain.Level5Management.Contract.Enums;
-using Logic.Domain.NintendoManagement.Contract.DataClasses.Font;
-using Logic.Domain.NintendoManagement.Contract.DataClasses.Image;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+using System.Text.RegularExpressions;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Forms.DataClasses;
@@ -66,6 +60,7 @@ partial class NdsForm
         _prevButton!.Clicked += _prevButton_Clicked;
         _nextButton!.Clicked += _nextButton_Clicked;
         _extractButton!.Clicked += _extractButton_Clicked;
+        _importButton!.Clicked += _importButton_Clicked;
         _searchBox!.TextChanged += _searchBox_TextChanged;
         _searchClearButton!.Clicked += _searchClearButton_Clicked;
         _fileTree!.SelectedNodeChanged += _fileTree_SelectedNodeChanged;
@@ -75,8 +70,7 @@ partial class NdsForm
 
         eventBroker.Subscribe<Layton1NdsFileParsedMessage>(ProcessParsedFile);
         eventBroker.Subscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
-        eventBroker.Subscribe<GdsModifiedMessage>(ProcessModifiedGds);
-        eventBroker.Subscribe<FontModifiedMessage>(ProcessModifiedFont);
+        eventBroker.Subscribe<FileContentModifiedMessage>(ProcessFileContentModified);
         eventBroker.Subscribe<SelectedNdsFileChangedMessage>(ProcessSelectedFileChanged);
 
         UpdateTreeView(ndsInfo);
@@ -93,7 +87,7 @@ partial class NdsForm
 
         _eventBroker.Unsubscribe<Layton1NdsFileParsedMessage>(ProcessParsedFile);
         _eventBroker.Unsubscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
-        _eventBroker.Unsubscribe<GdsModifiedMessage>(ProcessModifiedGds);
+        _eventBroker.Unsubscribe<FileContentModifiedMessage>(ProcessFileContentModified);
         _eventBroker.Unsubscribe<SelectedNdsFileChangedMessage>(ProcessSelectedFileChanged);
     }
 
@@ -176,6 +170,14 @@ partial class NdsForm
             await ExtractFile(_fileTree.SelectedNode.Data);
     }
 
+    private async void _importButton_Clicked(object? sender, EventArgs e)
+    {
+        if (_fileTree.SelectedNode is null)
+            return;
+
+        await ImportFile(_fileTree.SelectedNode.Data);
+    }
+
     private void _fileTree_SelectedNodeChanged(object? sender, EventArgs e)
     {
         Layton1NdsFile? file = _fileTree.SelectedNode.Data;
@@ -242,11 +244,8 @@ partial class NdsForm
 
     private void ProcessNdsFileSaved(NdsFileSavedMessage message)
     {
-        if (message.OriginalRom != _ndsInfo.Rom)
+        if (message.Rom != _ndsInfo.Rom)
             return;
-
-        _ndsInfo.Path = message.RomPath;
-        _ndsInfo.Rom = message.Rom;
 
         if (_selectedFile is not null)
             _selectedFile = message.Rom.Files.FirstOrDefault(f => f.Path == _selectedFile.Path);
@@ -267,37 +266,12 @@ partial class NdsForm
         UpdateHistoryButtons();
     }
 
-    private void ProcessModifiedGds(GdsModifiedMessage message)
+    private void ProcessFileContentModified(FileContentModifiedMessage message)
     {
-        if (message.Source != _gdsForm)
+        if (message.File.Rom != _ndsInfo.Rom)
             return;
 
-        ProcessModifiedFile(message.Script);
-    }
-
-    private void ProcessModifiedFont(FontModifiedMessage message)
-    {
-        if (message.Source != _fontForm)
-            return;
-
-        ProcessModifiedFile(message.Font);
-    }
-
-    private void ProcessModifiedFile(object fileData)
-    {
-        if (_selectedFile is null)
-            return;
-
-        try
-        {
-            _fileManager.Compose(_selectedFile, fileData);
-        }
-        catch (Exception)
-        {
-            return;
-        }
-
-        ToggleChangedFile(_selectedFile, true);
+        ToggleChangedFile(message.File, true);
         UpdateTreeView(_ndsInfo);
 
         UpdateSaveButtons();
@@ -359,12 +333,66 @@ partial class NdsForm
 
     private bool UpdateFileView(Layton1NdsFile file)
     {
-        FileType fileType;
-        object? data;
+        if (!TryParseFile(file, out var fileType, out var data))
+            return false;
+
+        RaiseSelectedFileChanged(file, data);
+        UpdateFileView(file, fileType, data);
+        
+        return true;
+    }
+
+    private void UpdateFileView(Layton1NdsFile file, FileType fileType, object? data)
+    {
+        switch (fileType)
+        {
+            case FileType.Bgx:
+                _contentPanel.Content = _imageForm;
+                break;
+
+            case FileType.Gds:
+                _contentPanel.Content = _gdsForm;
+                break;
+
+            case FileType.Text:
+                _contentPanel.Content = _textForm;
+                break;
+
+            case FileType.Pcm:
+                _contentPanel.Content = _pcmForm;
+                break;
+
+            case FileType.Anim:
+            case FileType.Anim2:
+            case FileType.Anim3:
+                _contentPanel.Content = _animForm;
+                break;
+
+            case FileType.Font:
+                _contentPanel.Content = _fontForm;
+                break;
+
+            case FileType.Banner:
+                _contentPanel.Content = _imageForm;
+                break;
+
+            default:
+                _contentPanel.Content = null!;
+                break;
+        }
+
+        _selectedFile = file;
+    }
+
+    private bool TryParseFile(Layton1NdsFile file, out FileType fileType, out object? data)
+    {
+        fileType = FileType.Bgx;
+        data = null;
 
         try
         {
             data = _fileManager.Parse(file, out fileType);
+            return true;
         }
         catch (Exception e)
         {
@@ -375,84 +403,11 @@ partial class NdsForm
 
             return false;
         }
-
-        switch (fileType)
-        {
-            case FileType.Bgx:
-                RaiseImageUpdated((Image<Rgba32>)data!);
-                _contentPanel.Content = _imageForm;
-                break;
-
-            case FileType.Gds:
-                RaiseGdsUpdated((CodeUnitSyntax)data!);
-                _contentPanel.Content = _gdsForm;
-                break;
-
-            case FileType.Text:
-                RaiseTextUpdated((string)data!);
-                _contentPanel.Content = _textForm;
-                break;
-
-            case FileType.Pcm:
-                RaisePcmUpdated((PcmFile[])data!);
-                _contentPanel.Content = _pcmForm;
-                break;
-
-            case FileType.Anim:
-            case FileType.Anim2:
-            case FileType.Anim3:
-                RaiseAnimationsUpdated((AnimationSequences)data!);
-                _contentPanel.Content = _animForm;
-                break;
-
-            case FileType.Font:
-                RaiseFontUpdated((NftrData)data!);
-                _contentPanel.Content = _fontForm;
-                break;
-
-            case FileType.Banner:
-                RaiseImageUpdated(((BannerData)data!).Image);
-                _contentPanel.Content = _imageForm;
-                break;
-
-            default:
-                _contentPanel.Content = null!;
-                break;
-        }
-
-        _selectedFile = file;
-
-        return true;
     }
 
-    private void RaiseImageUpdated(Image<Rgba32> image)
+    private void RaiseSelectedFileChanged(Layton1NdsFile file, object? content)
     {
-        _eventBroker.Raise(new SelectedImageChangedMessage(_ndsInfo.Rom, image));
-    }
-
-    private void RaiseGdsUpdated(CodeUnitSyntax script)
-    {
-        _eventBroker.Raise(new SelectedGdsChangedMessage(_ndsInfo.Rom, script));
-    }
-
-    private void RaiseTextUpdated(string text)
-    {
-        _eventBroker.Raise(new SelectedTextChangedMessage(_ndsInfo.Rom, text));
-    }
-
-    private void RaisePcmUpdated(PcmFile[] files)
-    {
-        _eventBroker.Raise(new SelectedPcmChangedMessage(_ndsInfo.Rom, files));
-    }
-
-    private void RaiseAnimationsUpdated(AnimationSequences animations)
-    {
-        _eventBroker.Raise(new SelectedAnimationsChangedMessage(_ndsInfo.Rom, animations));
-    }
-
-    private void RaiseFontUpdated(NftrData font)
-    {
-        _eventBroker.Raise(new SelectedFontChangedMessage(_ndsInfo.Rom, font));
+        _eventBroker.Raise(new SelectedFileChangedMessage(file, content));
     }
 
     private void UpdateTreeView(Layton1NdsInfo ndsInfo)
@@ -620,6 +575,32 @@ partial class NdsForm
         await _fileManager.GetUncompressedStream(file).CopyToAsync(fileStream);
     }
 
+    private async Task ImportFile(Layton1NdsFile file)
+    {
+        string? filePath = await SelectOpenFile(file);
+        if (filePath is null)
+        {
+            SetErrorStatus(_localizations.StatusFileSelectError);
+            return;
+        }
+
+        ImportFile(file, filePath);
+
+        if (!TryParseFile(file, out var fileType, out var data))
+            return;
+
+        RaiseFileContentModified(file, data);
+        UpdateFileView(file, fileType, data);
+
+        SetInfoStatus(string.Empty);
+    }
+
+    private void ImportFile(Layton1NdsFile file, string filePath)
+    {
+        Stream fileStream = File.OpenRead(filePath);
+        _fileManager.SetUncompressedStream(file, fileStream);
+    }
+
     private async Task<string?> SelectSaveFile(Layton1NdsFile file)
     {
         var sfd = new WindowsSaveFileDialog
@@ -635,7 +616,7 @@ partial class NdsForm
 
         string? saveDir = Path.GetDirectoryName(sfd.Files[0]);
         if (!string.IsNullOrEmpty(saveDir))
-            _settings.ExtractDirectory=saveDir;
+            _settings.ExtractDirectory = saveDir;
 
         return sfd.Files[0];
     }
@@ -653,6 +634,25 @@ partial class NdsForm
         return result is not DialogResult.Ok ? null : sfd.Directory;
     }
 
+    private async Task<string?> SelectOpenFile(Layton1NdsFile file)
+    {
+        var sfd = new WindowsOpenFileDialog
+        {
+            Title = _localizations.DialogFileImportCaption,
+            InitialDirectory = _settings.ImportDirectory
+        };
+
+        DialogResult result = await sfd.ShowAsync();
+        if (result is not DialogResult.Ok)
+            return null;
+
+        string? openDir = Path.GetDirectoryName(sfd.Files[0]);
+        if (!string.IsNullOrEmpty(openDir))
+            _settings.ImportDirectory = openDir;
+
+        return sfd.Files[0];
+    }
+
     private void SetErrorStatus(LocalizedString text, Exception? e = null)
     {
         _eventBroker.Raise(new UpdateStatusMessage(text, Status.Error, e));
@@ -666,5 +666,10 @@ partial class NdsForm
     private void RaiseNdsFileModified()
     {
         _eventBroker.RaiseAsync(new NdsFileModifiedMessage(_ndsInfo.Path));
+    }
+
+    private void RaiseFileContentModified(Layton1NdsFile file, object? content)
+    {
+        _eventBroker.RaiseAsync(new FileContentModifiedMessage(this, file, content));
     }
 }

@@ -11,9 +11,9 @@ class Layton1FileTypeDetector(ILayton1Compressor compressor) : ILayton1FileTypeD
 {
     public FileType Detect(PcmFile file)
     {
-        file.FileData.Position = 0;
+        file.Data.Position = 0;
 
-        return Detect(file.FileName, file.FileData);
+        return Detect(file.Name, file.Data);
     }
 
     public FileType Detect(Layton1NdsFile file)

@@ -6,6 +6,7 @@ public interface ISettingsProvider
     string OpenDirectory { get; set; }
     string SaveDirectory { get; set; }
     string ExtractDirectory { get; set; }
+    string ImportDirectory { get; set; }
     string PreviewDirectory { get; set; }
     bool ReplaceFontCharacters { get; set; }
 }

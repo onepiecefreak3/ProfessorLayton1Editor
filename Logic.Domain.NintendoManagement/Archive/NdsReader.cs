@@ -36,9 +36,11 @@ class NdsReader(INdsFntReader fntReader) : INdsReader
         // Read ARM9
         var arm9Offset = ndsHeader?.arm9Offset ?? dsiHeader!.arm9Offset;
         var arm9Size = ndsHeader?.arm9Size ?? dsiHeader!.arm9Size;
+
+        input.Position = arm9Offset;
         result.Add(new NdsFile
         {
-            Stream = new SubStream(input, arm9Offset, arm9Size),
+            Stream = new MemoryStream(br.ReadBytes(arm9Size)),
             Path = "sys/arm9.bin"
         });
 
@@ -66,9 +68,11 @@ class NdsReader(INdsFntReader fntReader) : INdsReader
         // Read ARM7
         var arm7Offset = ndsHeader?.arm7Offset ?? dsiHeader!.arm7Offset;
         var arm7Size = ndsHeader?.arm7Size ?? dsiHeader!.arm7Size;
+
+        input.Position = arm7Offset;
         result.Add(new NdsFile
         {
-            Stream = new SubStream(input, arm7Offset, arm7Size), 
+            Stream = new MemoryStream(br.ReadBytes(arm7Size)),
             Path = "sys/arm7.bin"
         });
 
@@ -105,9 +109,11 @@ class NdsReader(INdsFntReader fntReader) : INdsReader
         foreach (var file in arm9OverlayEntries)
         {
             var fileEntry = fileEntries[file.fileId];
+
+            input.Position = fileEntry.offset;
             result.Add(new NdsOverlayFile
             {
-                Stream = new SubStream(input, fileEntry.offset, fileEntry.endOffset - fileEntry.offset),
+                Stream = new MemoryStream(br.ReadBytes(fileEntry.endOffset - fileEntry.offset)),
                 Path = $"sys/ovl/overlay9_{file.id:000}",
                 Entry = file
             });
@@ -116,9 +122,11 @@ class NdsReader(INdsFntReader fntReader) : INdsReader
         foreach (var file in arm7OverlayEntries)
         {
             var fileEntry = fileEntries[file.fileId];
+
+            input.Position = fileEntry.offset;
             result.Add(new NdsOverlayFile
             {
-                Stream = new SubStream(input, fileEntry.offset, fileEntry.endOffset - fileEntry.offset),
+                Stream = new MemoryStream(br.ReadBytes(fileEntry.endOffset - fileEntry.offset)),
                 Path = $"sys/ovl/overlay7_{file.id:000}",
                 Entry = file
             });

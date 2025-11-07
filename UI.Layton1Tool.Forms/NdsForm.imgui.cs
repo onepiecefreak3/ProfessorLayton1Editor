@@ -25,6 +25,7 @@ partial class NdsForm : Component
 
     private ContextMenu _fileContextMenu;
     private MenuBarButton _extractButton;
+    private MenuBarButton _importButton;
 
     private ImageButton _saveButton;
     private ImageButton _saveAsButton;
@@ -53,6 +54,12 @@ partial class NdsForm : Component
     protected override void SetTabInactiveCore()
     {
         _fileTree.SetTabInactive();
+        _imageForm.SetTabInactive();
+        _gdsForm.SetTabInactive();
+        _pcmForm.SetTabInactive();
+        _animForm.SetTabInactive();
+        _textForm.SetTabInactive();
+        _fontForm.SetTabInactive();
     }
 
     private void InitializeComponent(Layton1NdsInfo ndsInfo, IFormFactory formFactory, ILocalizationProvider localizations, IImageProvider images)
@@ -65,7 +72,8 @@ partial class NdsForm : Component
         _fontForm = formFactory.CreateFontForm(ndsInfo);
 
         _extractButton = new MenuBarButton(localizations.MenuFileExtractCaption);
-        _fileContextMenu = new ContextMenu { Items = { _extractButton } };
+        _importButton = new MenuBarButton(localizations.MenuFileImportCaption);
+        _fileContextMenu = new ContextMenu { Items = { _extractButton, _importButton } };
 
         _saveButton = new ImageButton(images.Save)
         {

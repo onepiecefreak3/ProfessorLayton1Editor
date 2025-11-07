@@ -44,4 +44,9 @@ partial class PcmForm : Component
             }
         };
     }
+
+    protected override void SetTabInactiveCore()
+    {
+        _fileTree.SetTabInactive();
+    }
 }

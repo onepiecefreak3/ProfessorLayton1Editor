@@ -1,5 +1,4 @@
 ﻿using Komponent.IO;
-using Komponent.Streams;
 using Logic.Domain.NintendoManagement.Contract.DataClasses.Archive;
 using Logic.Domain.NintendoManagement.DataClasses.Archive;
 using Logic.Domain.NintendoManagement.InternalContract;
@@ -46,9 +45,11 @@ class NdsFntReader : INdsFntReader
                 tableOffset = (int)br.BaseStream.Position;
 
                 var currentFileEntry = fatEntries[firstFileId];
+
+                br.BaseStream.Position = contentOffset + currentFileEntry.offset;
                 yield return new NdsContentFile
                 {
-                    Stream = new SubStream(br.BaseStream, contentOffset + currentFileEntry.offset, currentFileEntry.endOffset - currentFileEntry.offset),
+                    Stream = new MemoryStream(br.ReadBytes(currentFileEntry.endOffset - currentFileEntry.offset)),
                     Path = string.IsNullOrEmpty(path) ? name : $"{path}/{name}",
                     FileId = firstFileId++
                 };

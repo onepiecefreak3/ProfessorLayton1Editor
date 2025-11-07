@@ -1,5 +1,6 @@
 ﻿using CrossCutting.Core.Contract.EventBrokerage;
 using ImGui.Forms.Controls.Tree;
+using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
 using Logic.Domain.Level5Management.Contract.Enums;
 using UI.Layton1Tool.Components.Contract;
@@ -15,6 +16,7 @@ partial class AnimationForm
     private readonly IEventBroker _eventBroker;
 
     private AnimationSequences? _animationSequences;
+    private Layton1NdsFile? _selectedFile;
 
     public AnimationForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILocalizationProvider localizations, IComponentFactory components)
     {
@@ -25,12 +27,14 @@ partial class AnimationForm
 
         _fileTree!.SelectedNodeChanged += _fileTree_SelectedNodeChanged;
 
-        eventBroker.Subscribe<SelectedAnimationsChangedMessage>(UpdateAnimations);
+        eventBroker.Subscribe<SelectedFileChangedMessage>(UpdateAnimations);
+        eventBroker.Subscribe<FileContentModifiedMessage>(UpdateAnimations);
     }
 
     public override void Destroy()
     {
-        _eventBroker.Unsubscribe<SelectedAnimationsChangedMessage>(UpdateAnimations);
+        _eventBroker.Unsubscribe<SelectedFileChangedMessage>(UpdateAnimations);
+        _eventBroker.Unsubscribe<FileContentModifiedMessage>(UpdateAnimations);
     }
 
     private void _fileTree_SelectedNodeChanged(object? sender, EventArgs e)
@@ -48,12 +52,32 @@ partial class AnimationForm
         UpdateAnimation(_animationSequences, index);
     }
 
-    private void UpdateAnimations(SelectedAnimationsChangedMessage message)
+    private void UpdateAnimations(SelectedFileChangedMessage message)
     {
-        if (message.Rom != _ndsInfo.Rom)
+        UpdateAnimations(message.File, message.Content);
+    }
+
+    private void UpdateAnimations(FileContentModifiedMessage message)
+    {
+        if (message.Source == this)
             return;
 
-        _animationSequences = message.AnimationSequences;
+        if (message.File != _selectedFile)
+            return;
+
+        UpdateAnimations(message.File, message.Content);
+    }
+
+    private void UpdateAnimations(Layton1NdsFile file, object? content)
+    {
+        if (content is not AnimationSequences sequences)
+            return;
+
+        if (file.Rom != _ndsInfo.Rom)
+            return;
+
+        _animationSequences = sequences;
+        _selectedFile = file;
 
         UpdateFileTree(_animationSequences.Sequences);
         UpdateError(_animationSequences);

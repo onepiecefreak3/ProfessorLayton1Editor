@@ -15,9 +15,13 @@ internal class LocalizationProvider : ILocalizationProvider
     public LocalizedString MenuFileSaveShortcut => LocalizedString.FromId("Menu.File.Save.Shortcut");
     public LocalizedString MenuFileSaveAsCaption => LocalizedString.FromId("Menu.File.SaveAs.Caption");
     public LocalizedString MenuFileSaveAsShortcut => LocalizedString.FromId("Menu.File.SaveAs.Shortcut");
+    public LocalizedString MenuFileViewCaption => LocalizedString.FromId("Menu.File.View.Caption");
+    public LocalizedString MenuFileViewFilesCaption => LocalizedString.FromId("Menu.File.View.Files.Caption");
+    public LocalizedString MenuFileViewPuzzlesCaption => LocalizedString.FromId("Menu.File.View.Puzzles.Caption");
     public LocalizedString MenuFileValidateCaption => LocalizedString.FromId("Menu.File.Validate.Caption");
     public LocalizedString MenuFileSearchCaption => LocalizedString.FromId("Menu.File.Search.Caption");
     public LocalizedString MenuFileExtractCaption => LocalizedString.FromId("Menu.File.Extract.Caption");
+    public LocalizedString MenuFileImportCaption => LocalizedString.FromId("Menu.File.Import.Caption");
 
     public LocalizedString FileNdsHistoryPreviousShortcut => LocalizedString.FromId("File.Nds.History.Previous.Shortcut");
     public LocalizedString FileNdsHistoryNextShortcut => LocalizedString.FromId("File.Nds.History.Next.Shortcut");
@@ -25,11 +29,31 @@ internal class LocalizationProvider : ILocalizationProvider
     public LocalizedString FileNdsSearchPlaceholder => LocalizedString.FromId("File.Nds.Search.Placeholder");
     public LocalizedString FileNdsSearchClear => LocalizedString.FromId("File.Nds.Search.Clear");
 
+    public LocalizedString PuzzleLanguageEnglishText => LocalizedString.FromId("Puzzle.Language.English.Text");
+    public LocalizedString PuzzleLanguageGermanText => LocalizedString.FromId("Puzzle.Language.German.Text");
+    public LocalizedString PuzzleLanguageSpanishText => LocalizedString.FromId("Puzzle.Language.Spanish.Text");
+    public LocalizedString PuzzleLanguageFrenchText => LocalizedString.FromId("Puzzle.Language.French.Text");
+    public LocalizedString PuzzleLanguageItalianText => LocalizedString.FromId("Puzzle.Language.Italian.Text");
+    public LocalizedString PuzzleLanguageKoreanText => LocalizedString.FromId("Puzzle.Language.Korean.Text");
+    public LocalizedString PuzzleLanguageJapaneseText => LocalizedString.FromId("Puzzle.Language.Japanese.Text");
+
+    public LocalizedString PuzzleInfoInternalIdText => LocalizedString.FromId("Puzzle.Info.InternalId.Text");
+    public LocalizedString PuzzleInfoNumberText => LocalizedString.FromId("Puzzle.Info.Number.Text");
+    public LocalizedString PuzzleInfoTitleText => LocalizedString.FromId("Puzzle.Info.Title.Text");
+    public LocalizedString PuzzleInfoLocationText => LocalizedString.FromId("Puzzle.Info.Location.Text");
+    public LocalizedString PuzzleInfoTypeText => LocalizedString.FromId("Puzzle.Info.Type.Text");
+    public LocalizedString PuzzleInfoPicaratText => LocalizedString.FromId("Puzzle.Info.Picarat.Text");
+    public LocalizedString PuzzleInfoDescriptionText => LocalizedString.FromId("Puzzle.Info.Description.Text");
+    public LocalizedString PuzzleInfoCorrectText => LocalizedString.FromId("Puzzle.Info.Correct.Text");
+    public LocalizedString PuzzleInfoIncorrectText => LocalizedString.FromId("Puzzle.Info.Incorrect.Text");
+    public LocalizedString PuzzleInfoHintsText => LocalizedString.FromId("Puzzle.Info.Hints.Text");
+
     public LocalizedString DialogFileNdsOpenCaption => LocalizedString.FromId("Dialog.File.Nds.Open.Caption");
     public LocalizedString DialogFileNdsOpenFilter => LocalizedString.FromId("Dialog.File.Nds.Open.Filter");
     public LocalizedString DialogFileNdsSaveCaption => LocalizedString.FromId("Dialog.File.Nds.Save.Caption");
     public LocalizedString DialogFileNdsSaveFilter => LocalizedString.FromId("Dialog.File.Nds.Save.Filter");
     public LocalizedString DialogFileExtractCaption => LocalizedString.FromId("Dialog.File.Extract.Caption");
+    public LocalizedString DialogFileImportCaption => LocalizedString.FromId("Dialog.File.Import.Caption");
     public LocalizedString DialogDirectoryExtractCaption => LocalizedString.FromId("Dialog.Directory.Extract.Caption");
     public LocalizedString DialogDirectoryExtractProgress(float completion) => LocalizedString.FromId("Dialog.Directory.Extract.Progress", () => completion);
     public LocalizedString DialogValidationCaption => LocalizedString.FromId("Dialog.Validation.Caption");

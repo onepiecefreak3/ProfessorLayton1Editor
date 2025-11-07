@@ -1,8 +1,8 @@
 ﻿using CrossCutting.Core.Contract.EventBrokerage;
-using ImGui.Forms.Modals.IO.Windows;
 using ImGui.Forms.Modals;
+using ImGui.Forms.Modals.IO.Windows;
 using ImGui.Forms.Resources;
-using System.Runtime;
+using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
@@ -19,6 +19,7 @@ partial class ImageForm
     private readonly ISettingsProvider _settings;
 
     private Image<Rgba32>? _image;
+    private Layton1NdsFile? _selectedFile;
 
     public ImageForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, IImageProvider images, ILocalizationProvider localizations,
         ISettingsProvider settings)
@@ -32,7 +33,14 @@ partial class ImageForm
 
         _extractButton!.Clicked += _extractButton_Clicked;
 
-        eventBroker.Subscribe<SelectedImageChangedMessage>(UpdateImage);
+        eventBroker.Subscribe<SelectedFileChangedMessage>(UpdateImage);
+        eventBroker.Subscribe<FileContentModifiedMessage>(UpdateImage);
+    }
+
+    public override void Destroy()
+    {
+        _eventBroker.Unsubscribe<SelectedFileChangedMessage>(UpdateImage);
+        _eventBroker.Unsubscribe<FileContentModifiedMessage>(UpdateImage);
     }
 
     private async void _extractButton_Clicked(object? sender, EventArgs e)
@@ -44,7 +52,7 @@ partial class ImageForm
         {
             Title = _localizations.ImageMenuExportPng,
             InitialDirectory = GetPreviewDirectory(),
-            InitialFileName = "banner.png"
+            InitialFileName = "image.png"
         };
 
         DialogResult result = await sfd.ShowAsync();
@@ -61,21 +69,36 @@ partial class ImageForm
         _settings.PreviewDirectory = selectedDir;
     }
 
-    public override void Destroy()
+    private void UpdateImage(SelectedFileChangedMessage message)
     {
-        _eventBroker.Unsubscribe<SelectedImageChangedMessage>(UpdateImage);
+        UpdateImage(message.File, message.Content);
     }
 
-    private void UpdateImage(SelectedImageChangedMessage message)
+    private void UpdateImage(FileContentModifiedMessage message)
     {
-        if (message.Rom != _ndsInfo.Rom)
+        if (message.Source == this)
             return;
 
-        _image = message.Image;
+        if (message.File != _selectedFile)
+            return;
+
+        UpdateImage(message.File, message.Content);
+    }
+
+    private void UpdateImage(Layton1NdsFile file, object? content)
+    {
+        if (content is not Image<Rgba32> image)
+            return;
+
+        if (file.Rom != _ndsInfo.Rom)
+            return;
+
+        _image = image;
+        _selectedFile = file;
 
         _extractButton.Enabled = true;
 
-        _zoomableImage.Image = ImageResource.FromImage(message.Image);
+        _zoomableImage.Image = ImageResource.FromImage(image);
 
         _zoomableImage.Reset();
         _zoomableImage.Zoom(2f);

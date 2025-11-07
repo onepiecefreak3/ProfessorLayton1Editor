@@ -1,4 +1,5 @@
-﻿using Logic.Business.Layton1ToolManagement.InternalContract.Scripts;
+﻿using Logic.Business.Layton1ToolManagement.Contract.Scripts;
+using Logic.Business.Layton1ToolManagement.InternalContract.Scripts;
 using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses;
 using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
 using Logic.Domain.CodeAnalysisManagement.Contract.Level5;

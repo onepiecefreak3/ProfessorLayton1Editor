@@ -1,9 +1,11 @@
 ﻿using CrossCutting.Core.Contract.EventBrokerage;
 using ImGui.Forms.Controls.Text.Editor;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
+using Logic.Business.Layton1ToolManagement.Contract.Files;
 using Logic.Business.Layton1ToolManagement.Contract.Scripts;
 using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
 using Logic.Domain.CodeAnalysisManagement.Contract.Level5;
+using Logic.Domain.Level5Management.Contract.DataClasses.Script.Gds;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Forms.Contract.Enums;
@@ -16,27 +18,38 @@ partial class GdsForm
     private readonly Layton1NdsInfo _ndsInfo;
 
     private readonly IEventBroker _eventBroker;
+    private readonly ILayton1NdsFileManager _fileManager;
     private readonly ILayton1ScriptInstructionManager _instructionManager;
+    private readonly ILayton1ScriptFileConverter _scriptFileConverter;
+    private readonly ILayton1ScriptCodeUnitConverter _codeUnitConverter;
     private readonly ILevel5ScriptComposer _scriptComposer;
     private readonly ILevel5ScriptParser _scriptParser;
+    private readonly ILevel5ScriptWhitespaceNormalizer _whitespaceNormalizer;
     private readonly IPositionManager _positionManager;
 
-    private CodeUnitSyntax? _scriptSyntax;
+    private GdsScriptFile? _script;
+    private CodeUnitSyntax? _codeUnit;
+    private Layton1NdsFile? _selectedFile;
 
     private MethodInvocationStatementSyntax? _selectedInvocation;
     private int _selectedParameterIndex = -1;
 
-    public GdsForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1ScriptInstructionManager instructionManager,
-        ILevel5ScriptComposer scriptComposer, ILevel5ScriptParser scriptParser, IPositionManager positionManager)
+    public GdsForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1NdsFileManager fileManager, ILayton1ScriptInstructionManager instructionManager,
+        ILayton1ScriptFileConverter scriptFileConverter, ILayton1ScriptCodeUnitConverter codeUnitConverter, ILevel5ScriptComposer scriptComposer, ILevel5ScriptParser scriptParser,
+        ILevel5ScriptWhitespaceNormalizer whitespaceNormalizer, IPositionManager positionManager)
     {
         InitializeComponent();
 
         _ndsInfo = ndsInfo;
 
         _eventBroker = eventBroker;
+        _fileManager = fileManager;
         _instructionManager = instructionManager;
+        _scriptFileConverter = scriptFileConverter;
+        _codeUnitConverter = codeUnitConverter;
         _scriptComposer = scriptComposer;
         _scriptParser = scriptParser;
+        _whitespaceNormalizer = whitespaceNormalizer;
         _positionManager = positionManager;
 
         _scriptEditor!.CursorPositionChanged += _scriptEditor_CursorPositionChanged;
@@ -45,12 +58,14 @@ partial class GdsForm
         _prevParameterButton!.Clicked += _prevParameterButton_Clicked;
         _nextParameterButton!.Clicked += _nextParameterButton_Clicked;
 
-        eventBroker.Subscribe<SelectedGdsChangedMessage>(UpdateScript);
+        eventBroker.Subscribe<SelectedFileChangedMessage>(UpdateScript);
+        eventBroker.Subscribe<FileContentModifiedMessage>(UpdateScript);
     }
 
     public override void Destroy()
     {
-        _eventBroker.Unsubscribe<SelectedGdsChangedMessage>(UpdateScript);
+        _eventBroker.Unsubscribe<SelectedFileChangedMessage>(UpdateScript);
+        _eventBroker.Unsubscribe<FileContentModifiedMessage>(UpdateScript);
     }
 
     private void _nextParameterButton_Clicked(object? sender, EventArgs e)
@@ -77,16 +92,24 @@ partial class GdsForm
 
     private void _scriptEditor_TextChanged(object? sender, string e)
     {
+        if (_selectedFile is null)
+            return;
+
         try
         {
-            _scriptSyntax = _scriptParser.ParseCodeUnit(e);
+            _codeUnit = _scriptParser.ParseCodeUnit(e);
+            _script = _codeUnitConverter.CreateScriptFile(_codeUnit, _ndsInfo.Rom.GameCode);
+
             UpdateSelectedInstruction(_scriptEditor.GetCursorPosition());
 
-            _eventBroker.Raise(new GdsModifiedMessage(this, _scriptSyntax));
+            _fileManager.Compose(_selectedFile, _script);
+
+            RaiseFileContentModified(_selectedFile, _script);
         }
         catch (Exception)
         {
-            _scriptSyntax = null;
+            _codeUnit = null;
+            _script = null;
         }
     }
 
@@ -95,17 +118,45 @@ partial class GdsForm
         UpdateSelectedInstruction(e);
     }
 
-    private void UpdateScript(SelectedGdsChangedMessage message)
+    private void RaiseFileContentModified(Layton1NdsFile file, GdsScriptFile script)
     {
-        if (message.Rom != _ndsInfo.Rom)
+        _eventBroker.Raise(new FileContentModifiedMessage(this, file, script));
+    }
+
+    private void UpdateScript(SelectedFileChangedMessage message)
+    {
+        UpdateScript(message.File, message.Content);
+    }
+
+    private void UpdateScript(FileContentModifiedMessage message)
+    {
+        if (message.Source == this)
             return;
 
-        _scriptSyntax = message.Script;
+        if (message.File != _selectedFile)
+            return;
 
-        string script = _scriptComposer.ComposeCodeUnit(message.Script);
+        UpdateScript(message.File, message.Content);
+    }
+
+    private void UpdateScript(Layton1NdsFile file, object? content)
+    {
+        if (content is not GdsScriptFile script)
+            return;
+
+        if (file.Rom != _ndsInfo.Rom)
+            return;
+
+        _script = script;
+        _selectedFile = file;
+
+        _codeUnit = _scriptFileConverter.CreateCodeUnit(script, _ndsInfo.Rom.GameCode);
+        _whitespaceNormalizer.NormalizeCodeUnit(_codeUnit);
+
+        string scriptText = _scriptComposer.ComposeCodeUnit(_codeUnit);
 
         Coordinate currentCursor = _scriptEditor.GetCursorPosition();
-        _scriptEditor.SetText(script);
+        _scriptEditor.SetText(scriptText);
 
         UpdateSelectedInstruction(currentCursor);
     }
@@ -136,10 +187,10 @@ partial class GdsForm
 
     private MethodInvocationStatementSyntax? GetSelectedMethodInvocation(Coordinate coordinate)
     {
-        if (_scriptSyntax is null)
+        if (_codeUnit is null)
             return null;
 
-        MethodDeclarationBodySyntax body = _scriptSyntax.MethodDeclarations[0].Body;
+        MethodDeclarationBodySyntax body = _codeUnit.MethodDeclarations[0].Body;
 
         IReadOnlyList<StatementSyntax> statements = body.Expressions;
         if (statements.Count <= 0)

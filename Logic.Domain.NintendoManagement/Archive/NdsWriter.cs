@@ -18,11 +18,11 @@ class NdsWriter(INdsFntWriter fntWriter) : INdsWriter
         var iconFile = ndsRom.Files.FirstOrDefault(x => x.Path == "sys/banner.bin");
 
         var arm9Overlays = ndsRom.Files
-            .Where(x => Path.GetFileName(x.Path).StartsWith("overlay9"))
+            .Where(x => Path.GetFileName(x.Path).StartsWith("overlay9", StringComparison.Ordinal))
             .Cast<NdsOverlayFile>()
             .ToArray();
         var arm7Overlays = ndsRom.Files
-            .Where(x => Path.GetFileName(x.Path).StartsWith("overlay7"))
+            .Where(x => Path.GetFileName(x.Path).StartsWith("overlay7", StringComparison.Ordinal))
             .Cast<NdsOverlayFile>()
             .ToArray();
 

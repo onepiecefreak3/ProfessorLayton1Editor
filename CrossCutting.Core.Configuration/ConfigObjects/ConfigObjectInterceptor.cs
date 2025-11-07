@@ -24,7 +24,7 @@ public class ConfigObjectInterceptor : IInterceptor
 
     public void Intercept(IInvocation invocation)
     {
-        if (!invocation.Method.Name.StartsWith("get_"))
+        if (!invocation.Method.Name.StartsWith("get_", StringComparison.Ordinal))
         {
             invocation.Proceed();
             return;

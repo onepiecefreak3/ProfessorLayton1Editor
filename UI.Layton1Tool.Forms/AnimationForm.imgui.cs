@@ -79,4 +79,9 @@ partial class AnimationForm : Component
                 _mainLayout.Items[1] = item;
         }
     }
+
+    protected override void SetTabInactiveCore()
+    {
+        _fileTree.SetTabInactive();
+    }
 }

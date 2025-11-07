@@ -21,10 +21,13 @@ class Layton1NdsParser(INdsReader ndsReader, ILayton1GameCodeValidator codeValid
     {
         codeValidator.Validate(rom.GameCode);
 
+        string makerCode = rom.DsHeader?.makerCode ?? rom.DsiHeader?.makerCode!;
+
         var ndsRom = new Layton1NdsRom
         {
             GameCode = rom.GameCode,
             Region = GetRegion(rom.GameCode),
+            Version = GetVersion(rom.GameCode + makerCode),
             DsHeader = rom.DsHeader,
             DsiHeader = rom.DsiHeader,
             Footer = rom.Footer
@@ -87,6 +90,21 @@ class Layton1NdsParser(INdsReader ndsReader, ILayton1GameCodeValidator codeValid
             'E' => Region.Usa,
             'P' => Region.Europe,
             _ => throw new InvalidOperationException($"Region Code {gameCode[3]} is not associated with Professor Layton 1.")
+        };
+    }
+
+    private static GameVersion GetVersion(string gameId)
+    {
+        return gameId switch
+        {
+            "A5FEHF" => GameVersion.Usa,
+            "A5FK01" => GameVersion.Korea,
+            "A5FP01" => GameVersion.Europe,
+            "A5FJHF" => GameVersion.Japan,
+            "Y49E01" => GameVersion.UsaDemo,
+            "Y49P01" => GameVersion.EuropeDemo,
+            "C5FJHF" => GameVersion.JapanFriendly,
+            _ => throw new InvalidOperationException($"Game ID {gameId} is not associated with Professor Layton 1.")
         };
     }
 }

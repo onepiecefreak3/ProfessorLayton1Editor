@@ -52,7 +52,7 @@ partial class SearchDialog : Modal
             Columns =
             {
                 new DataTableColumn<SearchResult>(error => error.File.Path, localizations.DialogSearchPath),
-                new DataTableColumn<SearchResult>(error => error.SubFile?.FileName ?? string.Empty, localizations.DialogSearchSubPath)
+                new DataTableColumn<SearchResult>(error => error.SubFile?.Name ?? string.Empty, localizations.DialogSearchSubPath)
             }
         };
 

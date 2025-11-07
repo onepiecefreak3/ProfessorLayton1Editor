@@ -1,6 +1,6 @@
-﻿namespace Logic.Domain.Level5Management.Contract.DataClasses.Archives;
+﻿namespace Logic.Domain.Level5Management.DataClasses.Archives;
 
-public class PcmHeader
+class PcmHeader
 {
     public int headerSize;
     public int sectionSize;
