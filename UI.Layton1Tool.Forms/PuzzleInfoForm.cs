@@ -195,7 +195,7 @@ partial class PuzzleInfoForm
             if (instruction.Arguments[1].Value is not int internalId || internalId != _puzzleId.InternalId)
                 continue;
 
-            instruction.Arguments[3].Value = _typeBox.Text;
+            instruction.Arguments[2].Value = _typeBox.Text;
             _fileManager.Compose(_infoScriptFile.File, _infoScriptFile.Content);
 
             RaiseFileContentModified(_infoScriptFile.File, _infoScriptFile.Content);
@@ -225,7 +225,7 @@ partial class PuzzleInfoForm
             if (instruction.Arguments[1].Value is not int internalId || internalId != _puzzleId.InternalId)
                 continue;
 
-            instruction.Arguments[2].Value = _locationBox.Text;
+            instruction.Arguments[3].Value = _locationBox.Text;
             _fileManager.Compose(_infoScriptFile.File, _infoScriptFile.Content);
 
             RaiseFileContentModified(_infoScriptFile.File, _infoScriptFile.Content);
