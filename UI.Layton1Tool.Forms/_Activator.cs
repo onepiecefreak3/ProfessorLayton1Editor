@@ -43,6 +43,7 @@ public class Layton1ToolFormsActivator : IComponentActivator
         kernel.RegisterToSelf<TextForm>();
         kernel.RegisterToSelf<FontForm>();
         kernel.RegisterToSelf<PuzzleInfoForm>();
+        kernel.RegisterToSelf<PuzzleScriptForm>();
 
         kernel.RegisterConfiguration<Layton1ToolFormsConfiguration>();
     }

@@ -37,6 +37,7 @@ partial class NdsForm
 
     private readonly HashSet<string> _errorPaths = [];
     private readonly HashSet<string> _changedPaths = [];
+    private readonly HashSet<string> _addedPaths = [];
 
     private Layton1NdsFile? _selectedFile;
 
@@ -71,6 +72,7 @@ partial class NdsForm
         eventBroker.Subscribe<Layton1NdsFileParsedMessage>(ProcessParsedFile);
         eventBroker.Subscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
         eventBroker.Subscribe<FileContentModifiedMessage>(ProcessFileContentModified);
+        eventBroker.Subscribe<FileAddedMessage>(ProcessFileAdded);
         eventBroker.Subscribe<SelectedNdsFileChangedMessage>(ProcessSelectedFileChanged);
 
         UpdateTreeView(ndsInfo);
@@ -88,6 +90,7 @@ partial class NdsForm
         _eventBroker.Unsubscribe<Layton1NdsFileParsedMessage>(ProcessParsedFile);
         _eventBroker.Unsubscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
         _eventBroker.Unsubscribe<FileContentModifiedMessage>(ProcessFileContentModified);
+        _eventBroker.Unsubscribe<FileAddedMessage>(ProcessFileAdded);
         _eventBroker.Unsubscribe<SelectedNdsFileChangedMessage>(ProcessSelectedFileChanged);
     }
 
@@ -279,6 +282,19 @@ partial class NdsForm
         RaiseNdsFileModified();
     }
 
+    private void ProcessFileAdded(FileAddedMessage message)
+    {
+        if (message.File.Rom != _ndsInfo.Rom)
+            return;
+
+        ToggleChangedFile(message.File, true);
+        UpdateTreeView(_ndsInfo);
+
+        UpdateSaveButtons();
+
+        RaiseNdsFileModified();
+    }
+
     private void ProcessSelectedFileChanged(SelectedNdsFileChangedMessage message)
     {
         if (_ndsInfo.Rom != message.Rom)
@@ -336,13 +352,13 @@ partial class NdsForm
         if (!TryParseFile(file, out var fileType, out var data))
             return false;
 
+        UpdateFileView(file, fileType);
         RaiseSelectedFileChanged(file, data);
-        UpdateFileView(file, fileType, data);
-        
+
         return true;
     }
 
-    private void UpdateFileView(Layton1NdsFile file, FileType fileType, object? data)
+    private void UpdateFileView(Layton1NdsFile file, FileType fileType)
     {
         switch (fileType)
         {
@@ -407,7 +423,7 @@ partial class NdsForm
 
     private void RaiseSelectedFileChanged(Layton1NdsFile file, object? content)
     {
-        _eventBroker.Raise(new SelectedFileChangedMessage(file, content));
+        _eventBroker.Raise(new SelectedFileChangedMessage(_contentPanel.Content, file, content));
     }
 
     private void UpdateTreeView(Layton1NdsInfo ndsInfo)
@@ -589,8 +605,8 @@ partial class NdsForm
         if (!TryParseFile(file, out var fileType, out var data))
             return;
 
+        UpdateFileView(file, fileType);
         RaiseFileContentModified(file, data);
-        UpdateFileView(file, fileType, data);
 
         SetInfoStatus(string.Empty);
     }

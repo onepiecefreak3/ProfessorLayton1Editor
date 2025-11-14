@@ -4,5 +4,5 @@ namespace Logic.Domain.Level5Management.Contract.Archives;
 
 public interface IPcmWriter
 {
-    void Write(PcmFile[] files, Stream output);
+    void Write(List<PcmFile> files, Stream output);
 }

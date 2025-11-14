@@ -8,7 +8,7 @@ public class Layton1NdsRom
     public required string GameCode { get; init; }
     public required Region Region { get; init; }
     public required GameVersion Version { get; init; }
-    public Layton1NdsFile[] Files { get; set; } = [];
+    public List<Layton1NdsFile> Files { get; set; } = [];
 
     public NdsHeader? DsHeader { get; init; }
     public DsiHeader? DsiHeader { get; init; }

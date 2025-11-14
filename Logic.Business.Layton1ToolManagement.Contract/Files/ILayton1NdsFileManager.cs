@@ -7,6 +7,7 @@ namespace Logic.Business.Layton1ToolManagement.Contract.Files;
 public interface ILayton1NdsFileManager
 {
     bool TryGet(Layton1NdsRom rom, string path, [NotNullWhen(true)] out Layton1NdsFile? file);
+    Layton1NdsFile Add(Layton1NdsRom rom, string path, object content, FileType type, CompressionType compression);
 
     FileType Detect(Layton1NdsFile file);
 
@@ -19,4 +20,5 @@ public interface ILayton1NdsFileManager
     object? Parse(Layton1NdsFile file, out FileType type);
     object? Parse(Layton1NdsFile file, FileType type);
     void Compose(Layton1NdsFile file, object content);
+    void Compose(Layton1NdsFile file, object content, FileType type);
 }

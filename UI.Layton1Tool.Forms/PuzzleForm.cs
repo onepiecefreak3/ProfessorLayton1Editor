@@ -3,9 +3,9 @@ using ImGui.Forms.Controls.Tree;
 using Logic.Business.Layton1ToolManagement.Contract;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums.Texts;
+using Logic.Business.Layton1ToolManagement.Contract.Files;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
-using UI.Layton1Tool.Forms.InternalContract;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Resources.Contract;
 
@@ -16,16 +16,24 @@ partial class PuzzleForm
     private readonly Layton1NdsInfo _ndsInfo;
 
     private readonly IEventBroker _eventBroker;
+    private readonly ILayton1NdsFileManager _fileManager;
     private readonly ILayton1PuzzleIdProvider _puzzleIdProvider;
+    private readonly IColorProvider _colors;
 
-    public PuzzleForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1PuzzleIdProvider puzzleIdProvider, ILocalizationProvider localizations,
-        IFormFactory formFactory, IImageProvider images)
+    private readonly HashSet<Layton1PuzzleId> _changedPuzzles = [];
+
+    private Layton1PuzzleId[]? _puzzleIds;
+
+    public PuzzleForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1PuzzleIdProvider puzzleIdProvider, ILayton1NdsFileManager fileManager,
+        ILocalizationProvider localizations, IFormFactory formFactory, IImageProvider images, IColorProvider colors)
     {
         InitializeComponent(ndsInfo, localizations, formFactory, images);
 
-        _eventBroker = eventBroker;
         _ndsInfo = ndsInfo;
+        _eventBroker = eventBroker;
+        _fileManager = fileManager;
         _puzzleIdProvider = puzzleIdProvider;
+        _colors = colors;
 
         _saveButton!.Clicked += _saveButton_Clicked;
         _saveAsButton!.Clicked += _saveAsButton_Clicked;
@@ -34,12 +42,19 @@ partial class PuzzleForm
 
         eventBroker.Subscribe<FileContentModifiedMessage>(ProcessFileContentModified);
         eventBroker.Subscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
+        eventBroker.Subscribe<PuzzleIdModifiedMessage>(ProcessPuzzleIdModified);
 
         InitializePuzzleList();
-
         UpdateSaveButtons();
 
         RaiseSelectedPuzzleLanguageChanged(_languageCombo.SelectedItem.Content);
+    }
+
+    public override void Destroy()
+    {
+        _eventBroker.Unsubscribe<FileContentModifiedMessage>(ProcessFileContentModified);
+        _eventBroker.Unsubscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
+        _eventBroker.Unsubscribe<PuzzleIdModifiedMessage>(ProcessPuzzleIdModified);
     }
 
     private async void _saveAsButton_Clicked(object? sender, EventArgs e)
@@ -65,7 +80,30 @@ partial class PuzzleForm
         if (message.Rom != _ndsInfo.Rom)
             return;
 
+        _changedPuzzles.Clear();
+
         UpdateSaveButtons();
+        UpdatePuzzleList();
+    }
+
+    private void ProcessPuzzleIdModified(PuzzleIdModifiedMessage message)
+    {
+        if (_puzzleIds is null)
+            return;
+
+        if (message.Rom != _ndsInfo.Rom)
+            return;
+
+        if (!_fileManager.TryGet(_ndsInfo.Rom, "sys/arm9.bin", out Layton1NdsFile? arm9File))
+            return;
+
+        _puzzleIdProvider.Set(_ndsInfo.Rom, _puzzleIds);
+
+        RaiseFileContentModified(arm9File, _fileManager.GetUncompressedStream(arm9File));
+
+        _changedPuzzles.Add(message.PuzzleId);
+
+        UpdatePuzzleList();
     }
 
     private async Task Save(bool saveAs)
@@ -74,6 +112,11 @@ partial class PuzzleForm
             return;
 
         await RaiseNdsFileSaveRequested(saveAs);
+    }
+
+    private void RaiseFileContentModified(Layton1NdsFile file, object? content)
+    {
+        _eventBroker.Raise(new FileContentModifiedMessage(this, file, content));
     }
 
     private async Task RaiseNdsFileSaveRequested(bool saveAs)
@@ -96,9 +139,9 @@ partial class PuzzleForm
         if (_puzzleTree.SelectedNode is null)
             return;
 
-        var puzzleData = _puzzleTree.SelectedNode.Data;
+        Layton1PuzzleId puzzleId = _puzzleTree.SelectedNode.Data;
 
-        RaiseSelectedPuzzleChanged(puzzleData);
+        RaiseSelectedPuzzleChanged(puzzleId);
 
         _contentPanel.Content = _puzzleInfo;
     }
@@ -130,9 +173,9 @@ partial class PuzzleForm
             });
         }
 
-        puzzleIds = _puzzleIdProvider.GetWifi(_ndsInfo.Rom);
+        Layton1PuzzleId[] wifiPuzzleIds = _puzzleIdProvider.GetWifi(_ndsInfo.Rom);
 
-        foreach (Layton1PuzzleId puzzleId in puzzleIds.OrderBy(p => p.Number))
+        foreach (Layton1PuzzleId puzzleId in wifiPuzzleIds.OrderBy(p => p.Number))
         {
             remainingIds.Remove(puzzleId.InternalId);
 
@@ -143,23 +186,63 @@ partial class PuzzleForm
             });
         }
 
+        List<Layton1PuzzleId> emptyPuzzleIds = [];
+
         foreach (int puzzleId in remainingIds)
         {
+            emptyPuzzleIds.Add(new Layton1PuzzleId
+            {
+                InternalId = puzzleId,
+                Number = 0,
+                IsWifi = false
+            });
+
             _puzzleTree.Nodes.Add(new TreeNode<Layton1PuzzleId>
             {
                 Text = "???",
-                Data = new Layton1PuzzleId
-                {
-                    InternalId = puzzleId,
-                    Number = 0,
-                    IsWifi = false
-                }
+                Data = emptyPuzzleIds[^1]
             });
+        }
+
+        _puzzleIds = puzzleIds.Concat(wifiPuzzleIds).Concat(emptyPuzzleIds).ToArray();
+    }
+
+    private void UpdatePuzzleList()
+    {
+        TreeNode<Layton1PuzzleId>[] nodes = _puzzleTree.Nodes.ToArray();
+
+        _puzzleTree.Nodes.Clear();
+
+        foreach (TreeNode<Layton1PuzzleId> node in nodes.Where(p => p.Data is { IsWifi: false, Number: > 0 }).OrderBy(n => n.Data.Number))
+        {
+            _puzzleTree.Nodes.Add(node);
+
+            node.Text = node.Data.Number <= 0 ? "???" : GetPuzzleNumberText(node.Data);
+            node.TextColor = _changedPuzzles.Contains(node.Data) ? _colors.Changed : _colors.Default;
+        }
+
+        foreach (TreeNode<Layton1PuzzleId> node in nodes.Where(p => p.Data is { IsWifi: true }).OrderBy(n => n.Data.Number))
+        {
+            _puzzleTree.Nodes.Add(node);
+
+            node.Text = node.Data.Number <= 0 ? "???" : GetPuzzleNumberText(node.Data);
+            node.TextColor = _changedPuzzles.Contains(node.Data) ? _colors.Changed : _colors.Default;
+        }
+
+        foreach (TreeNode<Layton1PuzzleId> node in nodes.Where(p => p.Data is { IsWifi: false, Number: <= 0 }).OrderBy(n => n.Data.Number))
+        {
+            _puzzleTree.Nodes.Add(node);
+
+            node.Text = node.Data.Number <= 0 ? "???" : GetPuzzleNumberText(node.Data);
+            node.TextColor = _changedPuzzles.Contains(node.Data) ? _colors.Changed : _colors.Default;
         }
     }
 
     private string GetPuzzleNumberText(Layton1PuzzleId puzzleId)
     {
+        if (puzzleId.Number <= 0)
+            return "???";
+
         if (puzzleId.IsWifi)
             return $"W{puzzleId.Number:00}";
 

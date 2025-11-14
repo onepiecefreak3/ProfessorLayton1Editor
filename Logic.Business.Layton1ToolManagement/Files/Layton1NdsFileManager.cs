@@ -1,11 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using CrossCutting.Core.Contract.EventBrokerage;
+﻿using CrossCutting.Core.Contract.EventBrokerage;
 using CrossCutting.Messages;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
 using Logic.Business.Layton1ToolManagement.Contract.Files;
 using Logic.Business.Layton1ToolManagement.InternalContract.Compression;
 using Logic.Business.Layton1ToolManagement.InternalContract.Files;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Logic.Business.Layton1ToolManagement.Files;
 
@@ -20,6 +20,24 @@ class Layton1NdsFileManager(
     {
         file = rom.Files.FirstOrDefault(f => f.Path == path);
         return file is not null;
+    }
+
+    public Layton1NdsFile Add(Layton1NdsRom rom, string path, object content, FileType type, CompressionType compression)
+    {
+        var file = new Layton1NdsContentFile
+        {
+            Rom = rom,
+            Path = path,
+            DataStream = new MemoryStream(),
+            CompressionType = compression,
+            IsChanged = true,
+            FileId = rom.Files.Count
+        };
+        Compose(file, content, type);
+
+        rom.Files.Add(file);
+
+        return file;
     }
 
     public FileType Detect(Layton1NdsFile file)
@@ -59,8 +77,6 @@ class Layton1NdsFileManager(
 
     public object? Parse(Layton1NdsFile file, out FileType type)
     {
-        Decompress(file);
-
         type = Detect(file);
 
         return Parse(file, type);
@@ -68,9 +84,8 @@ class Layton1NdsFileManager(
 
     public object? Parse(Layton1NdsFile file, FileType type)
     {
-        Decompress(file);
-
-        object? data = fileParser.Parse(GetUncompressedStream(file), type);
+        Stream fileStream = GetUncompressedStream(file);
+        object? data = fileParser.Parse(fileStream, type);
 
         if (data is null)
             return null;
@@ -82,10 +97,13 @@ class Layton1NdsFileManager(
 
     public void Compose(Layton1NdsFile file, object content)
     {
-        Decompress(file);
-
         FileType type = Detect(file);
 
+        Compose(file, content, type);
+    }
+
+    public void Compose(Layton1NdsFile file, object content, FileType type)
+    {
         Stream? output = fileComposer.Compose(content, type);
         if (output is null)
             return;

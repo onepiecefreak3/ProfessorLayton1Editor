@@ -31,6 +31,9 @@ partial class TextForm
 
     private void UpdateText(SelectedFileChangedMessage message)
     {
+        if (message.Target != this)
+            return;
+
         UpdateText(message.File, message.Content);
     }
 

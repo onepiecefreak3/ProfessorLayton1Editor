@@ -108,6 +108,9 @@ partial class FontForm : Component
 
     private void ProcessSelectedFontChanged(SelectedFileChangedMessage message)
     {
+        if (message.Target != this)
+            return;
+
         UpdateFont(message.File, message.Content);
     }
 

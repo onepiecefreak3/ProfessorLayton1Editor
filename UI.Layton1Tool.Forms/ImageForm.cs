@@ -71,6 +71,9 @@ partial class ImageForm
 
     private void UpdateImage(SelectedFileChangedMessage message)
     {
+        if (message.Target != this)
+            return;
+
         UpdateImage(message.File, message.Content);
     }
 

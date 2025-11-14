@@ -4,8 +4,9 @@ using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Controls.Text;
 using ImGui.Forms.Controls.Text.Editor;
 using ImGui.Forms.Models;
-using ImGui.Forms.Models.IO;
 using System.Numerics;
+using ImGuiNET;
+using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
 using Veldrid;
@@ -14,7 +15,13 @@ namespace UI.Layton1Tool.Forms;
 
 partial class PuzzleInfoForm : Component
 {
+    private int _layoutIndex;
+    private ArrowButton _prevButton;
+    private ArrowButton _nextButton;
+
     private StackLayout _mainLayout;
+    private StackLayout _infoLayout;
+    private Component _logicForm;
 
     private TextBox _internalIdBox;
     private TextBox _numberBox;
@@ -38,8 +45,11 @@ partial class PuzzleInfoForm : Component
         _mainLayout.Update(contentRect);
     }
 
-    private void InitializeComponent(ILocalizationProvider localizations)
+    private void InitializeComponent(Layton1NdsInfo ndsInfo, IFormFactory forms, ILocalizationProvider localizations)
     {
+        _prevButton = new ArrowButton(ImGuiDir.Left) { Enabled = false };
+        _nextButton = new ArrowButton(ImGuiDir.Right) { Enabled = false };
+
         _internalIdBox = new TextBox { IsReadOnly = true };
         _numberBox = new TextBox { IsReadOnly = true };
         _titleBox = new TextBox { IsReadOnly = true };
@@ -55,7 +65,9 @@ partial class PuzzleInfoForm : Component
         _picarat2Box = new TextBox { IsReadOnly = true };
         _picarat3Box = new TextBox { IsReadOnly = true };
 
-        _mainLayout = new StackLayout
+        _logicForm = forms.CreatePuzzleScriptForm(ndsInfo);
+
+        _infoLayout = new StackLayout
         {
             Alignment = Alignment.Vertical,
             Size = Size.Parent,
@@ -175,5 +187,41 @@ partial class PuzzleInfoForm : Component
                 }
             }
         };
+
+        _mainLayout = new StackLayout
+        {
+            Alignment = Alignment.Vertical,
+            Size = Size.Parent,
+            ItemSpacing = 5,
+            Items =
+            {
+                new StackLayout
+                {
+                    Alignment = Alignment.Horizontal,
+                    Size = Size.WidthAlign,
+                    ItemSpacing = 5,
+                    Items =
+                    {
+                        _prevButton,
+                        _nextButton
+                    }
+                },
+                _infoLayout
+            }
+        };
+    }
+
+    private void UpdateLayout()
+    {
+        switch (_layoutIndex)
+        {
+            case 0:
+                _mainLayout.Items[1] = _infoLayout;
+                break;
+
+            case 1:
+                _mainLayout.Items[1] = _logicForm;
+                break;
+        }
     }
 }

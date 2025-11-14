@@ -16,4 +16,5 @@ public interface IFormFactory
     Component CreateTextForm(Layton1NdsInfo ndsInfo);
     Component CreateFontForm(Layton1NdsInfo ndsInfo);
     Component CreatePuzzleInfo(Layton1NdsInfo ndsInfo);
+    Component CreatePuzzleScriptForm(Layton1NdsInfo ndsInfo);
 }

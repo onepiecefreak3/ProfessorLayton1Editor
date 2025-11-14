@@ -36,7 +36,7 @@ class Layton1FileComposer(IGdsScriptWriter scriptWriter, INftrWriter fontWriter,
                 return writer.BaseStream;
 
             case FileType.Pcm:
-                if (content is not PcmFile[] files)
+                if (content is not List<PcmFile> files)
                     return null;
 
                 var pcmStream = new MemoryStream();

@@ -58,4 +58,9 @@ class FormFactory(ICoCoKernel kernel) : IFormFactory
     {
         return kernel.Get<PuzzleInfoForm>(new ConstructorParameter("ndsInfo", ndsInfo));
     }
+
+    public Component CreatePuzzleScriptForm(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<PuzzleScriptForm>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
 }

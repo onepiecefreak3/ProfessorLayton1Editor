@@ -100,7 +100,7 @@ partial class SearchDialog
     {
         _progressBar.Value = 0;
         _progressBar.Minimum = 0;
-        _progressBar.Maximum = _ndsRom.Files.Length;
+        _progressBar.Maximum = _ndsRom.Files.Count;
 
         _matchTable.Rows.Clear();
 
@@ -141,7 +141,7 @@ partial class SearchDialog
                     break;
 
                 case FileType.Pcm:
-                    var pcmFiles = (PcmFile[]?)_fileManager.Parse(file, fileType);
+                    var pcmFiles = (System.Collections.Generic.List<PcmFile>?)_fileManager.Parse(file, fileType);
 
                     MatchPcm(file, pcmFiles, matchRegex);
 
@@ -149,7 +149,7 @@ partial class SearchDialog
             }
         }
 
-        _progressBar.Value = _ndsRom.Files.Length - 1;
+        _progressBar.Value = _ndsRom.Files.Count - 1;
         IncrementSearchProgress();
 
         _inputText.IsReadOnly = false;
@@ -162,7 +162,7 @@ partial class SearchDialog
         return !string.IsNullOrEmpty(data) && matchRegex.IsMatch(data);
     }
 
-    private void MatchPcm(Layton1NdsFile ndsFile, PcmFile[]? files, Regex matchRegex)
+    private void MatchPcm(Layton1NdsFile ndsFile, System.Collections.Generic.List<PcmFile>? files, Regex matchRegex)
     {
         if (files is null)
             return;
@@ -185,7 +185,7 @@ partial class SearchDialog
     {
         _progressBar.Value++;
 
-        float completion = (float)_progressBar.Value / _ndsRom.Files.Length * 100;
+        float completion = (float)_progressBar.Value / _ndsRom.Files.Count * 100;
         _progressBar.Text = _localizations.DialogSearchProgress(completion);
     }
 

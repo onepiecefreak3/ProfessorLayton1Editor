@@ -38,41 +38,41 @@ class Layton1NdsParser(INdsReader ndsReader, ILayton1GameCodeValidator codeValid
         return ndsRom;
     }
 
-    private Layton1NdsFile[] CreateFiles(NdsRom rom, Layton1NdsRom ndsRom)
+    private List<Layton1NdsFile> CreateFiles(NdsRom rom, Layton1NdsRom ndsRom)
     {
-        var result = new Layton1NdsFile[rom.Files.Length];
+        var result = new List<Layton1NdsFile>(rom.Files.Length);
 
-        for (var i = 0; i < rom.Files.Length; i++)
+        foreach (NdsFile file in rom.Files)
         {
-            CompressionType compressionType = compressionDetector.Detect(rom, rom.Files[i]);
+            CompressionType compressionType = compressionDetector.Detect(rom, file);
 
-            result[i] = rom.Files[i] switch
+            result.Add(file switch
             {
                 NdsOverlayFile overlay => new Layton1NdsOverlayFile
                 {
                     Rom = ndsRom,
                     CompressionType = compressionType,
-                    DataStream = rom.Files[i].Stream,
-                    Path = rom.Files[i].Path,
+                    DataStream = file.Stream,
+                    Path = file.Path,
                     Entry = overlay.Entry
                 },
                 NdsContentFile content => new Layton1NdsContentFile
                 {
                     Rom = ndsRom,
                     CompressionType = compressionType,
-                    DataStream = rom.Files[i].Stream,
-                    Path = rom.Files[i].Path,
+                    DataStream = file.Stream,
+                    Path = file.Path,
                     FileId = content.FileId
                 },
                 not null => new Layton1NdsFile
                 {
                     Rom = ndsRom,
                     CompressionType = compressionType,
-                    DataStream = rom.Files[i].Stream,
-                    Path = rom.Files[i].Path
+                    DataStream = file.Stream,
+                    Path = file.Path
                 },
                 _ => throw new InvalidOperationException("Unsupported type of file.")
-            };
+            });
         }
 
         return result;

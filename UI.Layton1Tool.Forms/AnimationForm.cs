@@ -54,6 +54,9 @@ partial class AnimationForm
 
     private void UpdateAnimations(SelectedFileChangedMessage message)
     {
+        if (message.Target != this)
+            return;
+
         UpdateAnimations(message.File, message.Content);
     }
 

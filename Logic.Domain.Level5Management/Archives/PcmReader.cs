@@ -7,7 +7,7 @@ namespace Logic.Domain.Level5Management.Archives;
 
 class PcmReader : IPcmReader
 {
-    public PcmFile[] Read(Stream input)
+    public List<PcmFile> Read(Stream input)
     {
         using var reader = new BinaryReaderX(input, true);
 
@@ -18,7 +18,7 @@ class PcmReader : IPcmReader
         {
             Name = e.fileName,
             Data = e.fileData
-        }).ToArray();
+        }).ToList();
     }
 
     private PcmHeader ReadHeader(BinaryReaderX reader)

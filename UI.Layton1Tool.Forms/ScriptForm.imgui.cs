@@ -1,15 +1,15 @@
-﻿using System.Numerics;
-using ImGui.Forms.Controls;
+﻿using ImGui.Forms.Controls;
 using ImGui.Forms.Controls.Base;
 using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Controls.Text.Editor;
-using ImGui.Forms.Models;
 using ImGuiNET;
+using System.Numerics;
+using ImGui.Forms.Models;
 using Veldrid;
 
 namespace UI.Layton1Tool.Forms;
 
-partial class GdsForm : Component
+internal abstract partial class ScriptForm : Component
 {
     private StackLayout _editorLayout;
     private TableLayout _infoLayout;

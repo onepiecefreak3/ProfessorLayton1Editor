@@ -107,7 +107,7 @@ partial class ValidationDialog
     {
         _progressBar.Value = 0;
         _progressBar.Minimum = 0;
-        _progressBar.Maximum = _ndsRom.Files.Length;
+        _progressBar.Maximum = _ndsRom.Files.Count;
 
         foreach (Layton1NdsFile file in _ndsRom.Files)
         {
@@ -128,7 +128,7 @@ partial class ValidationDialog
                 _warningTable.Rows.Add(new DataTableRow<Layton1NdsFile>(file));
         }
 
-        _progressBar.Value = _ndsRom.Files.Length - 1;
+        _progressBar.Value = _ndsRom.Files.Count - 1;
         IncrementValidationProgress();
 
         _isValidating = false;
@@ -140,7 +140,7 @@ partial class ValidationDialog
     {
         _progressBar.Value++;
 
-        float completion = (float)_progressBar.Value / _ndsRom.Files.Length * 100;
+        float completion = (float)_progressBar.Value / _ndsRom.Files.Count * 100;
         _progressBar.Text = _localizations.DialogValidationProgress(completion);
     }
 

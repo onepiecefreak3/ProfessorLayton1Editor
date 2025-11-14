@@ -9,5 +9,5 @@ public interface ILayton1PuzzleIdProvider
     Layton1PuzzleId[] Get(Layton1NdsRom ndsRom);
     Layton1PuzzleId[] GetWifi(Layton1NdsRom ndsRom);
 
-    void Set(Layton1NdsRom ndsRom, Layton1PuzzleId puzzleId);
+    void Set(Layton1NdsRom ndsRom, Layton1PuzzleId[] puzzleIds);
 }

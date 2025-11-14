@@ -7,7 +7,7 @@ namespace Logic.Domain.Level5Management.Archives;
 
 internal class PcmWriter : IPcmWriter
 {
-    public void Write(PcmFile[] files, Stream output)
+    public void Write(List<PcmFile> files, Stream output)
     {
         using var writer = new BinaryWriterX(output, true);
 
@@ -20,7 +20,7 @@ internal class PcmWriter : IPcmWriter
         {
             headerSize = 0x10,
             sectionSize = (int)output.Length,
-            fileCount = files.Length,
+            fileCount = files.Count,
             magic = "LPCK"
         };
 
@@ -28,11 +28,11 @@ internal class PcmWriter : IPcmWriter
         WriteHeader(header, writer);
     }
 
-    private PcmEntry[] CreateEntries(PcmFile[] files)
+    private PcmEntry[] CreateEntries(List<PcmFile> files)
     {
-        var result = new PcmEntry[files.Length];
+        var result = new PcmEntry[files.Count];
 
-        for (var i = 0; i < files.Length; i++)
+        for (var i = 0; i < files.Count; i++)
             result[i] = CreateEntry(files[i]);
 
         return result;
@@ -59,7 +59,7 @@ internal class PcmWriter : IPcmWriter
 
     private void WriteEntries(PcmEntry[] entries, BinaryWriterX writer)
     {
-        foreach (PcmEntry entry in entries)
+        foreach (PcmEntry entry in entries.OrderBy(e => e.fileName))
             WriteEntry(entry, writer);
     }
 
