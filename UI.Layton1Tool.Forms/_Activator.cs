@@ -4,7 +4,9 @@ using CrossCutting.Core.Contract.DependencyInjection;
 using CrossCutting.Core.Contract.DependencyInjection.DataClasses;
 using CrossCutting.Core.Contract.EventBrokerage;
 using UI.Layton1Tool.Forms.Contract;
+using UI.Layton1Tool.Forms.Files;
 using UI.Layton1Tool.Forms.InternalContract;
+using UI.Layton1Tool.Forms.Puzzles;
 
 namespace UI.Layton1Tool.Forms;
 

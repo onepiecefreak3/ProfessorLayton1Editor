@@ -4,4 +4,4 @@ using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 
 namespace UI.Layton1Tool.Messages;
 
-public record PuzzleScriptUpdatedMessage(Component Target, Layton1NdsRom Rom, GdsScriptFile Script);
+public record PuzzleScriptUpdatedMessage(Component Target, Layton1NdsRom Rom, Layton1PuzzleId PuzzleId, GdsScriptFile Script);

@@ -4,6 +4,8 @@ using ImGui.Forms;
 using ImGui.Forms.Controls.Base;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
+using UI.Layton1Tool.Forms.Files;
+using UI.Layton1Tool.Forms.Puzzles;
 
 namespace UI.Layton1Tool.Forms;
 

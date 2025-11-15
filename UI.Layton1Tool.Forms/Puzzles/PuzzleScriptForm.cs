@@ -1,4 +1,5 @@
 ﻿using CrossCutting.Core.Contract.EventBrokerage;
+using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Scripts;
 using Logic.Domain.CodeAnalysisManagement.Contract.Level5;
 using Logic.Domain.Level5Management.Contract.DataClasses.Script.Gds;
@@ -6,13 +7,15 @@ using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Messages;
 
-namespace UI.Layton1Tool.Forms;
+namespace UI.Layton1Tool.Forms.Puzzles;
 
 internal class PuzzleScriptForm : ScriptForm
 {
     private readonly Layton1NdsInfo _ndsInfo;
 
     private readonly IEventBroker _eventBroker;
+
+    private Layton1PuzzleId? _puzzleId;
 
     public PuzzleScriptForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1ScriptInstructionManager instructionManager, ILayton1ScriptCodeUnitConverter codeUnitConverter,
         ILayton1ScriptFileConverter scriptFileConverter, ILevel5ScriptParser scriptParser, ILevel5ScriptComposer scriptComposer,
@@ -33,10 +36,10 @@ internal class PuzzleScriptForm : ScriptForm
 
     protected override void OnScriptChanged()
     {
-        if (Script is null)
+        if (Script is null || _puzzleId is null)
             return;
 
-        RaisePuzzleScriptModified(Script);
+        RaisePuzzleScriptModified(_puzzleId, Script);
     }
 
     private void ProcessPuzzleScriptUpdated(PuzzleScriptUpdatedMessage message)
@@ -47,11 +50,13 @@ internal class PuzzleScriptForm : ScriptForm
         if (message.Rom != _ndsInfo.Rom)
             return;
 
+        _puzzleId = message.PuzzleId;
+
         UpdateScript(message.Script);
     }
 
-    private void RaisePuzzleScriptModified(GdsScriptFile script)
+    private void RaisePuzzleScriptModified(Layton1PuzzleId puzzleId, GdsScriptFile script)
     {
-        _eventBroker.Raise(new PuzzleScriptModifiedMessage(this, script));
+        _eventBroker.Raise(new PuzzleScriptModifiedMessage(this, _ndsInfo.Rom, puzzleId, script));
     }
 }

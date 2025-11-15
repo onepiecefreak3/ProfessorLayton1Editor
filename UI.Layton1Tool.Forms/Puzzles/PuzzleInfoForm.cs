@@ -552,9 +552,9 @@ partial class PuzzleInfoForm
         _eventBroker.Raise(new PuzzleIdModifiedMessage(_ndsInfo.Rom, puzzleId));
     }
 
-    private void RaisePuzzleScriptUpdated(GdsScriptFile script)
+    private void RaisePuzzleScriptUpdated(Layton1PuzzleId puzzleId, GdsScriptFile script)
     {
-        _eventBroker.Raise(new PuzzleScriptUpdatedMessage(_logicForm, _ndsInfo.Rom, script));
+        _eventBroker.Raise(new PuzzleScriptUpdatedMessage(_logicForm, _ndsInfo.Rom, puzzleId, script));
     }
 
     private void ProcessPuzzleScriptModified(PuzzleScriptModifiedMessage message)
@@ -921,7 +921,7 @@ partial class PuzzleInfoForm
             script = logicScript;
         }
 
-        RaisePuzzleScriptUpdated(script);
+        RaisePuzzleScriptUpdated(puzzleId, script);
     }
 
     private void UpdateButtons()
