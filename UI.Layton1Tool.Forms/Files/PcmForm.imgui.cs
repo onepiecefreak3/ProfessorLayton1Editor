@@ -7,7 +7,7 @@ using ImGui.Forms.Models;
 using Logic.Domain.Level5Management.Contract.DataClasses.Archives;
 using Veldrid;
 
-namespace UI.Layton1Tool.Forms;
+namespace UI.Layton1Tool.Forms.Files;
 
 partial class PcmForm : Component
 {

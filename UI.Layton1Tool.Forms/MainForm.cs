@@ -12,6 +12,7 @@ using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Forms.DataClasses;
 using UI.Layton1Tool.Forms.Enums;
+using UI.Layton1Tool.Forms.InternalContract;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.Enums;
 using UI.Layton1Tool.Resources.Contract;
@@ -28,13 +29,14 @@ partial class MainForm
     private readonly ILayton1NdsParser _ndsParser;
     private readonly ILayton1NdsComposer _ndsComposer;
     private readonly IFormFactory _formFactory;
+    private readonly IFontProvider _fontProvider;
     private readonly IDialogFactory _dialogFactory;
 
     private readonly Dictionary<string, Layton1NdsTabPage> _loadedFiles = [];
     private readonly Dictionary<TabPage, Layton1NdsTabPage> _loadedTabs = [];
 
     public MainForm(IEventBroker eventBroker, ILocalizationProvider localizations, IColorProvider colors, ISettingsProvider settings,
-        ILayton1NdsParser ndsParser, ILayton1NdsComposer ndsComposer, IFormFactory formFactory, IDialogFactory dialogFactory,
+        ILayton1NdsParser ndsParser, ILayton1NdsComposer ndsComposer, IFormFactory formFactory, IFontProvider fontProvider, IDialogFactory dialogFactory,
         IImageProvider images)
     {
         InitializeComponent(localizations, images);
@@ -46,6 +48,7 @@ partial class MainForm
         _ndsParser = ndsParser;
         _ndsComposer = ndsComposer;
         _formFactory = formFactory;
+        _fontProvider = fontProvider;
         _dialogFactory = dialogFactory;
 
         _fileOpenButton!.Clicked += _fileOpenButton_Clicked;
@@ -189,6 +192,8 @@ partial class MainForm
     {
         if (!_loadedTabs.TryGetValue(e.Page, out Layton1NdsTabPage? loadedPage))
             return;
+
+        _fontProvider.Free(loadedPage.Info.Rom);
 
         _loadedTabs.Remove(loadedPage.Page);
         _loadedFiles.Remove(loadedPage.Info.Path);

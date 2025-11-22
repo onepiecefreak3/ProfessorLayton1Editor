@@ -1,10 +1,12 @@
-﻿namespace Logic.Domain.NintendoManagement.Contract.DataClasses.Font;
+﻿using Logic.Domain.NintendoManagement.Contract.Enums.Font;
+
+namespace Logic.Domain.NintendoManagement.Contract.DataClasses.Font;
 
 public class NftrMetaData
 {
     public ushort Version { get; set; }
     public byte Type { get; set; }
-    public byte Encoding { get; set; }
+    public CharEncoding Encoding { get; set; }
     public CwdhEntry DefaultWidths { get; set; }
     public byte LineFeed { get; set; }
     public byte Baseline { get; set; }

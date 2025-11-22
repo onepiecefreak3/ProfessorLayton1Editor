@@ -20,7 +20,7 @@ class Layton1FileParser(
     INftrReader fontReader,
     IBannerReader bannerReader) : ILayton1FileParser
 {
-    public object? Parse(Stream input, FileType type)
+    public object? Parse(Stream input, FileType type, GameVersion version)
     {
         input.Position = 0;
 
@@ -33,7 +33,15 @@ class Layton1FileParser(
                 return scriptParser.Parse(input);
 
             case FileType.Text:
-                return new StreamReader(input, Encoding.GetEncoding("Shift-JIS")).ReadToEnd();
+                switch (version)
+                {
+                    case GameVersion.Korea:
+                        string text = new StreamReader(input, Encoding.BigEndianUnicode).ReadToEnd();
+                        return text.TrimEnd('\0');
+
+                    default:
+                        return new StreamReader(input, Encoding.GetEncoding("Shift-JIS")).ReadToEnd();
+                }
 
             case FileType.Pcm:
                 return pcmReader.Read(input);

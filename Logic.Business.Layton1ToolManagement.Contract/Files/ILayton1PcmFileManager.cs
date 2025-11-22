@@ -7,10 +7,10 @@ namespace Logic.Business.Layton1ToolManagement.Contract.Files;
 public interface ILayton1PcmFileManager
 {
     bool TryGet(List<PcmFile> files, string name, [NotNullWhen(true)] out PcmFile? file);
-    PcmFile Add(List<PcmFile> files, string name, object content, FileType type);
+    PcmFile Add(List<PcmFile> files, string name, object content, FileType type, GameVersion version);
 
     FileType Detect(PcmFile file);
 
-    object? Parse(PcmFile file, FileType type);
-    void Compose(PcmFile file, object content, FileType type);
+    object? Parse(PcmFile file, FileType type, GameVersion version);
+    void Compose(PcmFile file, object content, FileType type, GameVersion version);
 }

@@ -7,7 +7,7 @@ using Logic.Domain.Level5Management.Contract.DataClasses.Archives;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Messages;
 
-namespace UI.Layton1Tool.Forms;
+namespace UI.Layton1Tool.Forms.Files;
 
 partial class PcmForm
 {
@@ -50,7 +50,7 @@ partial class PcmForm
         if (_selectedFile is null || _selectedSubFile is null || _subFiles is null)
             return;
 
-        _pcmFileManager.Compose(_selectedSubFile, e, FileType.Text);
+        _pcmFileManager.Compose(_selectedSubFile, e, FileType.Text, _ndsInfo.Rom.Version);
         _fileManager.Compose(_selectedFile, _subFiles, FileType.Pcm);
 
         RaiseFileContentModified(_selectedFile);
@@ -98,6 +98,8 @@ partial class PcmForm
         if (file.Rom != _ndsInfo.Rom)
             return;
 
+        string? selectedFileName = _selectedSubFile?.Name;
+
         _selectedFile = file;
         _subFiles = files;
         _selectedSubFile = null;
@@ -105,7 +107,12 @@ partial class PcmForm
         UpdateFileTree(files);
 
         if (files.Count > 0)
-            UpdateSelectedFile(files[0]);
+        {
+            PcmFile? pcmFile = files.FirstOrDefault(p => p.Name == selectedFileName);
+
+            if (pcmFile is not null)
+                UpdateSelectedFile(pcmFile);
+        }
     }
 
     private void UpdateSelectedFile(SelectedPcmFileChangedMessage message)
@@ -145,7 +152,11 @@ partial class PcmForm
         switch (extension)
         {
             case ".txt":
-                UpdateTxt(file);
+                object? content = _pcmFileManager.Parse(file, FileType.Text, _ndsInfo.Rom.Version);
+                if (content is not string text)
+                    goto default;
+
+                UpdateText(text);
                 break;
 
             default:
@@ -154,12 +165,9 @@ partial class PcmForm
         }
     }
 
-    private void UpdateTxt(PcmFile file)
+    private void UpdateText(string text)
     {
-        file.Data.Position = 0;
-
-        var streamReader = new StreamReader(file.Data, leaveOpen: true);
-        _textEditor.SetText(streamReader.ReadToEnd());
+        _textEditor.SetText(text);
         _textEditor.IsReadOnly = false;
 
         _contentPanel.Content = _textEditor;

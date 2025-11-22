@@ -4,5 +4,5 @@ namespace Logic.Business.Layton1ToolManagement.InternalContract.Files;
 
 interface ILayton1FileParser
 {
-    object? Parse(Stream input, FileType type);
+    object? Parse(Stream input, FileType type, GameVersion version);
 }

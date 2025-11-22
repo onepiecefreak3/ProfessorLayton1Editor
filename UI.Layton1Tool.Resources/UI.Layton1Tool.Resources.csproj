@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="resources\fonts\notoko.ttf" />
     <None Remove="resources\fonts\roboto.ttf" />
     <None Remove="resources\images\close.png" />
     <None Remove="resources\images\font_edit.png" />
@@ -28,6 +29,9 @@
   <ItemGroup>
     <EmbeddedResource Include="resources\fonts\notojp.ttf">
       <LogicalName>notojp.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\fonts\notoko.ttf">
+      <LogicalName>notoko.ttf</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="resources\fonts\roboto.ttf">
       <LogicalName>roboto.ttf</LogicalName>

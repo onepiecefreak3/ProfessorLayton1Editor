@@ -85,7 +85,7 @@ class Layton1NdsFileManager(
     public object? Parse(Layton1NdsFile file, FileType type)
     {
         Stream fileStream = GetUncompressedStream(file);
-        object? data = fileParser.Parse(fileStream, type);
+        object? data = fileParser.Parse(fileStream, type, file.Rom.Version);
 
         if (data is null)
             return null;
@@ -104,7 +104,7 @@ class Layton1NdsFileManager(
 
     public void Compose(Layton1NdsFile file, object content, FileType type)
     {
-        Stream? output = fileComposer.Compose(content, type);
+        Stream? output = fileComposer.Compose(content, type, file.Rom.Version);
         if (output is null)
             return;
 

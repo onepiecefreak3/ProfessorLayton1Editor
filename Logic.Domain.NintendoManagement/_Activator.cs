@@ -1,4 +1,5 @@
-﻿using CrossCutting.Core.Contract.Bootstrapping;
+﻿using System.Text;
+using CrossCutting.Core.Contract.Bootstrapping;
 using CrossCutting.Core.Contract.Configuration;
 using CrossCutting.Core.Contract.DependencyInjection;
 using CrossCutting.Core.Contract.DependencyInjection.DataClasses;
@@ -34,6 +35,8 @@ public class NintendoManagementActivator : IComponentActivator
 
     public void Register(ICoCoKernel kernel)
     {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
         kernel.Register<INdsReader, NdsReader>(ActivationScope.Unique);
         kernel.Register<INdsWriter, NdsWriter>(ActivationScope.Unique);
         kernel.Register<INdsFntReader, NdsFntReader>(ActivationScope.Unique);

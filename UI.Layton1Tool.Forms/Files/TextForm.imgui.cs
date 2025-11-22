@@ -3,7 +3,7 @@ using ImGui.Forms.Controls.Text.Editor;
 using ImGui.Forms.Models;
 using Veldrid;
 
-namespace UI.Layton1Tool.Forms;
+namespace UI.Layton1Tool.Forms.Files;
 
 partial class TextForm : Component
 {

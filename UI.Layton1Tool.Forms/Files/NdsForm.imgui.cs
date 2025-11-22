@@ -14,7 +14,7 @@ using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
 using Veldrid;
 
-namespace UI.Layton1Tool.Forms;
+namespace UI.Layton1Tool.Forms.Files;
 
 partial class NdsForm : Component
 {

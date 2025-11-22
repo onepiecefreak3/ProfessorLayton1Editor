@@ -8,14 +8,16 @@ class FontFactory : IFontFactory
 {
     public void RegisterFonts()
     {
-        ImGui.Forms.Factories.FontFactory.RegisterFromResource("NotoJp", "notojp.ttf", FontGlyphRange.ChineseJapanese | FontGlyphRange.Korean);
+        ImGui.Forms.Factories.FontFactory.RegisterFromResource("NotoJp", "notojp.ttf", FontGlyphRange.ChineseJapanese);
+        ImGui.Forms.Factories.FontFactory.RegisterFromResource("NotoKo", "notoko.ttf", FontGlyphRange.Korean);
         ImGui.Forms.Factories.FontFactory.RegisterFromResource("Roboto", "roboto.ttf", FontGlyphRange.Latin);
     }
 
     public FontResource GetApplicationFont(int size)
     {
-        FontResource notoFont = ImGui.Forms.Factories.FontFactory.Get("NotoJp", size);
-        return ImGui.Forms.Factories.FontFactory.Get("Roboto", size, notoFont);
+        FontResource notoJpFont = ImGui.Forms.Factories.FontFactory.Get("NotoJp", size);
+        FontResource notoKoFont = ImGui.Forms.Factories.FontFactory.Get("NotoKo", size, notoJpFont);
+        return ImGui.Forms.Factories.FontFactory.Get("Roboto", size, notoKoFont);
     }
 
     public FontResource GetHexadecimalFont(int size)

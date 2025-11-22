@@ -57,6 +57,6 @@ internal class PuzzleScriptForm : ScriptForm
 
     private void RaisePuzzleScriptModified(Layton1PuzzleId puzzleId, GdsScriptFile script)
     {
-        _eventBroker.Raise(new PuzzleScriptModifiedMessage(this, _ndsInfo.Rom, puzzleId, script));
+        _eventBroker.Raise(new SelectedPuzzleScriptModifiedMessage(this, _ndsInfo.Rom, puzzleId, script));
     }
 }

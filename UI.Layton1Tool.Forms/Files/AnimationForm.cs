@@ -8,7 +8,7 @@ using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Resources.Contract;
 
-namespace UI.Layton1Tool.Forms;
+namespace UI.Layton1Tool.Forms.Files;
 
 partial class AnimationForm
 {

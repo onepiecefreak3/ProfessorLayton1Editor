@@ -10,7 +10,7 @@ using UI.Layton1Tool.Resources.Contract;
 using Rectangle = Veldrid.Rectangle;
 using Size = ImGui.Forms.Models.Size;
 
-namespace UI.Layton1Tool.Forms;
+namespace UI.Layton1Tool.Forms.Files;
 
 partial class AnimationForm : Component
 {

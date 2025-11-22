@@ -7,6 +7,8 @@ using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Files;
 using UI.Layton1Tool.Forms.InternalContract;
 using UI.Layton1Tool.Forms.Puzzles;
+using UI.Layton1Tool.Forms.Text;
+using UI.Layton1Tool.Forms.Views;
 
 namespace UI.Layton1Tool.Forms;
 
@@ -34,18 +36,33 @@ public class Layton1ToolFormsActivator : IComponentActivator
         kernel.Register<IPositionManager, PositionManager>(ActivationScope.Unique);
         kernel.Register<IUnicodeCharacterParser, UnicodeCharacterParser>(ActivationScope.Unique);
         kernel.Register<IFileHistory, FileHistory>();
+        kernel.Register<IFontProvider, FontProvider>(ActivationScope.Unique);
 
         kernel.RegisterToSelf<MainForm>();
         kernel.RegisterToSelf<NdsForm>();
-        kernel.RegisterToSelf<PuzzleForm>();
         kernel.RegisterToSelf<ImageForm>();
         kernel.RegisterToSelf<GdsForm>();
         kernel.RegisterToSelf<PcmForm>();
         kernel.RegisterToSelf<AnimationForm>();
         kernel.RegisterToSelf<TextForm>();
         kernel.RegisterToSelf<FontForm>();
-        kernel.RegisterToSelf<PuzzleInfoForm>();
+
+        kernel.RegisterToSelf<PuzzleForm>();
+        kernel.RegisterToSelf<PuzzleTitleForm>();
+        kernel.RegisterToSelf<PuzzleTextForm>();
+        kernel.RegisterToSelf<PuzzleHintForm>();
         kernel.RegisterToSelf<PuzzleScriptForm>();
+
+        kernel.RegisterToSelf<PuzzleTitleView>();
+        kernel.RegisterToSelf<PuzzleIndexView>();
+
+        kernel.RegisterToSelf<PuzzleDescriptionView>();
+        kernel.RegisterToSelf<PuzzleCorrectView>();
+        kernel.RegisterToSelf<PuzzleIncorrectView>();
+
+        kernel.RegisterToSelf<PuzzleHint1View>();
+        kernel.RegisterToSelf<PuzzleHint2View>();
+        kernel.RegisterToSelf<PuzzleHint3View>();
 
         kernel.RegisterConfiguration<Layton1ToolFormsConfiguration>();
     }

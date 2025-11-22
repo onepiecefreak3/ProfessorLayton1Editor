@@ -174,7 +174,7 @@ partial class SearchDialog
             if (fileType is not FileType.Text)
                 continue;
 
-            var text = (string?)_pcmManager.Parse(file, fileType);
+            var text = (string?)_pcmManager.Parse(file, fileType, _ndsRom.Version);
 
             if (IsMatchText(text, matchRegex))
                 _matchTable.Rows.Add(new DataTableRow<SearchResult>(new SearchResult { File = ndsFile, SubFile = file }));

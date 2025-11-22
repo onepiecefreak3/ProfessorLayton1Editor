@@ -14,7 +14,7 @@ class Layton1PcmFileManager(ILayton1FileTypeDetector detector, ILayton1FileParse
         return file is not null;
     }
 
-    public PcmFile Add(List<PcmFile> files, string name, object content, FileType type)
+    public PcmFile Add(List<PcmFile> files, string name, object content, FileType type, GameVersion version)
     {
         var file = new PcmFile
         {
@@ -23,7 +23,7 @@ class Layton1PcmFileManager(ILayton1FileTypeDetector detector, ILayton1FileParse
         };
         files.Add(file);
 
-        Compose(file, content, type);
+        Compose(file, content, type, version);
 
         return file;
     }
@@ -33,14 +33,14 @@ class Layton1PcmFileManager(ILayton1FileTypeDetector detector, ILayton1FileParse
         return detector.Detect(file);
     }
 
-    public object? Parse(PcmFile file, FileType type)
+    public object? Parse(PcmFile file, FileType type, GameVersion version)
     {
-        return fileParser.Parse(file.Data, type);
+        return fileParser.Parse(file.Data, type, version);
     }
 
-    public void Compose(PcmFile file, object content, FileType type)
+    public void Compose(PcmFile file, object content, FileType type, GameVersion version)
     {
-        Stream? fileData = fileComposer.Compose(content, type);
+        Stream? fileData = fileComposer.Compose(content, type, version);
 
         if (fileData is null)
             return;

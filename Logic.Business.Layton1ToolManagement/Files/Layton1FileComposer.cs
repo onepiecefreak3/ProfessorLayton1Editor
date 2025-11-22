@@ -12,7 +12,7 @@ namespace Logic.Business.Layton1ToolManagement.Files;
 
 class Layton1FileComposer(IGdsScriptWriter scriptWriter, INftrWriter fontWriter, IPcmWriter pcmWriter) : ILayton1FileComposer
 {
-    public Stream? Compose(object content, FileType type)
+    public Stream? Compose(object content, FileType type, GameVersion version)
     {
         switch (type)
         {
@@ -29,7 +29,19 @@ class Layton1FileComposer(IGdsScriptWriter scriptWriter, INftrWriter fontWriter,
                 if (content is not string text)
                     return null;
 
-                var writer = new StreamWriter(new MemoryStream(), Encoding.GetEncoding("Shift-JIS"));
+                StreamWriter writer;
+                switch (version)
+                {
+                    case GameVersion.Korea:
+                        writer = new StreamWriter(new MemoryStream(), Encoding.BigEndianUnicode);
+                        text += '\0';
+                        break;
+
+                    default:
+                        writer = new StreamWriter(new MemoryStream(), Encoding.GetEncoding("Shift-JIS"));
+                        break;
+                }
+
                 writer.Write(text);
                 writer.Flush();
 

@@ -1,4 +1,5 @@
-﻿using CrossCutting.Core.Contract.EventBrokerage;
+﻿using System.Text.RegularExpressions;
+using CrossCutting.Core.Contract.EventBrokerage;
 using CrossCutting.Messages;
 using ImGui.Forms.Controls.Tree;
 using ImGui.Forms.Localization;
@@ -10,7 +11,6 @@ using Logic.Business.Layton1ToolManagement.Contract.Enums;
 using Logic.Business.Layton1ToolManagement.Contract.Files;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
 using Logic.Domain.Level5Management.Contract.Enums;
-using System.Text.RegularExpressions;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Forms.DataClasses;
@@ -19,7 +19,7 @@ using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.Enums;
 using UI.Layton1Tool.Resources.Contract;
 
-namespace UI.Layton1Tool.Forms;
+namespace UI.Layton1Tool.Forms.Files;
 
 partial class NdsForm
 {

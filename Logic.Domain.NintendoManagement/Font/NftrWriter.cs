@@ -3,17 +3,23 @@ using Konnect.Contract.DataClasses.Plugin.File.Font;
 using Konnect.Plugin.File.Image;
 using Logic.Domain.NintendoManagement.Contract.DataClasses;
 using Logic.Domain.NintendoManagement.Contract.DataClasses.Font;
+using Logic.Domain.NintendoManagement.Contract.Enums.Font;
 using Logic.Domain.NintendoManagement.Contract.Font;
 using Logic.Domain.NintendoManagement.DataClasses;
 using Logic.Domain.NintendoManagement.DataClasses.Font;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Buffers.Binary;
+using System.Text;
 
 namespace Logic.Domain.NintendoManagement.Font;
 
 class NftrWriter : INftrWriter
 {
+    private readonly Encoding _sjis = Encoding.GetEncoding("Shift-JIS");
+    private readonly Encoding _win1252 = Encoding.GetEncoding("Windows-1252");
+
     private const int HeaderSize_ = 0x10;
     private const int InfoOffset_ = HeaderSize_;
     private const int InfoSize_ = 0x1C;
@@ -26,7 +32,7 @@ class NftrWriter : INftrWriter
 
     public void Write(Stream output, NftrData fontData)
     {
-        CharacterInfo[] characters = fontData.Characters.OrderBy(x => x.CodePoint).ToArray();
+        CharacterInfo[] characters = fontData.Characters.OrderBy(x => GetEncodedChar(x.CodePoint, fontData.MetaData.Encoding)).ToArray();
 
         // Create header
         NftrHeader header = CreateHeader(fontData.MetaData);
@@ -38,7 +44,7 @@ class NftrWriter : INftrWriter
         NftrCglpSection imageSection = CreateImageSection(characters, fontData.MetaData, fontData.ImageData);
 
         // Create mapping sections
-        CmapSection[] mappingSections = CreateMappingSections(characters);
+        CmapSection[] mappingSections = CreateMappingSections(characters, infoSection.encoding);
 
         // Create widths section
         CwdhSection widthSection = CreateWidthSection(characters);
@@ -126,21 +132,21 @@ class NftrWriter : INftrWriter
         };
     }
 
-    private CmapSection[] CreateMappingSections(CharacterInfo[] characters)
+    private CmapSection[] CreateMappingSections(CharacterInfo[] characters, CharEncoding charEncoding)
     {
         var directMappingSections = new List<CmapSection>();
         var indirectMappingSections = new List<CmapSection>();
         var scanEntries = new List<CmapScanTableEntry>();
 
         var previousEnd = 0;
-        foreach (Match match in _rangeOptimalParser.Parse(characters))
+        foreach (Match match in _rangeOptimalParser.Parse(characters, charEncoding))
         {
             // Add raw entries
             for (int i = previousEnd; i < match.Start; i++)
             {
                 scanEntries.Add(new CmapScanTableEntry
                 {
-                    code = characters[i].CodePoint,
+                    code = GetEncodedChar(characters[i].CodePoint, charEncoding),
                     index = (ushort)i
                 });
             }
@@ -148,8 +154,8 @@ class NftrWriter : INftrWriter
             // Add code range section
             var section = new CmapSection
             {
-                codeBegin = characters[match.Start].CodePoint,
-                codeEnd = characters[match.End].CodePoint,
+                codeBegin = GetEncodedChar(characters[match.Start].CodePoint, charEncoding),
+                codeEnd = GetEncodedChar(characters[match.End].CodePoint, charEncoding),
                 mappingMethod = (short)match.Method
             };
 
@@ -175,7 +181,7 @@ class NftrWriter : INftrWriter
                         if (i + 1 > match.End)
                             break;
 
-                        for (int j = characters[i].CodePoint + 1; j < characters[i + 1].CodePoint; j++)
+                        for (int j = GetEncodedChar(characters[i].CodePoint, charEncoding) + 1; j < GetEncodedChar(characters[i + 1].CodePoint, charEncoding); j++)
                         {
                             tableEntries.Add(new CmapIndexEntry
                             {
@@ -276,6 +282,30 @@ class NftrWriter : INftrWriter
         return result;
     }
 
+    private ushort GetEncodedChar(char code, CharEncoding charEncoding)
+    {
+        byte[] codeBytes;
+
+        switch (charEncoding)
+        {
+            case CharEncoding.Unicode:
+                return code;
+
+            case CharEncoding.Sjis:
+                codeBytes = _sjis.GetBytes($"{code}");
+                break;
+
+            case CharEncoding.Cp1252:
+                codeBytes = _win1252.GetBytes($"{code}");
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unsupported encoding {charEncoding}.");
+        }
+
+        return codeBytes.Length is 1 ? codeBytes[0] : BinaryPrimitives.ReadUInt16BigEndian(codeBytes);
+    }
+
     private void WriteHeader(NftrHeader header, BinaryWriterX writer)
     {
         writer.WriteString(header.magic, writeNullTerminator: false);
@@ -298,7 +328,7 @@ class NftrWriter : INftrWriter
         writer.Write(infoSection.defaultWidths.leftPadding);
         writer.Write(infoSection.defaultWidths.glyphWidth);
         writer.Write(infoSection.defaultWidths.charWidth);
-        writer.Write(infoSection.encoding);
+        writer.Write((byte)infoSection.encoding);
         writer.Write(infoSection.cglpOffset);
         writer.Write(infoSection.cwdhOffset);
         writer.Write(infoSection.cmapOffset);

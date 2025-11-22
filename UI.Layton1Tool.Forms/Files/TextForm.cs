@@ -3,7 +3,7 @@ using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Messages;
 
-namespace UI.Layton1Tool.Forms;
+namespace UI.Layton1Tool.Forms.Files;
 
 partial class TextForm
 {

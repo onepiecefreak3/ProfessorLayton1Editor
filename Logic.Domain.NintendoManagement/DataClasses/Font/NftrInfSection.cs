@@ -1,4 +1,5 @@
 ﻿using Logic.Domain.NintendoManagement.Contract.DataClasses;
+using Logic.Domain.NintendoManagement.Contract.Enums.Font;
 
 namespace Logic.Domain.NintendoManagement.DataClasses.Font;
 
@@ -8,7 +9,7 @@ struct NftrInfSection
     public byte lineFeed;
     public ushort fallbackCharIndex;
     public CwdhEntry defaultWidths;
-    public byte encoding;
+    public CharEncoding encoding;
     public int cglpOffset;
     public int cwdhOffset;
     public int cmapOffset;

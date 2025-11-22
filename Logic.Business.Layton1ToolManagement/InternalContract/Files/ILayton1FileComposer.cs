@@ -4,5 +4,5 @@ namespace Logic.Business.Layton1ToolManagement.InternalContract.Files;
 
 interface ILayton1FileComposer
 {
-    Stream? Compose(object content, FileType type);
+    Stream? Compose(object content, FileType type, GameVersion version);
 }

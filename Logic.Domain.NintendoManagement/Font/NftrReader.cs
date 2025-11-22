@@ -1,4 +1,5 @@
-﻿using Kaligraphy.Contract.DataClasses;
+﻿using System.Buffers.Binary;
+using Kaligraphy.Contract.DataClasses;
 using Kaligraphy.Generation;
 using Komponent.IO;
 using Konnect.Contract.DataClasses.Plugin.File.Font;
@@ -7,18 +8,23 @@ using Konnect.Contract.Plugin.File.Image;
 using Konnect.Plugin.File.Image;
 using Logic.Domain.NintendoManagement.Contract.DataClasses;
 using Logic.Domain.NintendoManagement.Contract.DataClasses.Font;
+using Logic.Domain.NintendoManagement.Contract.Enums.Font;
 using Logic.Domain.NintendoManagement.Contract.Font;
 using Logic.Domain.NintendoManagement.DataClasses;
 using Logic.Domain.NintendoManagement.DataClasses.Font;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Text;
 using ByteOrder = Komponent.Contract.Enums.ByteOrder;
 
 namespace Logic.Domain.NintendoManagement.Font;
 
 class NftrReader : INftrReader
 {
+    private readonly Encoding _sjis = Encoding.GetEncoding("Shift-JIS");
+    private readonly Encoding _win1252 = Encoding.GetEncoding("Windows-1252");
+
     private readonly NftrEncodingProvider _encodingProvider = new();
 
     public NftrData Read(Stream input)
@@ -44,7 +50,7 @@ class NftrReader : INftrReader
 
         return new NftrData
         {
-            Characters = GetCharacterInfos(imageSection, codes, widthEntries),
+            Characters = GetCharacterInfos(imageSection, codes, widthEntries, infoSection.encoding),
             MetaData = new NftrMetaData
             {
                 Version = header.version,
@@ -127,11 +133,12 @@ class NftrReader : INftrReader
         return result;
     }
 
-    private List<CharacterInfo> GetCharacterInfos(NftrCglpSection imageSection, Dictionary<ushort, int> codes, CwdhEntry[] widthEntries)
+    private List<CharacterInfo> GetCharacterInfos(NftrCglpSection imageSection, Dictionary<ushort, int> codes, CwdhEntry[] widthEntries, CharEncoding charEncoding)
     {
         var result = new List<CharacterInfo>(codes.Count);
 
         var index = 0;
+        var codeBytes = new byte[2];
         foreach (ushort code in codes.Keys.Order())
         {
             IImageFile glyphImage = GetGlyphImage(imageSection, imageSection.cellData[index++]);
@@ -146,16 +153,37 @@ class NftrReader : INftrReader
                 ? image.Clone(context => context.Crop(new Rectangle(glyphDescription.Position, glyphDescription.Size)))
                 : null;
 
+            char codeChar;
+            switch (charEncoding)
+            {
+                case CharEncoding.Unicode:
+                    codeChar = (char)code;
+                    break;
+
+                case CharEncoding.Sjis:
+                    BinaryPrimitives.WriteUInt16BigEndian(codeBytes, code);
+                    codeChar = code < 0x80 ? _sjis.GetString(codeBytes[1..])[0] : _sjis.GetString(codeBytes)[0];
+                    break;
+
+                case CharEncoding.Cp1252:
+                    BinaryPrimitives.WriteUInt16BigEndian(codeBytes, code);
+                    codeChar = _win1252.GetString(codeBytes[1..])[0];
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unsupported encoding {charEncoding}.");
+            }
+
             result.Add(new CharacterInfo
             {
-                CodePoint = (char)code,
+                CodePoint = codeChar,
                 GlyphPosition = new Point(widthEntry.leftPadding, glyphDescription.Position.Y - srcRect.Top),
                 BoundingBox = new Size(widthEntry.charWidth, imageSection.cellHeight),
                 Glyph = glyph
             });
         }
 
-        return result;
+        return result.OrderBy(x => x.CodePoint).ToList();
     }
 
     private IImageFile GetGlyphImage(NftrCglpSection imageSection, byte[] cellData)
@@ -307,7 +335,7 @@ class NftrReader : INftrReader
             lineFeed = reader.ReadByte(),
             fallbackCharIndex = reader.ReadUInt16(),
             defaultWidths = ReadCwdhEntry(reader),
-            encoding = reader.ReadByte(),
+            encoding = (CharEncoding)reader.ReadByte(),
             cglpOffset = reader.ReadInt32(),
             cwdhOffset = reader.ReadInt32(),
             cmapOffset = reader.ReadInt32()
