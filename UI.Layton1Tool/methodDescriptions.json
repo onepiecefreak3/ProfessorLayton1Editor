@@ -42,8 +42,19 @@
       "Description": "Fades the top and bottom screen in from black.",
       "Parameters": []
     },
+    "23": {
+      "Name": "jump",
+      "Description": "Unconditionally jump to the given label.",
+      "Parameters": [
+        {
+          "Name": "label",
+          "Type": "string",
+          "Description": "The label to jump to."
+        }
+      ]
+    },
     "34": {
-      "Name": "set_room_movevment",
+      "Name": "set_room_movement",
       "Description": "Sets up a movement to another 'room'.",
       "Parameters": [
         {
@@ -129,6 +140,17 @@
         }
       ]
     },
+    "72": {
+      "Name": "set_flag2",
+      "Description": "Set the given flag.",
+      "Parameters": [
+        {
+          "Name": "flag",
+          "Type": "int",
+          "Description": "The flag to set."
+        }
+      ]
+    },
     "80": {
       "Name": "set_room_event_object",
       "Description": "Sets up event objects in a 'room'.",
@@ -162,6 +184,22 @@
           "Name": "eventId",
           "Type": "int",
           "Description": "The ID of the event to execute from '/data/script/event/e[id].gds'."
+        }
+      ]
+    },
+    "88": {
+      "Name": "jump_on_unset_flag1",
+      "Description": "When the given flag is set, jump to the specified label.",
+      "Parameters": [
+        {
+          "Name": "flag",
+          "Type": "int",
+          "Description": "The flag to check the state of."
+        },
+        {
+          "Name": "label",
+          "Type": "string",
+          "Description": "The label to jump to, if the flag is set."
         }
       ]
     },
@@ -217,6 +255,33 @@
         }
       ]
     },
+    "96": {
+      "Name": "set_flag1",
+      "Description": "Set the given flag.",
+      "Parameters": [
+        {
+          "Name": "flag",
+          "Type": "int",
+          "Description": "The flag to set."
+        }
+      ]
+    },
+    "99": {
+      "Name": "jump_on_state",
+      "Description": "When the game is in the given state, jump to the specified label.",
+      "Parameters": [
+        {
+          "Name": "state",
+          "Type": "int",
+          "Description": "The state the game has to be in."
+        },
+        {
+          "Name": "label",
+          "Type": "string",
+          "Description": "The label to jump to, if the flag is set."
+        }
+      ]
+    },
     "104": {
       "Name": "set_room_hint_coin",
       "Description": "Sets a hint coin in a 'room'.",
@@ -250,6 +315,22 @@
           "Name": "unk1",
           "Type": "int",
           "Description": "Unknown"
+        }
+      ]
+    },
+    "141": {
+      "Name": "jump_on_unset_flag2",
+      "Description": "When the given flag is set, jump to the specified label.",
+      "Parameters": [
+        {
+          "Name": "flag",
+          "Type": "int",
+          "Description": "The flag to check the state of."
+        },
+        {
+          "Name": "label",
+          "Type": "string",
+          "Description": "The label to jump to, if the flag is set."
         }
       ]
     },

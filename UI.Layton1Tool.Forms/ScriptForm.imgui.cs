@@ -19,6 +19,7 @@ internal abstract partial class ScriptForm : Component
     private ArrowButton _prevParameterButton;
     private ArrowButton _nextParameterButton;
 
+    private Label _instructionIdLabel;
     private Label _instructionNameLabel;
     private Label _instructionDescriptionLabel;
     private Label _parameterNameLabel;
@@ -33,8 +34,9 @@ internal abstract partial class ScriptForm : Component
 
     private void InitializeComponent()
     {
-        _scriptEditor = new TextEditor();
+        _scriptEditor = new TextEditor { IsReadOnly = true };
 
+        _instructionIdLabel = new Label();
         _instructionNameLabel = new Label();
         _instructionDescriptionLabel = new Label();
         _parameterNameLabel = new Label();
@@ -53,7 +55,7 @@ internal abstract partial class ScriptForm : Component
                 {
                     Cells =
                     {
-                        null!,
+                        _instructionIdLabel,
                         new StackLayout
                         {
                             Alignment = Alignment.Horizontal,

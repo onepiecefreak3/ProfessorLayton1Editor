@@ -11,6 +11,10 @@ class SettingsProvider(ISettingsProvider settings) : Contract.ISettingsProvider
     private const string ImportDirectoryName_ = "Layton1Tool.Settings.Import.Directory";
     private const string PreviewDirectoryName_ = "Layton1Tool.Settings.PreviewDirectory";
     private const string ReplaceFontCharactersName_ = "Layton1Tool.Settings.ReplaceFontCharacters";
+    private const string RenderTextBoxesName_ = "Layton1Tool.Settings.RenderTextBoxes";
+    private const string RenderHintBoxesName_ = "Layton1Tool.Settings.RenderHintBoxes";
+    private const string RenderObjectBoxesName_ = "Layton1Tool.Settings.RenderObjectBoxes";
+    private const string RenderMovementArrowsName_ = "Layton1Tool.Settings.RenderMovementArrows";
 
     public string Locale
     {
@@ -52,5 +56,29 @@ class SettingsProvider(ISettingsProvider settings) : Contract.ISettingsProvider
     {
         get => settings.Get(ReplaceFontCharactersName_, false);
         set => settings.Set(ReplaceFontCharactersName_, value);
+    }
+
+    public bool RenderTextBoxes
+    {
+        get => settings.Get(RenderTextBoxesName_, true);
+        set => settings.Set(RenderTextBoxesName_, value);
+    }
+
+    public bool RenderHintBoxes
+    {
+        get => settings.Get(RenderHintBoxesName_, true);
+        set => settings.Set(RenderHintBoxesName_, value);
+    }
+
+    public bool RenderObjectBoxes
+    {
+        get => settings.Get(RenderObjectBoxesName_, true);
+        set => settings.Set(RenderObjectBoxesName_, value);
+    }
+
+    public bool RenderMovementArrows
+    {
+        get => settings.Get(RenderMovementArrowsName_, true);
+        set => settings.Set(RenderMovementArrowsName_, value);
     }
 }

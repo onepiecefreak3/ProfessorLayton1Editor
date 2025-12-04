@@ -17,6 +17,7 @@ public interface ILocalizationProvider
     LocalizedString MenuFileViewCaption { get; }
     LocalizedString MenuFileViewFilesCaption { get; }
     LocalizedString MenuFileViewPuzzlesCaption { get; }
+    LocalizedString MenuFileViewRoomsCaption { get; }
     LocalizedString MenuFileValidateCaption { get; }
     LocalizedString MenuFileSearchCaption { get; }
     LocalizedString MenuFileExtractCaption { get; }
@@ -46,6 +47,12 @@ public interface ILocalizationProvider
     LocalizedString PuzzleInfoCorrectText { get; }
     LocalizedString PuzzleInfoIncorrectText { get; }
     LocalizedString PuzzleInfoHintsText { get; }
+
+    LocalizedString RoomFlagCaption(int flag);
+    LocalizedString RoomRenderTextBoxes { get; }
+    LocalizedString RoomRenderHintBoxes { get; }
+    LocalizedString RoomRenderObjectBoxes { get; }
+    LocalizedString RoomRenderMovementArrows { get; }
 
     LocalizedString DialogFileNdsOpenCaption { get; }
     LocalizedString DialogFileNdsOpenFilter { get; }

@@ -10,6 +10,12 @@ internal class Layton1PathProvider : ILayton1PathProvider
     {
         string result = GetFullDirectory(path, version);
 
+        if (result.Contains('?'))
+            return result.Replace("?", GetLanguage(language));
+
+        if (!string.IsNullOrEmpty(Path.GetExtension(result)))
+            return result;
+
         string? languageDir = GetLanguageDirectory(version, language);
         if (!string.IsNullOrEmpty(languageDir))
             return result + languageDir;
@@ -68,6 +74,21 @@ internal class Layton1PathProvider : ILayton1PathProvider
             TextLanguage.Italian => "it/",
             TextLanguage.Korean => "ko/",
             TextLanguage.Japanese => "jp/",
+            _ => throw new InvalidOperationException($"Unknown language {language}.")
+        };
+    }
+
+    private static string GetLanguage(TextLanguage language)
+    {
+        return language switch
+        {
+            TextLanguage.English => "en",
+            TextLanguage.German => "de",
+            TextLanguage.Spanish => "es",
+            TextLanguage.French => "fr",
+            TextLanguage.Italian => "it",
+            TextLanguage.Korean => "ko",
+            TextLanguage.Japanese => "jp",
             _ => throw new InvalidOperationException($"Unknown language {language}.")
         };
     }

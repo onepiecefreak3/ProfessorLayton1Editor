@@ -27,6 +27,8 @@ public class Layton1ToolComponentsActivator : IComponentActivator
 
     public void Register(ICoCoKernel kernel)
     {
+        kernel.Register<IAnimationStateManager, AnimationStateManager>(ActivationScope.Unique);
+
         kernel.Register<IComponentFactory, ComponentFactory>(ActivationScope.Unique);
 
         kernel.RegisterToSelf<AnimationPlayer>();

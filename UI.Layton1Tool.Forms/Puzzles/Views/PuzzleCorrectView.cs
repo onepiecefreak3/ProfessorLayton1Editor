@@ -12,9 +12,9 @@ using Kaligraphy.Rendering;
 using Logic.Business.Layton1ToolManagement.Contract;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
-using Logic.Business.Layton1ToolManagement.Contract.Enums.Texts;
 using Logic.Business.Layton1ToolManagement.Contract.Files;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
@@ -23,9 +23,9 @@ using UI.Layton1Tool.Forms.Text;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.Enums;
 
-namespace UI.Layton1Tool.Forms.Views;
+namespace UI.Layton1Tool.Forms.Puzzles.Views;
 
-internal partial class PuzzleIncorrectView
+internal partial class PuzzleCorrectView
 {
     private readonly Layton1NdsInfo _ndsInfo;
 
@@ -35,18 +35,16 @@ internal partial class PuzzleIncorrectView
     private readonly ILayton1PathProvider _pathProvider;
 
     private Layton1PuzzleId? _puzzleId;
-    private TextLanguage? _language;
 
-    private Image<Rgba32>? _topBg;
     private Image<Rgba32>? _bottomBg;
     private IGlyphProvider? _font;
     private IGlyphProvider? _furiganaFont;
 
     private Image<Rgba32>? _bg;
 
-    private string? _incorrect;
+    private string? _correct;
 
-    public PuzzleIncorrectView(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, IFontProvider fontProvider, ILayton1NdsFileManager fileManager,
+    public PuzzleCorrectView(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, IFontProvider fontProvider, ILayton1NdsFileManager fileManager,
         ILayton1PathProvider pathProvider)
     {
         InitializeComponent();
@@ -62,8 +60,7 @@ internal partial class PuzzleIncorrectView
         eventBroker.Subscribe<FileAddedMessage>(ProcessFileAdded);
         eventBroker.Subscribe<FontModifiedMessage>(ProcessFontModified);
         eventBroker.Subscribe<SelectedPuzzleChangedMessage>(ProcessSelectedPuzzleChanged);
-        eventBroker.Subscribe<SelectedPuzzleLanguageChangedMessage>(ProcessSelectedPuzzleLanguageChanged);
-        eventBroker.Subscribe<SelectedPuzzleIncorrectTextModifiedMessage>(ProcessSelectedPuzzleIncorrectTextModified);
+        eventBroker.Subscribe<SelectedPuzzleCorrectTextModifiedMessage>(ProcessSelectedPuzzleCorrectTextModified);
     }
 
     public override void Destroy()
@@ -72,8 +69,7 @@ internal partial class PuzzleIncorrectView
         _eventBroker.Unsubscribe<FileAddedMessage>(ProcessFileAdded);
         _eventBroker.Unsubscribe<FontModifiedMessage>(ProcessFontModified);
         _eventBroker.Unsubscribe<SelectedPuzzleChangedMessage>(ProcessSelectedPuzzleChanged);
-        _eventBroker.Unsubscribe<SelectedPuzzleLanguageChangedMessage>(ProcessSelectedPuzzleLanguageChanged);
-        _eventBroker.Unsubscribe<SelectedPuzzleIncorrectTextModifiedMessage>(ProcessSelectedPuzzleIncorrectTextModified);
+        _eventBroker.Unsubscribe<SelectedPuzzleCorrectTextModifiedMessage>(ProcessSelectedPuzzleCorrectTextModified);
     }
 
     private void ProcessFileContentModified(FileContentModifiedMessage message)
@@ -81,21 +77,19 @@ internal partial class PuzzleIncorrectView
         if (message.Source == this)
             return;
 
-        if (_language is null || _incorrect is null)
+        if (_correct is null)
             return;
 
         if (message.File.Rom != _ndsInfo.Rom)
             return;
 
-        if (message.File.Path == GetTopBackgroundPath(_language.Value))
-            _topBg = GetTopBackground(_language.Value);
-        else if (message.File.Path == GetBottomBackgroundPath())
+        if (message.File.Path == GetBottomBackgroundPath())
             _bottomBg = GetBottomBackground();
         else
             return;
 
-        if (GenerateBackground(_language.Value))
-            GeneratePreview(_incorrect);
+        if (GenerateBackground())
+            GeneratePreview(_correct);
     }
 
     private void ProcessFileAdded(FileAddedMessage message)
@@ -103,26 +97,24 @@ internal partial class PuzzleIncorrectView
         if (message.Source == this)
             return;
 
-        if (_language is null || _incorrect is null)
+        if (_correct is null)
             return;
 
         if (message.File.Rom != _ndsInfo.Rom)
             return;
 
-        if (message.File.Path == GetTopBackgroundPath(_language.Value))
-            _topBg = GetTopBackground(_language.Value);
-        else if (message.File.Path == GetBottomBackgroundPath())
+        if (message.File.Path == GetBottomBackgroundPath())
             _bottomBg = GetBottomBackground();
         else
             return;
 
-        if (GenerateBackground(_language.Value))
-            GeneratePreview(_incorrect);
+        if (GenerateBackground())
+            GeneratePreview(_correct);
     }
 
     private void ProcessFontModified(FontModifiedMessage message)
     {
-        if (_language is null || _incorrect is null)
+        if (_correct is null)
             return;
 
         if (message.File.Rom != _ndsInfo.Rom)
@@ -142,8 +134,8 @@ internal partial class PuzzleIncorrectView
                 return;
         }
 
-        if (SetupBackground(_language.Value))
-            GeneratePreview(_incorrect);
+        if (SetupBackground())
+            GeneratePreview(_correct);
     }
 
     private void ProcessSelectedPuzzleChanged(SelectedPuzzleChangedMessage message)
@@ -151,32 +143,16 @@ internal partial class PuzzleIncorrectView
         if (message.Rom != _ndsInfo.Rom)
             return;
 
-        if (_incorrect is not null)
-            if (GenerateBackground(message.Language))
-                GeneratePreview(_incorrect);
+        if (_correct is not null)
+            if (GenerateBackground())
+                GeneratePreview(_correct);
 
         _puzzleId = message.Puzzle;
-        _language = message.Language;
     }
 
-    private void ProcessSelectedPuzzleLanguageChanged(SelectedPuzzleLanguageChangedMessage message)
+    private void ProcessSelectedPuzzleCorrectTextModified(SelectedPuzzleCorrectTextModifiedMessage message)
     {
         if (_puzzleId is null)
-            return;
-
-        if (message.Rom != _ndsInfo.Rom)
-            return;
-
-        if (_incorrect is not null)
-            if (GenerateBackground(message.Language))
-                GeneratePreview(_incorrect);
-
-        _language = message.Language;
-    }
-
-    private void ProcessSelectedPuzzleIncorrectTextModified(SelectedPuzzleIncorrectTextModifiedMessage message)
-    {
-        if (_puzzleId is null || _language is null)
             return;
 
         if (message.Rom != _ndsInfo.Rom)
@@ -185,13 +161,13 @@ internal partial class PuzzleIncorrectView
         if (message.Puzzle.InternalId != _puzzleId.InternalId)
             return;
 
-        if (SetupBackground(_language.Value))
-            GeneratePreview(message.Incorrect);
+        if (SetupBackground())
+            GeneratePreview(message.Correct);
 
-        _incorrect = message.Incorrect;
+        _correct = message.Correct;
     }
 
-    private void GeneratePreview(string incorrect)
+    private void GeneratePreview(string correct)
     {
         if (_bg is null)
             return;
@@ -201,12 +177,12 @@ internal partial class PuzzleIncorrectView
 
         Image<Rgba32> image = _bg.Clone();
 
-        RenderIncorrectText(image, incorrect);
+        RenderCorrectText(image, correct);
 
-        _indexImageBox.Image = ImageResource.FromImage(image);
+        _indexImageBox.SetImage(ImageResource.FromImage(image));
     }
 
-    private void RenderIncorrectText(Image<Rgba32> image, string incorrect)
+    private void RenderCorrectText(Image<Rgba32> image, string correct)
     {
         if (_font is null)
             return;
@@ -231,7 +207,7 @@ internal partial class PuzzleIncorrectView
                 deserializer = new CharacterDeserializer();
                 layouter = new TextLayouter(new LayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Left, LineHeight = 12 }, _font);
                 renderer = new TextRenderer(new RenderOptions { TextColor = Color.Black }, _font);
-                pos = new Point(4, 218);
+                pos = new Point(4, 217);
                 break;
 
             case GameVersion.Korea:
@@ -262,26 +238,26 @@ internal partial class PuzzleIncorrectView
                 throw new InvalidOperationException($"Unknown game version {_ndsInfo.Rom.Version}.");
         }
 
-        var layout = layouter.Create(deserializer.Deserialize(incorrect), pos, new Size(256, 192));
+        var layout = layouter.Create(deserializer.Deserialize(correct), pos, new Size(256, 192));
         renderer.Render(image, layout);
     }
 
-    private bool SetupBackground(TextLanguage language)
+    private bool SetupBackground()
     {
         if (_bg is not null)
             return true;
 
-        return GenerateBackground(language);
+        return GenerateBackground();
     }
 
-    private bool GenerateBackground(TextLanguage language)
+    private bool GenerateBackground()
     {
-        if (!SetupImageResources(language))
+        if (!SetupImageResources())
             return false;
 
         var image = new Image<Rgba32>(256, 192 * 2);
 
-        image.Mutate(c => c.DrawImage(_topBg!, Point.Empty, 1f));
+        image.Mutate(c => c.Fill(Color.Black, new RectangleF(0, 0, 256, 192)));
         image.Mutate(c => c.DrawImage(_bottomBg!, new Point(0, 192), 1f));
 
         _bg = image;
@@ -289,10 +265,9 @@ internal partial class PuzzleIncorrectView
         return true;
     }
 
-    private bool SetupImageResources(TextLanguage language)
+    private bool SetupImageResources()
     {
-        return SetupStaticImageResources() &&
-               SetupLocalizedImageResources(language);
+        return SetupStaticImageResources();
     }
 
     private bool SetupStaticImageResources()
@@ -300,27 +275,6 @@ internal partial class PuzzleIncorrectView
         _bottomBg ??= GetBottomBackground();
 
         return _bottomBg is not null;
-    }
-
-    private bool SetupLocalizedImageResources(TextLanguage language)
-    {
-        if (_language is not null)
-        {
-            if (_language.Value != language)
-            {
-                _topBg = GetTopBackground(language);
-            }
-            else
-            {
-                _topBg ??= GetTopBackground(language);
-            }
-        }
-        else
-        {
-            _topBg ??= GetTopBackground(language);
-        }
-
-        return _topBg is not null;
     }
 
     private bool SetupFontResources()
@@ -336,16 +290,6 @@ internal partial class PuzzleIncorrectView
         return isLoaded;
     }
 
-    private Image<Rgba32>? GetTopBackground(TextLanguage language)
-    {
-        string filePath = GetTopBackgroundPath(language);
-
-        if (!_fileManager.TryGet(_ndsInfo.Rom, filePath, out Layton1NdsFile? file))
-            return null;
-
-        return (Image<Rgba32>?)_fileManager.Parse(file, FileType.Bgx);
-    }
-
     private Image<Rgba32>? GetBottomBackground()
     {
         string filePath = GetBottomBackgroundPath();
@@ -356,17 +300,8 @@ internal partial class PuzzleIncorrectView
         return (Image<Rgba32>?)_fileManager.Parse(file, FileType.Bgx);
     }
 
-    private string GetTopBackgroundPath(TextLanguage language)
-    {
-        string filePath = _ndsInfo.Rom.Version is GameVersion.Japan or GameVersion.Usa or GameVersion.UsaDemo
-            ? _pathProvider.GetFullDirectory("bg/", _ndsInfo.Rom.Version)
-            : _pathProvider.GetFullDirectory("bg/", _ndsInfo.Rom.Version, language);
-
-        return filePath + "judge_r114_bg.arc";
-    }
-
     private string GetBottomBackgroundPath()
     {
-        return _pathProvider.GetFullDirectory("bg/qend_awrong.arc", _ndsInfo.Rom.Version);
+        return _pathProvider.GetFullDirectory("bg/qend_acorrect.arc", _ndsInfo.Rom.Version);
     }
 }

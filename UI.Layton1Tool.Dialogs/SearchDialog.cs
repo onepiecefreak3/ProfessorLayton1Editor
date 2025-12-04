@@ -189,12 +189,12 @@ partial class SearchDialog
         _progressBar.Text = _localizations.DialogSearchProgress(completion);
     }
 
-    private Regex GetSearchTerm()
+    private Regex? GetSearchTerm()
     {
         if (string.IsNullOrEmpty(_inputText.Text))
             return new(".*");
 
-        string escapedSearchTerm = _inputText.Text.Replace(".", "\\.").Replace("*", ".*");
+        string escapedSearchTerm = _inputText.Text.Replace("(","\\(").Replace(")", "\\)").Replace(".", "\\.").Replace("*", ".*");
         return new Regex(escapedSearchTerm);
     }
 }

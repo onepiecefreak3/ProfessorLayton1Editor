@@ -23,9 +23,9 @@ using UI.Layton1Tool.Forms.Text;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.Enums;
 
-namespace UI.Layton1Tool.Forms.Views;
+namespace UI.Layton1Tool.Forms.Puzzles.Views;
 
-internal partial class PuzzleTitleView
+internal partial class PuzzleHint1View
 {
     private readonly Layton1NdsInfo _ndsInfo;
 
@@ -44,9 +44,9 @@ internal partial class PuzzleTitleView
 
     private Image<Rgba32>? _bg;
 
-    private string? _title;
+    private string? _hint1;
 
-    public PuzzleTitleView(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, IFontProvider fontProvider, ILayton1NdsFileManager fileManager,
+    public PuzzleHint1View(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, IFontProvider fontProvider, ILayton1NdsFileManager fileManager,
         ILayton1PathProvider pathProvider)
     {
         InitializeComponent();
@@ -63,7 +63,7 @@ internal partial class PuzzleTitleView
         eventBroker.Subscribe<FontModifiedMessage>(ProcessFontModified);
         eventBroker.Subscribe<SelectedPuzzleChangedMessage>(ProcessSelectedPuzzleChanged);
         eventBroker.Subscribe<SelectedPuzzleLanguageChangedMessage>(ProcessSelectedPuzzleLanguageChanged);
-        eventBroker.Subscribe<SelectedPuzzleTitleTextModifiedMessage>(ProcessSelectedPuzzleTitleTextChanged);
+        eventBroker.Subscribe<SelectedPuzzleHint1TextModifiedMessage>(ProcessSelectedPuzzleHint1TextModified);
     }
 
     public override void Destroy()
@@ -73,7 +73,7 @@ internal partial class PuzzleTitleView
         _eventBroker.Unsubscribe<FontModifiedMessage>(ProcessFontModified);
         _eventBroker.Unsubscribe<SelectedPuzzleChangedMessage>(ProcessSelectedPuzzleChanged);
         _eventBroker.Unsubscribe<SelectedPuzzleLanguageChangedMessage>(ProcessSelectedPuzzleLanguageChanged);
-        _eventBroker.Unsubscribe<SelectedPuzzleTitleTextModifiedMessage>(ProcessSelectedPuzzleTitleTextChanged);
+        _eventBroker.Unsubscribe<SelectedPuzzleHint1TextModifiedMessage>(ProcessSelectedPuzzleHint1TextModified);
     }
 
     private void ProcessFileContentModified(FileContentModifiedMessage message)
@@ -81,21 +81,21 @@ internal partial class PuzzleTitleView
         if (message.Source == this)
             return;
 
-        if (_puzzleId is null || _language is null || _title is null)
+        if (_puzzleId is null || _language is null || _hint1 is null)
             return;
 
         if (message.File.Rom != _ndsInfo.Rom)
             return;
 
-        if (message.File.Path == GetTopBackgroundPath())
-            _topBg = GetTopBackground();
-        else if (message.File.Path == GetBottomBackgroundPath(_language.Value))
-            _bottomBg = GetBottomBackground(_language.Value);
+        if (message.File.Path == GetTopBackgroundPath(_language.Value))
+            _topBg = GetTopBackground(_language.Value);
+        else if (message.File.Path == GetBottomBackgroundPath())
+            _bottomBg = GetBottomBackground();
         else
             return;
 
         if (GenerateBackground(_language.Value))
-            GeneratePreview(_title, _puzzleId);
+            GeneratePreview(_hint1);
     }
 
     private void ProcessFileAdded(FileAddedMessage message)
@@ -103,26 +103,26 @@ internal partial class PuzzleTitleView
         if (message.Source == this)
             return;
 
-        if (_puzzleId is null || _language is null || _title is null)
+        if (_language is null || _hint1 is null)
             return;
 
         if (message.File.Rom != _ndsInfo.Rom)
             return;
 
-        if (message.File.Path == GetTopBackgroundPath())
-            _topBg = GetTopBackground();
-        else if (message.File.Path == GetBottomBackgroundPath(_language.Value))
-            _bottomBg = GetBottomBackground(_language.Value);
+        if (message.File.Path == GetTopBackgroundPath(_language.Value))
+            _topBg = GetTopBackground(_language.Value);
+        else if (message.File.Path == GetBottomBackgroundPath())
+            _bottomBg = GetBottomBackground();
         else
             return;
 
         if (GenerateBackground(_language.Value))
-            GeneratePreview(_title, _puzzleId);
+            GeneratePreview(_hint1);
     }
 
     private void ProcessFontModified(FontModifiedMessage message)
     {
-        if (_puzzleId is null || _language is null || _title is null)
+        if (_language is null || _hint1 is null)
             return;
 
         if (message.File.Rom != _ndsInfo.Rom)
@@ -130,7 +130,7 @@ internal partial class PuzzleTitleView
 
         switch (message.Type)
         {
-            case FontType.Event:
+            case FontType.Question:
                 _font = message.Font;
                 break;
 
@@ -143,7 +143,7 @@ internal partial class PuzzleTitleView
         }
 
         if (SetupBackground(_language.Value))
-            GeneratePreview(_title, _puzzleId);
+            GeneratePreview(_hint1);
     }
 
     private void ProcessSelectedPuzzleChanged(SelectedPuzzleChangedMessage message)
@@ -151,9 +151,9 @@ internal partial class PuzzleTitleView
         if (message.Rom != _ndsInfo.Rom)
             return;
 
-        if (_title is not null)
+        if (_hint1 is not null)
             if (GenerateBackground(message.Language))
-                GeneratePreview(_title, message.Puzzle);
+                GeneratePreview(_hint1);
 
         _puzzleId = message.Puzzle;
         _language = message.Language;
@@ -161,20 +161,17 @@ internal partial class PuzzleTitleView
 
     private void ProcessSelectedPuzzleLanguageChanged(SelectedPuzzleLanguageChangedMessage message)
     {
-        if (_puzzleId is null)
-            return;
-
         if (message.Rom != _ndsInfo.Rom)
             return;
 
-        if (_title is not null)
+        if (_hint1 is not null)
             if (GenerateBackground(message.Language))
-                GeneratePreview(_title, _puzzleId);
+                GeneratePreview(_hint1);
 
         _language = message.Language;
     }
 
-    private void ProcessSelectedPuzzleTitleTextChanged(SelectedPuzzleTitleTextModifiedMessage message)
+    private void ProcessSelectedPuzzleHint1TextModified(SelectedPuzzleHint1TextModifiedMessage message)
     {
         if (_puzzleId is null || _language is null)
             return;
@@ -186,12 +183,12 @@ internal partial class PuzzleTitleView
             return;
 
         if (SetupBackground(_language.Value))
-            GeneratePreview(message.Title, _puzzleId);
+            GeneratePreview(message.Hint1);
 
-        _title = message.Title;
+        _hint1 = message.Hint1;
     }
 
-    private void GeneratePreview(string title, Layton1PuzzleId puzzleId)
+    private void GeneratePreview(string hint1)
     {
         if (_bg is null)
             return;
@@ -201,12 +198,12 @@ internal partial class PuzzleTitleView
 
         Image<Rgba32> image = _bg.Clone();
 
-        RenderTitleText(image, puzzleId, title);
+        RenderHint1Text(image, hint1);
 
-        _titleImageBox.Image = ImageResource.FromImage(image);
+        _indexImageBox.SetImage(ImageResource.FromImage(image));
     }
 
-    private void RenderTitleText(Image<Rgba32> image, Layton1PuzzleId puzzleId, string title)
+    private void RenderHint1Text(Image<Rgba32> image, string hint1)
     {
         if (_font is null)
             return;
@@ -221,54 +218,48 @@ internal partial class PuzzleTitleView
             case GameVersion.Europe:
             case GameVersion.EuropeDemo:
                 deserializer = new DiacriticCharacterDeserializer();
-                layouter = new TextLayouter(new LayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Center }, _font);
+                layouter = new TextLayouter(new LayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Left, LineHeight = 12 }, _font);
                 renderer = new TextRenderer(new RenderOptions { TextColor = Color.Black }, _font);
-                pos = new Point(2, 121);
+                pos = new Point(4, 212);
                 break;
 
             case GameVersion.Usa:
             case GameVersion.UsaDemo:
                 deserializer = new CharacterDeserializer();
-                layouter = new TextLayouter(new LayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Center }, _font);
+                layouter = new TextLayouter(new LayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Left, LineHeight = 12 }, _font);
                 renderer = new TextRenderer(new RenderOptions { TextColor = Color.Black }, _font);
-                pos = new Point(0, 121);
+                pos = new Point(4, 224);
                 break;
 
             case GameVersion.Korea:
                 deserializer = new CharacterDeserializer();
-                layouter = new TextLayouter(new LayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Center }, _font);
+                layouter = new TextLayouter(new LayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Left, LineHeight = 13 }, _font);
                 renderer = new TextRenderer(new RenderOptions { TextColor = Color.Black }, _font);
-                pos = new Point(2, 119);
+                pos = new Point(4, 215);
                 break;
 
             case GameVersion.JapanFriendly:
                 if (_furiganaFont is null)
                     return;
 
-                string numberText = $"{puzzleId.Number:000}".Aggregate("", (o, c) => o + (char)(c + 0xFEE0));
-
                 deserializer = new FuriganaCharacterDeserializer(false);
-                layouter = new FuriganaTextLayouter(new FuriganaLayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Center, FuriganaLineSpacing = -2 }, _font, _furiganaFont);
-                renderer = new FuriganaTextRenderer(new FuriganaRenderOptions { TextColor = Color.Black, FuriganaTextColor = Color.FromRgb(0xad, 0x7b, 0x39) }, _font, _furiganaFont);
-                pos = new Point(2, 121);
-                title = $"ナゾ{numberText}  {title}";
+                layouter = new FuriganaTextLayouter(new FuriganaLayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Left, FuriganaLineSpacing = -3, LineHeight = 17 }, _font, _furiganaFont);
+                renderer = new FuriganaTextRenderer(new FuriganaRenderOptions { TextColor = Color.Black, FuriganaTextColor = Color.FromRgb(0x9e, 0x96, 0x30) }, _font, _furiganaFont);
+                pos = new Point(18, 216);
                 break;
 
             case GameVersion.Japan:
-                string numberText1 = $"{puzzleId.Number:000}".Aggregate("", (o, c) => o + (char)(c + 0xFEE0));
-
                 deserializer = new CharacterDeserializer();
-                layouter = new TextLayouter(new LayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Center }, _font);
+                layouter = new TextLayouter(new LayoutOptions { HorizontalAlignment = HorizontalTextAlignment.Left, LineHeight = 15 }, _font);
                 renderer = new TextRenderer(new RenderOptions { TextColor = Color.Black }, _font);
-                pos = new Point(2, 121);
-                title = $"ナゾ{numberText1}  {title}";
+                pos = new Point(22, 237);
                 break;
 
             default:
                 throw new InvalidOperationException($"Unknown game version {_ndsInfo.Rom.Version}.");
         }
 
-        var layout = layouter.Create(deserializer.Deserialize(title), pos, new Size(256, 192));
+        var layout = layouter.Create(deserializer.Deserialize(hint1), pos, new Size(256, 192));
         renderer.Render(image, layout);
     }
 
@@ -303,9 +294,9 @@ internal partial class PuzzleTitleView
 
     private bool SetupStaticImageResources()
     {
-        _topBg ??= GetTopBackground();
+        _bottomBg ??= GetBottomBackground();
 
-        return _topBg is not null;
+        return _bottomBg is not null;
     }
 
     private bool SetupLocalizedImageResources(TextLanguage language)
@@ -313,21 +304,25 @@ internal partial class PuzzleTitleView
         if (_language is not null)
         {
             if (_language.Value != language)
-                _bottomBg = GetBottomBackground(language);
+            {
+                _topBg = GetTopBackground(language);
+            }
             else
-                _bottomBg ??= GetBottomBackground(language);
+            {
+                _topBg ??= GetTopBackground(language);
+            }
         }
         else
         {
-            _bottomBg ??= GetBottomBackground(language);
+            _topBg ??= GetTopBackground(language);
         }
 
-        return _bottomBg is not null;
+        return _topBg is not null;
     }
 
     private bool SetupFontResources()
     {
-        _font = _fontProvider.GetEventFont(_ndsInfo.Rom);
+        _font = _fontProvider.GetQuestionFont(_ndsInfo.Rom);
         _furiganaFont = _fontProvider.GetFuriganaFont(_ndsInfo.Rom);
 
         bool isLoaded = _font is not null;
@@ -338,9 +333,9 @@ internal partial class PuzzleTitleView
         return isLoaded;
     }
 
-    private Image<Rgba32>? GetTopBackground()
+    private Image<Rgba32>? GetTopBackground(TextLanguage language)
     {
-        string filePath = GetTopBackgroundPath();
+        string filePath = GetTopBackgroundPath(language);
 
         if (!_fileManager.TryGet(_ndsInfo.Rom, filePath, out Layton1NdsFile? file))
             return null;
@@ -348,9 +343,9 @@ internal partial class PuzzleTitleView
         return (Image<Rgba32>?)_fileManager.Parse(file, FileType.Bgx);
     }
 
-    private Image<Rgba32>? GetBottomBackground(TextLanguage language)
+    private Image<Rgba32>? GetBottomBackground()
     {
-        string filePath = GetBottomBackgroundPath(language);
+        string filePath = GetBottomBackgroundPath();
 
         if (!_fileManager.TryGet(_ndsInfo.Rom, filePath, out Layton1NdsFile? file))
             return null;
@@ -358,15 +353,17 @@ internal partial class PuzzleTitleView
         return (Image<Rgba32>?)_fileManager.Parse(file, FileType.Bgx);
     }
 
-    private string GetTopBackgroundPath()
+    private string GetTopBackgroundPath(TextLanguage language)
     {
-        return _pathProvider.GetFullDirectory("bg/q_alt_sub_bg.arc", _ndsInfo.Rom.Version);
+        string filePath = _ndsInfo.Rom.Version is GameVersion.Japan or GameVersion.Usa or GameVersion.UsaDemo
+            ? _pathProvider.GetFullDirectory("bg/", _ndsInfo.Rom.Version)
+            : _pathProvider.GetFullDirectory("bg/", _ndsInfo.Rom.Version, language);
+
+        return filePath + "q_bg.arc";
     }
 
-    private string GetBottomBackgroundPath(TextLanguage language)
+    private string GetBottomBackgroundPath()
     {
-        return _ndsInfo.Rom.Version is GameVersion.Japan or GameVersion.Usa or GameVersion.UsaDemo
-            ? _pathProvider.GetFullDirectory("bg/", _ndsInfo.Rom.Version) + "picarat_bg.arc"
-            : _pathProvider.GetFullDirectory("bg/", _ndsInfo.Rom.Version, language) + "picarat_bg.arc";
+        return _pathProvider.GetFullDirectory("bg/hint_1.arc", _ndsInfo.Rom.Version);
     }
 }

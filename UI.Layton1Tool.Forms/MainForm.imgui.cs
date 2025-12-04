@@ -21,6 +21,7 @@ partial class MainForm : Form
 
     private MenuBarCheckBox _filesViewButton;
     private MenuBarCheckBox _puzzlesViewButton;
+    private MenuBarCheckBox _roomsViewButton;
 
     private StackLayout _contentLayout;
 
@@ -39,12 +40,14 @@ partial class MainForm : Form
 
         _filesViewButton = new MenuBarCheckBox(localizations.MenuFileViewFilesCaption);
         _puzzlesViewButton = new MenuBarCheckBox(localizations.MenuFileViewPuzzlesCaption);
+        _roomsViewButton = new MenuBarCheckBox(localizations.MenuFileViewRoomsCaption);
         _fileViewButton = new MenuBarRadio(localizations.MenuFileViewCaption)
         {
             CheckItems =
             {
                 _filesViewButton,
-                _puzzlesViewButton
+                _puzzlesViewButton,
+                _roomsViewButton
             },
             Enabled = false
         };

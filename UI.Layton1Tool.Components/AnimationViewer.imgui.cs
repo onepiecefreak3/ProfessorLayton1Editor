@@ -1,11 +1,11 @@
 ﻿using ImGui.Forms.Controls;
 using ImGui.Forms.Controls.Base;
 using ImGui.Forms.Controls.Layouts;
-using ImGui.Forms.Models;
 using ImGui.Forms.Resources;
 using UI.Layton1Tool.Components.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
-using Veldrid;
+using Rectangle = Veldrid.Rectangle;
+using Size = ImGui.Forms.Models.Size;
 
 namespace UI.Layton1Tool.Components;
 
@@ -44,6 +44,6 @@ partial class AnimationViewer : Component
 
     private void SetFrame(ImageResource image)
     {
-        _zoomableImage.Image = image;
+        _zoomableImage.SetImage(image, false);
     }
 }

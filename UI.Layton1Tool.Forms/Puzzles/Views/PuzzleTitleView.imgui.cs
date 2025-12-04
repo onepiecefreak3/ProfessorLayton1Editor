@@ -3,21 +3,21 @@ using ImGui.Forms.Controls.Base;
 using ImGui.Forms.Models;
 using Veldrid;
 
-namespace UI.Layton1Tool.Forms.Views;
+namespace UI.Layton1Tool.Forms.Puzzles.Views;
 
-internal partial class PuzzleHint3View : Component
+internal partial class PuzzleTitleView : Component
 {
-    private ZoomablePictureBox _indexImageBox;
+    private ZoomablePictureBox _titleImageBox;
 
     public override Size GetSize() => Size.Parent;
 
     protected override void UpdateInternal(Rectangle contentRect)
     {
-        _indexImageBox.Update(contentRect);
+        _titleImageBox.Update(contentRect);
     }
 
     private void InitializeComponent()
     {
-        _indexImageBox = new ZoomablePictureBox { ShowBorder = true };
+        _titleImageBox = new ZoomablePictureBox { ShowBorder = true };
     }
 }

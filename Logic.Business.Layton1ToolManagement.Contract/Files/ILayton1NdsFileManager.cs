@@ -7,6 +7,7 @@ namespace Logic.Business.Layton1ToolManagement.Contract.Files;
 public interface ILayton1NdsFileManager
 {
     bool TryGet(Layton1NdsRom rom, string path, [NotNullWhen(true)] out Layton1NdsFile? file);
+    bool TryGetDirectory(Layton1NdsRom rom, string path, [NotNullWhen(true)] out Layton1NdsFile[]? files);
     Layton1NdsFile Add(Layton1NdsRom rom, string path, object content, FileType type, CompressionType compression);
 
     FileType Detect(Layton1NdsFile file);

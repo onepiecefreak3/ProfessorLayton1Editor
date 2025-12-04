@@ -7,8 +7,10 @@ using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Files;
 using UI.Layton1Tool.Forms.InternalContract;
 using UI.Layton1Tool.Forms.Puzzles;
+using UI.Layton1Tool.Forms.Puzzles.Views;
+using UI.Layton1Tool.Forms.Rooms;
+using UI.Layton1Tool.Forms.Rooms.Views;
 using UI.Layton1Tool.Forms.Text;
-using UI.Layton1Tool.Forms.Views;
 
 namespace UI.Layton1Tool.Forms;
 
@@ -52,17 +54,20 @@ public class Layton1ToolFormsActivator : IComponentActivator
         kernel.RegisterToSelf<PuzzleTextForm>();
         kernel.RegisterToSelf<PuzzleHintForm>();
         kernel.RegisterToSelf<PuzzleScriptForm>();
-
         kernel.RegisterToSelf<PuzzleTitleView>();
         kernel.RegisterToSelf<PuzzleIndexView>();
-
         kernel.RegisterToSelf<PuzzleDescriptionView>();
         kernel.RegisterToSelf<PuzzleCorrectView>();
         kernel.RegisterToSelf<PuzzleIncorrectView>();
-
         kernel.RegisterToSelf<PuzzleHint1View>();
         kernel.RegisterToSelf<PuzzleHint2View>();
         kernel.RegisterToSelf<PuzzleHint3View>();
+
+        kernel.RegisterToSelf<RoomForm>();
+        kernel.RegisterToSelf<RoomParamsScriptForm>();
+        kernel.RegisterToSelf<RoomFlagsForm>();
+        kernel.RegisterToSelf<RoomRenderForm>();
+        kernel.RegisterToSelf<RoomView>();
 
         kernel.RegisterConfiguration<Layton1ToolFormsConfiguration>();
     }

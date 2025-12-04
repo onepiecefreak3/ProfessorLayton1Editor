@@ -82,6 +82,7 @@ partial class MainForm
             loadedPage.Form.Type = FormType.Nds;
             loadedPage.Form.NdsForm ??= _formFactory.CreateNdsForm(loadedPage.Info);
             loadedPage.Form.PuzzleForm?.SetTabInactive();
+            loadedPage.Form.RoomForm?.SetTabInactive();
             loadedPage.Page.Content = loadedPage.Form.NdsForm;
         }
         else if (_puzzlesViewButton.Checked)
@@ -89,7 +90,16 @@ partial class MainForm
             loadedPage.Form.Type = FormType.Puzzle;
             loadedPage.Form.PuzzleForm ??= _formFactory.CreatePuzzleForm(loadedPage.Info);
             loadedPage.Form.NdsForm?.SetTabInactive();
+            loadedPage.Form.RoomForm?.SetTabInactive();
             loadedPage.Page.Content = loadedPage.Form.PuzzleForm;
+        }
+        else if (_roomsViewButton.Checked)
+        {
+            loadedPage.Form.Type = FormType.Room;
+            loadedPage.Form.RoomForm ??= _formFactory.CreateRoomForm(loadedPage.Info);
+            loadedPage.Form.NdsForm?.SetTabInactive();
+            loadedPage.Form.PuzzleForm?.SetTabInactive();
+            loadedPage.Page.Content = loadedPage.Form.RoomForm;
         }
     }
 
@@ -145,6 +155,10 @@ partial class MainForm
 
             case FormType.Puzzle:
                 _puzzlesViewButton.Checked = true;
+                break;
+
+            case FormType.Room:
+                _roomsViewButton.Checked = true;
                 break;
         }
     }

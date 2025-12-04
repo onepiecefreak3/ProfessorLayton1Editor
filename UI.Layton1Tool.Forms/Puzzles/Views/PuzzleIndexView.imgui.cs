@@ -3,9 +3,9 @@ using ImGui.Forms.Controls.Base;
 using ImGui.Forms.Models;
 using Veldrid;
 
-namespace UI.Layton1Tool.Forms.Views;
+namespace UI.Layton1Tool.Forms.Puzzles.Views;
 
-internal partial class PuzzleHint1View : Component
+internal partial class PuzzleIndexView : Component
 {
     private ZoomablePictureBox _indexImageBox;
 

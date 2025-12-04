@@ -6,7 +6,9 @@ using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Forms.Files;
 using UI.Layton1Tool.Forms.Puzzles;
-using UI.Layton1Tool.Forms.Views;
+using UI.Layton1Tool.Forms.Puzzles.Views;
+using UI.Layton1Tool.Forms.Rooms;
+using UI.Layton1Tool.Forms.Rooms.Views;
 
 namespace UI.Layton1Tool.Forms;
 
@@ -115,5 +117,30 @@ class FormFactory(ICoCoKernel kernel) : IFormFactory
     public Component CreatePuzzleHint3View(Layton1NdsInfo ndsInfo)
     {
         return kernel.Get<PuzzleHint3View>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateRoomForm(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<RoomForm>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateRoomParamsScriptForm(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<RoomParamsScriptForm>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateRoomFlagsForm(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<RoomFlagsForm>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateRoomRenderForm(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<RoomRenderForm>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateRoomView(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<RoomView>(new ConstructorParameter("ndsInfo", ndsInfo));
     }
 }

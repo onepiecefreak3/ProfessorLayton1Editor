@@ -101,7 +101,7 @@ partial class ImageForm
 
         _extractButton.Enabled = true;
 
-        _zoomableImage.Image = ImageResource.FromImage(image);
+        _zoomableImage.SetImage(ImageResource.FromImage(image));
 
         _zoomableImage.Reset();
         _zoomableImage.Zoom(2f);

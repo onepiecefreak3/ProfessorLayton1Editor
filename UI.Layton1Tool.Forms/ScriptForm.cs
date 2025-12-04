@@ -109,6 +109,7 @@ internal abstract partial class ScriptForm
 
         Coordinate currentCursor = _scriptEditor.GetCursorPosition();
         _scriptEditor.SetText(scriptText);
+        _scriptEditor.IsReadOnly = false;
 
         UpdateSelectedInstruction(currentCursor);
     }
@@ -153,8 +154,7 @@ internal abstract partial class ScriptForm
             return;
         }
 
-        // TODO: Add placeholder for no info
-
+        _instructionIdLabel.Text = $"{description.Id}";
         _instructionNameLabel.Text = string.IsNullOrEmpty(description.Name) ? invocation.Identifier.Text : description.Name;
         _instructionDescriptionLabel.Text = description.Description;
 

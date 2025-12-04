@@ -18,6 +18,7 @@ internal class LocalizationProvider : ILocalizationProvider
     public LocalizedString MenuFileViewCaption => LocalizedString.FromId("Menu.File.View.Caption");
     public LocalizedString MenuFileViewFilesCaption => LocalizedString.FromId("Menu.File.View.Files.Caption");
     public LocalizedString MenuFileViewPuzzlesCaption => LocalizedString.FromId("Menu.File.View.Puzzles.Caption");
+    public LocalizedString MenuFileViewRoomsCaption => LocalizedString.FromId("Menu.File.View.Rooms.Caption");
     public LocalizedString MenuFileValidateCaption => LocalizedString.FromId("Menu.File.Validate.Caption");
     public LocalizedString MenuFileSearchCaption => LocalizedString.FromId("Menu.File.Search.Caption");
     public LocalizedString MenuFileExtractCaption => LocalizedString.FromId("Menu.File.Extract.Caption");
@@ -47,6 +48,12 @@ internal class LocalizationProvider : ILocalizationProvider
     public LocalizedString PuzzleInfoCorrectText => LocalizedString.FromId("Puzzle.Info.Correct.Text");
     public LocalizedString PuzzleInfoIncorrectText => LocalizedString.FromId("Puzzle.Info.Incorrect.Text");
     public LocalizedString PuzzleInfoHintsText => LocalizedString.FromId("Puzzle.Info.Hints.Text");
+
+    public LocalizedString RoomFlagCaption(int flag) => LocalizedString.FromId("Room.Flag.Text", () => flag);
+    public LocalizedString RoomRenderTextBoxes => LocalizedString.FromId("Room.Render.TextBoxes");
+    public LocalizedString RoomRenderHintBoxes => LocalizedString.FromId("Room.Render.HintBoxes");
+    public LocalizedString RoomRenderObjectBoxes => LocalizedString.FromId("Room.Render.ObjectBoxes");
+    public LocalizedString RoomRenderMovementArrows => LocalizedString.FromId("Room.Render.MovementArrows");
 
     public LocalizedString DialogFileNdsOpenCaption => LocalizedString.FromId("Dialog.File.Nds.Open.Caption");
     public LocalizedString DialogFileNdsOpenFilter => LocalizedString.FromId("Dialog.File.Nds.Open.Filter");

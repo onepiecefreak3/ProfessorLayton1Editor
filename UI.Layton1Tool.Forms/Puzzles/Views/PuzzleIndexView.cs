@@ -23,7 +23,7 @@ using UI.Layton1Tool.Forms.Text;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.Enums;
 
-namespace UI.Layton1Tool.Forms.Views;
+namespace UI.Layton1Tool.Forms.Puzzles.Views;
 
 internal partial class PuzzleIndexView
 {
@@ -222,7 +222,7 @@ internal partial class PuzzleIndexView
         RenderLocationText(image, location);
         RenderBottomTitleText(image, title);
 
-        _indexImageBox.Image = ImageResource.FromImage(image);
+        _indexImageBox.SetImage(ImageResource.FromImage(image));
     }
 
     private void RenderTopTitleText(Image<Rgba32> image, string title)

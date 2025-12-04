@@ -78,9 +78,7 @@ partial class AnimationPlayer : Component
         if (!_isPlaying)
             return;
 
-        float frameSpeed = animationState.FrameSpeed;
-        while (frameSpeed > 0)
-            frameSpeed -= Step(animationState, frameSpeed);
+        _animationManager.Step(animationState);
     }
 
     protected override int GetContentHeight(int parentWidth, int parentHeight, float layoutCorrection = 1)

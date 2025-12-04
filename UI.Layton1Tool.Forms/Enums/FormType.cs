@@ -3,5 +3,6 @@
 enum FormType
 {
     Nds,
-    Puzzle
+    Puzzle,
+    Room
 }

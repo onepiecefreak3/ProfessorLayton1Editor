@@ -22,6 +22,16 @@ class Layton1NdsFileManager(
         return file is not null;
     }
 
+    public bool TryGetDirectory(Layton1NdsRom rom, string path, [NotNullWhen(true)] out Layton1NdsFile[]? files)
+    {
+        files = rom.Files.Where(f => f.Path.StartsWith(path, StringComparison.InvariantCulture)).ToArray();
+
+        if (files.Length is 0)
+            files = null;
+
+        return files is not null;
+    }
+
     public Layton1NdsFile Add(Layton1NdsRom rom, string path, object content, FileType type, CompressionType compression)
     {
         var file = new Layton1NdsContentFile

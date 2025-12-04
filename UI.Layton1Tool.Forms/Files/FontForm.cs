@@ -322,7 +322,7 @@ partial class FontForm : Component
     {
         _generatedPreview = GeneratePreview();
 
-        _textPreview.Image = (_generatedPreview is null ? null : ImageResource.FromImage(_generatedPreview))!;
+        _textPreview.SetImage((_generatedPreview is null ? null : ImageResource.FromImage(_generatedPreview))!);
     }
 
     private Image<Rgba32>? GeneratePreview()

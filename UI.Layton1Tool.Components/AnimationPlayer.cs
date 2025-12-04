@@ -3,7 +3,9 @@ using System.Globalization;
 using CrossCutting.Core.Contract.EventBrokerage;
 using ImGui.Forms.Resources;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
+using UI.Layton1Tool.Components.Contract;
 using UI.Layton1Tool.Components.Contract.DataClasses;
+using UI.Layton1Tool.Components.Contract.Enums;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Resources.Contract;
@@ -15,17 +17,20 @@ partial class AnimationPlayer
     private readonly Layton1NdsInfo _ndsInfo;
     private readonly IEventBroker _eventBroker;
     private readonly IImageProvider _images;
+    private readonly IAnimationStateManager _animationManager;
 
     private AnimationState? _animationState;
     private bool _isPlaying = true;
 
-    public AnimationPlayer(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILocalizationProvider localizations, IImageProvider images)
+    public AnimationPlayer(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILocalizationProvider localizations, IImageProvider images,
+        IAnimationStateManager animationManager)
     {
         InitializeComponent(localizations, images);
 
         _ndsInfo = ndsInfo;
         _eventBroker = eventBroker;
         _images = images;
+        _animationManager = animationManager;
 
         _speedInput!.TextChanged += _speedInput_TextChanged;
         _playButton!.Clicked += _playButton_Clicked;
@@ -49,14 +54,10 @@ partial class AnimationPlayer
 
         if (_animationState is null || _animationState.Animations != message.AnimationSequences)
         {
-            var loadedImages = new ImageResource[message.AnimationSequences.Frames.Length];
-            for (var i = 0; i < loadedImages.Length; i++)
-                loadedImages[i] = ImageResource.FromImage(message.AnimationSequences.Frames[i].Image);
-
             _animationState = new AnimationState
             {
                 Animations = message.AnimationSequences,
-                Images = loadedImages,
+                Images = message.AnimationSequences.Frames.Select(f => ImageResource.FromImage(f.Image)).ToArray(),
                 FrameSpeed = 1f
             };
         }
@@ -86,12 +87,7 @@ partial class AnimationPlayer
         if (_animationState?.ActiveAnimation is null)
             return;
 
-        if (_animationState.StepCounter + 1 >= _animationState.ActiveAnimation.Steps.Length)
-            return;
-
-        _animationState.TotalFrameCounter += _animationState.ActiveAnimation.Steps[_animationState.StepCounter].FrameCounter - _animationState.FrameCounter;
-        _animationState.FrameCounter = 0;
-        _animationState.StepCounter++;
+        _animationManager.Increment(_animationState, AnimationUnit.Step);
 
         UpdatePlayButtons();
     }
@@ -101,24 +97,7 @@ partial class AnimationPlayer
         if (_animationState?.ActiveAnimation is null)
             return;
 
-        int totalFrames = _animationState.ActiveAnimation.Steps.Sum(x => x.FrameCounter);
-
-        _animationState.TotalFrameCounter = Math.Min(totalFrames - 1, _animationState.TotalFrameCounter + 1);
-
-        AnimationStep step = _animationState.ActiveAnimation.Steps[_animationState.StepCounter];
-
-        if (_animationState.FrameCounter + 1 >= step.FrameCounter)
-        {
-            if (_animationState.StepCounter + 1 >= _animationState.ActiveAnimation.Steps.Length)
-                return;
-
-            _animationState.StepCounter = Math.Min(_animationState.ActiveAnimation.Steps.Length - 1, _animationState.StepCounter + 1);
-            _animationState.FrameCounter = 0;
-        }
-        else
-        {
-            _animationState.FrameCounter++;
-        }
+        _animationManager.Increment(_animationState, AnimationUnit.Frame);
 
         UpdatePlayButtons();
     }
@@ -128,20 +107,7 @@ partial class AnimationPlayer
         if (_animationState?.ActiveAnimation is null)
             return;
 
-        _animationState.TotalFrameCounter = Math.Max(0, _animationState.TotalFrameCounter - 1);
-
-        if (_animationState.FrameCounter <= 0)
-        {
-            if (_animationState.StepCounter <= 0)
-                return;
-
-            AnimationStep step = _animationState.ActiveAnimation.Steps[_animationState.StepCounter - 1];
-
-            _animationState.StepCounter--;
-            _animationState.FrameCounter = step.FrameCounter;
-        }
-
-        _animationState.FrameCounter--;
+        _animationManager.Decrement(_animationState, AnimationUnit.Frame);
 
         UpdatePlayButtons();
     }
@@ -151,16 +117,7 @@ partial class AnimationPlayer
         if (_animationState?.ActiveAnimation is null)
             return;
 
-        if (_animationState.FrameCounter is not 0)
-        {
-            _animationState.TotalFrameCounter -= _animationState.FrameCounter;
-            _animationState.FrameCounter = 0;
-        }
-        else
-        {
-            _animationState.StepCounter = Math.Max(0, _animationState.StepCounter - 1);
-            _animationState.TotalFrameCounter -= _animationState.ActiveAnimation.Steps[_animationState.StepCounter].FrameCounter;
-        }
+        _animationManager.Decrement(_animationState, AnimationUnit.Step);
 
         UpdatePlayButtons();
     }
@@ -198,35 +155,6 @@ partial class AnimationPlayer
     {
         animationState = _animationState;
         return animationState is not null;
-    }
-
-    private static float Step(AnimationState animationState, float frameSpeed)
-    {
-        if (animationState.ActiveAnimation is null)
-            return frameSpeed;
-
-        int stepIndex = animationState.StepCounter;
-        if (stepIndex >= animationState.ActiveAnimation.Steps.Length)
-            return frameSpeed;
-
-        AnimationStep step = animationState.ActiveAnimation.Steps[stepIndex];
-
-        var stepTotalFrames = 0;
-        for (var i = 0; i < stepIndex; i++)
-            stepTotalFrames += animationState.ActiveAnimation.Steps[i].FrameCounter;
-
-        float maxFrameSpeed = Math.Min(frameSpeed, 1);
-
-        animationState.FrameCounter += maxFrameSpeed;
-        animationState.TotalFrameCounter = stepTotalFrames + animationState.FrameCounter;
-
-        if (animationState.FrameCounter < step.FrameCounter)
-            return maxFrameSpeed;
-
-        animationState.StepCounter = step.NextStepIndex;
-        animationState.FrameCounter = 0;
-
-        return maxFrameSpeed;
     }
 
     private void UpdatePlayButtons()
