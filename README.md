@@ -8,13 +8,13 @@ An editor for all versions of Professor Layton 1 on the Nintendo DS.
 <img width="1102" height="732" alt="file_script" src="https://github.com/user-attachments/assets/f5897210-912f-4d59-b1e1-bd232acae9a1" />
 <img width="1102" height="732" alt="file_text" src="https://github.com/user-attachments/assets/1b7e3c4e-6d27-429f-86c6-52adb35f7bfa" />
 
-## Puzzle Viewer
+## Puzzle Editor
 
 <img width="1102" height="732" alt="puzzles_title" src="https://github.com/user-attachments/assets/88280d63-a883-4dc9-a4da-9e89d7c4dc7d" />
 <img width="1102" height="732" alt="puzzles_description" src="https://github.com/user-attachments/assets/e53f522b-9910-4064-a985-7dff3f716eb7" />
 <img width="1102" height="732" alt="puzzles_script" src="https://github.com/user-attachments/assets/41eab2d0-9bd5-40f9-ae92-4950a23b1245" />
 
-## Room Viewer
+## Room Editor
 
 <img width="1102" height="732" alt="rooms_editor" src="https://github.com/user-attachments/assets/5299a97b-0b4d-44bc-a822-0e80563e9c15" />
 
