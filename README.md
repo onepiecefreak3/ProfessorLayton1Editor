@@ -1,12 +1,24 @@
 # ProfessorLayton1Editor
 An editor for all versions of Professor Layton 1 on the Nintendo DS.
 
-## Screenshots
+## File Viewer
 
-<img width="1102" height="732" alt="show_image" src="https://github.com/user-attachments/assets/b9d6205a-6041-48d6-842e-300b061db432" />
-<img width="1102" height="732" alt="show_anim" src="https://github.com/user-attachments/assets/a0a79df7-7532-466d-a7bf-311908d04e8a" />
-<img width="1102" height="732" alt="show_script" src="https://github.com/user-attachments/assets/489aa3cc-3c5f-4e9e-b101-8ade6555262e" />
-<img width="1102" height="732" alt="show_text" src="https://github.com/user-attachments/assets/b9ada3d8-80bc-46fa-adee-e9b2add46b1c" />
+<img width="1102" height="732" alt="file_bgx" src="https://github.com/user-attachments/assets/a97fb419-54b0-480c-b404-db05204dc3db" />
+<img width="1102" height="732" alt="show_anim" src="https://github.com/user-attachments/assets/5d9b867d-346b-48f8-aab8-032a9ba8c043" />
+<img width="1102" height="732" alt="file_script" src="https://github.com/user-attachments/assets/f5897210-912f-4d59-b1e1-bd232acae9a1" />
+<img width="1102" height="732" alt="file_text" src="https://github.com/user-attachments/assets/1b7e3c4e-6d27-429f-86c6-52adb35f7bfa" />
 
-<img width="1102" height="732" alt="show_validation" src="https://github.com/user-attachments/assets/02cf5c70-2767-456b-8ab5-521e7f4c72ed" />
-<img width="1102" height="732" alt="show_search" src="https://github.com/user-attachments/assets/15dcaad6-1766-4506-b6f4-f5fbfa2a6e46" />
+## Puzzle Viewer
+
+<img width="1102" height="732" alt="puzzles_title" src="https://github.com/user-attachments/assets/88280d63-a883-4dc9-a4da-9e89d7c4dc7d" />
+<img width="1102" height="732" alt="puzzles_description" src="https://github.com/user-attachments/assets/e53f522b-9910-4064-a985-7dff3f716eb7" />
+<img width="1102" height="732" alt="puzzles_script" src="https://github.com/user-attachments/assets/41eab2d0-9bd5-40f9-ae92-4950a23b1245" />
+
+## Room Viewer
+
+<img width="1102" height="732" alt="rooms_editor" src="https://github.com/user-attachments/assets/5299a97b-0b4d-44bc-a822-0e80563e9c15" />
+
+## Dialogs
+
+<img width="1102" height="732" alt="dialog_validate" src="https://github.com/user-attachments/assets/3f10916c-aa91-4f1a-a4a8-a96730babb10" />
+<img width="1102" height="732" alt="dialog_search" src="https://github.com/user-attachments/assets/8770a7b6-2a7b-4ae2-9eac-17a3486a13d3" />
