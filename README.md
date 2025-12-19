@@ -16,7 +16,7 @@ An editor for all versions of Professor Layton 1 on the Nintendo DS.
 
 ## Room Editor
 
-<img width="1102" height="732" alt="rooms_editor" src="https://github.com/user-attachments/assets/5299a97b-0b4d-44bc-a822-0e80563e9c15" />
+<img width="1102" height="732" alt="room-editor" src="https://github.com/user-attachments/assets/9e877943-2ede-4608-91a0-60d13879cd99" />
 
 ## Dialogs
 
