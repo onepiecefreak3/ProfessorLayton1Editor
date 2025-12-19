@@ -3,7 +3,7 @@ using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Scripts;
 using Logic.Business.Layton1ToolManagement.InternalContract.Scripts;
 using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses;
-using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
+using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Layton1;
 
 namespace Logic.Business.Layton1ToolManagement.Scripts;
 
@@ -11,7 +11,7 @@ class Layton1ScriptInstructionManager(ILayton1ScriptInstructionDescriptionProvid
 {
     private readonly Regex _subPattern = new("^sub[0-9]+$", RegexOptions.Compiled);
 
-    public Layton1ScriptInstruction? GetInstruction(MethodInvocationStatementSyntax invocation, string gameCode)
+    public Layton1ScriptInstruction? GetInstruction(MethodInvocationExpressionSyntax invocation, string gameCode)
     {
         int instructionType;
 

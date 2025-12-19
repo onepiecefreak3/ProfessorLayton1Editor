@@ -8,6 +8,7 @@ public interface IImageProvider
 {
     Image<Rgba32> Icon { get; }
     ThemedImageResource SearchClear { get; }
+    ThemedImageResource Add { get; }
     ThemedImageResource Save { get; }
     ThemedImageResource SaveAs { get; }
     ThemedImageResource Play { get; }

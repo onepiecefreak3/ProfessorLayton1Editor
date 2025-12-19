@@ -20,6 +20,7 @@ internal partial class RoomForm : Component
 
     private ImageButton _saveButton;
     private ImageButton _saveAsButton;
+    private ImageButton _addButton;
 
     private ComboBox<TextLanguage> _languageCombo;
 
@@ -46,6 +47,12 @@ internal partial class RoomForm : Component
 
         _languageCombo = new ComboBox<TextLanguage> { MaxShowItems = 5 };
 
+        _addButton = new ImageButton(images.Add)
+        {
+            ImageSize = new Vector2(16),
+            Tooltip = localizations.RoomAddCaption,
+            KeyAction = new KeyCommand(ModifierKeys.Control | ModifierKeys.Shift, Key.A, localizations.RoomAddShortcut)
+        };
         _saveButton = new ImageButton(images.Save)
         {
             ImageSize = new Vector2(16),
@@ -82,6 +89,7 @@ internal partial class RoomForm : Component
                             {
                                 _saveButton,
                                 _saveAsButton,
+                                _addButton,
                                 new StackItem(_languageCombo) { Size = Size.WidthAlign, HorizontalAlignment = HorizontalAlignment.Right }
                             }
                         },
@@ -90,23 +98,23 @@ internal partial class RoomForm : Component
                 },
                 new StackLayout
                 {
-                    Alignment = Alignment.Horizontal,
+                    Alignment = Alignment.Vertical,
                     Size = Size.Parent,
                     ItemSpacing = 5,
                     Items =
                     {
+                        new StackItem(_roomFlagsForm){Size = new Size(SizeValue.Parent, .15f)},
                         new StackLayout
                         {
-                            Alignment = Alignment.Vertical,
-                            Size = Size.Parent,
+                            Alignment = Alignment.Horizontal,
+                            Size = new Size(SizeValue.Parent, .85f),
                             ItemSpacing = 5,
                             Items =
                             {
-                                new StackItem(_roomParamForm) { Size = new Size(SizeValue.Parent, SizeValue.Relative(.8f)) },
-                                new StackItem(_roomFlagsForm) { Size = new Size(SizeValue.Parent, SizeValue.Relative(.2f)) }
+                                _roomParamForm,
+                                _roomRenderForm
                             }
-                        },
-                        _roomRenderForm
+                        }
                     }
                 }
             }

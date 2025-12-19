@@ -37,6 +37,8 @@ public interface ILocalizationProvider
     LocalizedString PuzzleLanguageKoreanText { get; }
     LocalizedString PuzzleLanguageJapaneseText { get; }
 
+    LocalizedString PuzzleAddCaption { get; }
+    LocalizedString PuzzleAddShortcut { get; }
     LocalizedString PuzzleInfoInternalIdText { get; }
     LocalizedString PuzzleInfoNumberText { get; }
     LocalizedString PuzzleInfoTitleText { get; }
@@ -48,11 +50,23 @@ public interface ILocalizationProvider
     LocalizedString PuzzleInfoIncorrectText { get; }
     LocalizedString PuzzleInfoHintsText { get; }
 
-    LocalizedString RoomFlagCaption(int flag);
+    LocalizedString RoomAddCaption { get; }
+    LocalizedString RoomAddShortcut { get; }
     LocalizedString RoomRenderTextBoxes { get; }
     LocalizedString RoomRenderHintBoxes { get; }
     LocalizedString RoomRenderObjectBoxes { get; }
     LocalizedString RoomRenderMovementArrows { get; }
+
+    LocalizedString ScriptReturnText { get; }
+    LocalizedString ScriptSolvedText { get; }
+    LocalizedString ScriptStateText { get; }
+    LocalizedString ScriptPuzzleSolvedCountText { get; }
+    LocalizedString ScriptPuzzleCaption(int puzzleId);
+    LocalizedString ScriptDialogIndexText { get; }
+    LocalizedString ScriptPuzzleSeenText { get; }
+    LocalizedString ScriptPuzzleSolvedText { get; }
+    LocalizedString ScriptPuzzleFinalSolvedText { get; }
+    LocalizedString ScriptFlagText(int flagId);
 
     LocalizedString DialogFileNdsOpenCaption { get; }
     LocalizedString DialogFileNdsOpenFilter { get; }

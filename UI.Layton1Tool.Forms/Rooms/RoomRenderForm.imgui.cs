@@ -66,8 +66,8 @@ internal partial class RoomRenderForm : Component
         {
             Items =
             {
-                _settingsLayout,
-                _viewForm
+                _viewForm,
+                _settingsLayout
             }
         };
     }

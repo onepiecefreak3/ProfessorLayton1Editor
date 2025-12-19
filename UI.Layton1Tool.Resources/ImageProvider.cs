@@ -10,6 +10,7 @@ class ImageProvider : IImageProvider
 {
     private const string IconResource_ = "UI.Layton1Tool.Resources.resources.images.layton1tool.png";
     private const string CloseResource_ = "UI.Layton1Tool.Resources.resources.images.close.png";
+    private const string AddResource_ = "UI.Layton1Tool.Resources.resources.images.add.png";
     private const string SaveResource_ = "UI.Layton1Tool.Resources.resources.images.save.png";
     private const string SaveAsResource_ = "UI.Layton1Tool.Resources.resources.images.save_as.png";
     private const string PlayResource_ = "UI.Layton1Tool.Resources.resources.images.play.png";
@@ -26,6 +27,7 @@ class ImageProvider : IImageProvider
 
     public Image<Rgba32> Icon => FromResource(IconResource_);
     public ThemedImageResource SearchClear => new(GetImageResource(CloseResource_), GetImageResource(CloseResource_));
+    public ThemedImageResource Add => new(GetImageResource(AddResource_), GetImageResource(AddResource_));
     public ThemedImageResource Save => new(GetImageResource(SaveResource_), GetImageResource(SaveResource_));
     public ThemedImageResource SaveAs => new(GetImageResource(SaveAsResource_), GetImageResource(SaveAsResource_));
     public ThemedImageResource Play => new(GetImageResource(PlayResource_), GetImageResource(PlayResource_));

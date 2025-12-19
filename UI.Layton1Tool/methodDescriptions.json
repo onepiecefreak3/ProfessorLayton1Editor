@@ -1,12 +1,12 @@
 {
   "A5FP": {
     "5": {
-      "Name": "fade_out",
+      "Name": "fadeOut",
       "Description": "Fades the top and bottom screen out to black.",
       "Parameters": []
     },
     "11": {
-      "Name": "draw_image_bottom",
+      "Name": "drawImageBottom",
       "Description": "Draws an image on the bottom screen.",
       "Parameters": [
         {
@@ -22,7 +22,7 @@
       ]
     },
     "12": {
-      "Name": "draw_image_top",
+      "Name": "drawImageTop",
       "Description": "Draws an image on the top screen.",
       "Parameters": [
         {
@@ -38,23 +38,12 @@
       ]
     },
     "15": {
-      "Name": "fade_in",
+      "Name": "fadeIn",
       "Description": "Fades the top and bottom screen in from black.",
       "Parameters": []
     },
-    "23": {
-      "Name": "jump",
-      "Description": "Unconditionally jump to the given label.",
-      "Parameters": [
-        {
-          "Name": "label",
-          "Type": "string",
-          "Description": "The label to jump to."
-        }
-      ]
-    },
     "34": {
-      "Name": "set_room_movement",
+      "Name": "setRoomMovement",
       "Description": "Sets up a movement to another 'room'.",
       "Parameters": [
         {
@@ -100,7 +89,7 @@
       ]
     },
     "67": {
-      "Name": "set_room_text",
+      "Name": "setRoomText",
       "Description": "Sets up an area in a 'room' that triggers descriptive text.",
       "Parameters": [
         {
@@ -141,18 +130,43 @@
       ]
     },
     "72": {
-      "Name": "set_flag2",
-      "Description": "Set the given flag.",
+      "Name": "setPuzzleId",
+      "Description": "Set the id of the active puzzle.",
       "Parameters": [
         {
-          "Name": "flag",
+          "Name": "puzzleId",
           "Type": "int",
-          "Description": "The flag to set."
+          "Description": "The internal puzzle id."
         }
       ]
     },
+    "73": {
+      "Name": "isPuzzleSeen",
+      "Description": "Checks if the active puzzle is encountered.",
+      "Parameters": []
+    },
+    "74": {
+      "Name": "isScriptInit",
+      "Description": "Checks if the script is initially executed, like from an object in a room.",
+      "Parameters": []
+    },
+    "75": {
+      "Name": "isScriptReturn",
+      "Description": "Checks if the script is returned to, like from a puzzle.",
+      "Parameters": []
+    },
+    "77": {
+      "Name": "isScriptSolved",
+      "Description": "Checks if the puzzle the script was returned to is solved.",
+      "Parameters": []
+    },
+    "78": {
+      "Name": "isPuzzleFinalSolved",
+      "Description": "Checks if the active puzzle was solved by a previous script.",
+      "Parameters": []
+    },
     "80": {
-      "Name": "set_room_event_object",
+      "Name": "setRoomEvent",
       "Description": "Sets up event objects in a 'room'.",
       "Parameters": [
         {
@@ -187,24 +201,30 @@
         }
       ]
     },
+    "84": {
+      "Name": "isPuzzleSolved",
+      "Description": "Checks if the given puzzle is solved.",
+      "Parameters": [
+        {
+          "Name": "puzzleId",
+          "Type": "int",
+          "Description": "The puzzle to check."
+        }
+      ]
+    },
     "88": {
-      "Name": "jump_on_unset_flag1",
-      "Description": "When the given flag is set, jump to the specified label.",
+      "Name": "isFlag1Unset",
+      "Description": "If the given flag is not set.",
       "Parameters": [
         {
           "Name": "flag",
           "Type": "int",
           "Description": "The flag to check the state of."
-        },
-        {
-          "Name": "label",
-          "Type": "string",
-          "Description": "The label to jump to, if the flag is set."
         }
       ]
     },
     "90": {
-      "Name": "set_room_map",
+      "Name": "setRoomMap",
       "Description": "Sets up the map view in a 'room' on the top screen.",
       "Parameters": [
         {
@@ -235,7 +255,7 @@
       ]
     },
     "92": {
-      "Name": "set_room_animation",
+      "Name": "setRoomAnimation",
       "Description": "Sets up an animation in a 'room' that plays as part of the environment.",
       "Parameters": [
         {
@@ -256,7 +276,7 @@
       ]
     },
     "96": {
-      "Name": "set_flag1",
+      "Name": "setFlag1",
       "Description": "Set the given flag.",
       "Parameters": [
         {
@@ -267,23 +287,18 @@
       ]
     },
     "99": {
-      "Name": "jump_on_state",
-      "Description": "When the game is in the given state, jump to the specified label.",
+      "Name": "isStateSet",
+      "Description": "If the game is in the given state.",
       "Parameters": [
         {
           "Name": "state",
           "Type": "int",
           "Description": "The state the game has to be in."
-        },
-        {
-          "Name": "label",
-          "Type": "string",
-          "Description": "The label to jump to, if the flag is set."
         }
       ]
     },
     "104": {
-      "Name": "set_room_hint_coin",
+      "Name": "setRoomHintCoin",
       "Description": "Sets a hint coin in a 'room'.",
       "Parameters": [
         {
@@ -318,24 +333,30 @@
         }
       ]
     },
+    "119": {
+      "Name": "isPuzzleSolvedCount",
+      "Description": "If the given amount of puzzles is solved.",
+      "Parameters": [
+        {
+          "Name": "count",
+          "Type": "int",
+          "Description": "The amount of puzzles to be solved."
+        }
+      ]
+    },
     "141": {
-      "Name": "jump_on_unset_flag2",
-      "Description": "When the given flag is set, jump to the specified label.",
+      "Name": "isFlag2Unset",
+      "Description": "If the given flag is not set.",
       "Parameters": [
         {
           "Name": "flag",
           "Type": "int",
           "Description": "The flag to check the state of."
-        },
-        {
-          "Name": "label",
-          "Type": "string",
-          "Description": "The label to jump to, if the flag is set."
         }
       ]
     },
     "186": {
-      "Name": "set_puzzle_name",
+      "Name": "setPuzzleName",
       "Description": "Sets the name of a puzzle.",
       "Parameters": [
         {
@@ -350,8 +371,13 @@
         }
       ]
     },
+    "193": {
+      "Name": "receivedUserInput",
+      "Description": "Checks if the user generated an input.",
+      "Parameters": []
+    },
     "195": {
-      "Name": "set_puzzle_picarat",
+      "Name": "setPuzzlePicarat",
       "Description": "Sets the picarat of a puzzle.",
       "Parameters": [
         {
@@ -376,8 +402,19 @@
         }
       ]
     },
+    "218": {
+      "Name": "isDialogItemSelected",
+      "Description": "Checks if the dialog item at the given index is selected.",
+      "Parameters": [
+        {
+          "Name": "index",
+          "Type": "int",
+          "Description": "The index to check for selection."
+        }
+      ]
+    },
     "220": {
-      "Name": "set_puzzle_info",
+      "Name": "setPuzzleInfo",
       "Description": "Sets the type and location of a puzzle.",
       "Parameters": [
         {

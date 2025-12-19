@@ -38,6 +38,8 @@ internal class LocalizationProvider : ILocalizationProvider
     public LocalizedString PuzzleLanguageKoreanText => LocalizedString.FromId("Puzzle.Language.Korean.Text");
     public LocalizedString PuzzleLanguageJapaneseText => LocalizedString.FromId("Puzzle.Language.Japanese.Text");
 
+    public LocalizedString PuzzleAddCaption => LocalizedString.FromId("Puzzle.Add.Caption");
+    public LocalizedString PuzzleAddShortcut => LocalizedString.FromId("Puzzle.Add.Shortcut");
     public LocalizedString PuzzleInfoInternalIdText => LocalizedString.FromId("Puzzle.Info.InternalId.Text");
     public LocalizedString PuzzleInfoNumberText => LocalizedString.FromId("Puzzle.Info.Number.Text");
     public LocalizedString PuzzleInfoTitleText => LocalizedString.FromId("Puzzle.Info.Title.Text");
@@ -49,11 +51,23 @@ internal class LocalizationProvider : ILocalizationProvider
     public LocalizedString PuzzleInfoIncorrectText => LocalizedString.FromId("Puzzle.Info.Incorrect.Text");
     public LocalizedString PuzzleInfoHintsText => LocalizedString.FromId("Puzzle.Info.Hints.Text");
 
-    public LocalizedString RoomFlagCaption(int flag) => LocalizedString.FromId("Room.Flag.Text", () => flag);
+    public LocalizedString RoomAddCaption => LocalizedString.FromId("Room.Add.Caption");
+    public LocalizedString RoomAddShortcut => LocalizedString.FromId("Room.Add.Shortcut");
     public LocalizedString RoomRenderTextBoxes => LocalizedString.FromId("Room.Render.TextBoxes");
     public LocalizedString RoomRenderHintBoxes => LocalizedString.FromId("Room.Render.HintBoxes");
     public LocalizedString RoomRenderObjectBoxes => LocalizedString.FromId("Room.Render.ObjectBoxes");
     public LocalizedString RoomRenderMovementArrows => LocalizedString.FromId("Room.Render.MovementArrows");
+
+    public LocalizedString ScriptReturnText => LocalizedString.FromId("Script.Return.Text");
+    public LocalizedString ScriptSolvedText => LocalizedString.FromId("Script.Solved.Text");
+    public LocalizedString ScriptStateText => LocalizedString.FromId("Script.State.Text");
+    public LocalizedString ScriptPuzzleSolvedCountText => LocalizedString.FromId("Script.Puzzle.Solved.Count.Text");
+    public LocalizedString ScriptPuzzleCaption(int puzzleId) => LocalizedString.FromId("Script.Puzzle.Caption", () => puzzleId);
+    public LocalizedString ScriptDialogIndexText => LocalizedString.FromId("Script.Dialog.Index.Text");
+    public LocalizedString ScriptPuzzleSeenText => LocalizedString.FromId("Script.Puzzle.Seen.Text");
+    public LocalizedString ScriptPuzzleSolvedText => LocalizedString.FromId("Script.Puzzle.Solved.Text");
+    public LocalizedString ScriptPuzzleFinalSolvedText => LocalizedString.FromId("Script.Puzzle.FinalSolved.Text");
+    public LocalizedString ScriptFlagText(int flagId) => LocalizedString.FromId("Script.Flag.Text", () => flagId);
 
     public LocalizedString DialogFileNdsOpenCaption => LocalizedString.FromId("Dialog.File.Nds.Open.Caption");
     public LocalizedString DialogFileNdsOpenFilter => LocalizedString.FromId("Dialog.File.Nds.Open.Filter");

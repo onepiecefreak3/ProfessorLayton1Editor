@@ -14,6 +14,7 @@ using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
 using Logic.Business.Layton1ToolManagement.Contract.Enums.Texts;
 using Logic.Business.Layton1ToolManagement.Contract.Files;
+using Logic.Business.Layton1ToolManagement.Contract.Scripts;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
 using Logic.Domain.Level5Management.Contract.DataClasses.Archives;
 using Logic.Domain.Level5Management.Contract.DataClasses.Script.Gds;
@@ -40,12 +41,13 @@ internal partial class RoomView
     private readonly ILayton1NdsFileManager _fileManager;
     private readonly ILayton1PcmFileManager _pcmManager;
     private readonly ILayton1PathProvider _pathProvider;
+    private readonly ILayton1ScriptReducer _scriptReducer;
     private readonly IAnimationStateManager _animationManager;
     private readonly IFontProvider _fontProvider;
 
     private int? _roomId;
     private TextLanguage? _language;
-    private RoomFlagStates? _states;
+    private GameState? _states;
     private RoomRenderSettings? _settings;
 
     private int? _mapId;
@@ -68,13 +70,14 @@ internal partial class RoomView
     private GdsScriptFile? _script;
 
     public RoomView(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1NdsFileManager fileManager, ILayton1PcmFileManager pcmManager,
-        ILayton1PathProvider pathProvider, IAnimationStateManager animationManager, IFontProvider fontProvider)
+        ILayton1PathProvider pathProvider, ILayton1ScriptReducer scriptReducer, IAnimationStateManager animationManager, IFontProvider fontProvider)
     {
         _ndsInfo = ndsInfo;
         _eventBroker = eventBroker;
         _fileManager = fileManager;
         _pcmManager = pcmManager;
         _pathProvider = pathProvider;
+        _scriptReducer = scriptReducer;
         _animationManager = animationManager;
         _fontProvider = fontProvider;
 
@@ -277,7 +280,7 @@ internal partial class RoomView
         _settings = message.Settings;
     }
 
-    private void UpdateResources(GdsScriptFile script, int roomId, TextLanguage language, RoomFlagStates states)
+    private void UpdateResources(GdsScriptFile script, int roomId, TextLanguage language, GameState states)
     {
         var hasMap = false;
         var hasRoomImage = false;
@@ -294,84 +297,11 @@ internal partial class RoomView
 
         _ = SetupRoomImageResource(roomId);
 
-        var jumped = false;
-        var negate = false;
-        for (var i = 0; i < script.Instructions.Count; i++)
+        var reducedInstructions = _scriptReducer.Reduce(script, states);
+
+        foreach (GdsScriptInstruction instruction in reducedInstructions)
         {
-            GdsScriptInstruction instruction = script.Instructions[i];
-
-            var negateLocal = negate;
-            negate = false;
-
-            if (instruction.Type is not 0)
-            {
-                if (instruction.Type is 8)
-                    negate = true;
-            }
-            else if (instruction.Arguments.Length > 1 && instruction.Arguments[0].Value is 23)
-            {
-                if (jumped)
-                {
-                    jumped = false;
-                    continue;
-                }
-
-                jumped = false;
-
-                if (instruction.Arguments[1].Value is not string label)
-                    continue;
-
-                int targetInstructionIndex = script.Instructions.FindIndex(x => x.Jump?.Label == label);
-                if (targetInstructionIndex >= 0)
-                    i = targetInstructionIndex - 1;
-            }
-            else if (instruction.Arguments.Length > 2 && instruction.Arguments[0].Value is 88 or 141 or 99)
-            {
-                jumped = false;
-
-                string label;
-                if (instruction.Arguments[0].Value is 88 or 141)
-                {
-                    IDictionary<int, bool> flags = instruction.Arguments[0].Value switch
-                    {
-                        88 => states.Flags1,
-                        141 => states.Flags2,
-                        _ => new Dictionary<int, bool>()
-                    };
-
-                    if (instruction.Arguments[1].Value is not int flag)
-                        continue;
-
-                    if (negateLocal ? flags.TryGetValue(flag, out bool toggle1) && !toggle1 : flags.TryGetValue(flag, out bool toggle) && toggle)
-                        continue;
-
-                    if (instruction.Arguments[2].Value is not string label1)
-                        continue;
-
-                    label = label1;
-                }
-                else
-                {
-                    if (instruction.Arguments[1].Value is not int state)
-                        continue;
-
-                    if (negateLocal ? states.State != state : states.State == state)
-                        continue;
-
-                    if (instruction.Arguments[2].Value is not string label1)
-                        continue;
-
-                    label = label1;
-                }
-
-                int targetInstructionIndex = script.Instructions.FindIndex(x => x.Jump?.Label == label);
-                if (targetInstructionIndex >= 0)
-                {
-                    i = targetInstructionIndex - 1;
-                    jumped = true;
-                }
-            }
-            else if (instruction.Arguments.Length > 1 && instruction.Arguments[0].Value is 11)
+            if (instruction.Arguments.Length > 1 && instruction.Arguments[0].Value is 11)
             {
                 if (instruction.Arguments[1].Value is string imagePath)
                 {
@@ -617,7 +547,9 @@ internal partial class RoomView
         for (var j = 0; j < animations.Frames.Length; j++)
         {
             var options = new DrawingOptions { GraphicsOptions = new GraphicsOptions { AlphaCompositionMode = PixelAlphaCompositionMode.Src } };
-            Image<Rgba32> frame = animations.Frames[j].Image.Clone(c => c.Fill(options, new RecolorBrush(Color.FromRgb(0x00, 0xff, 0x0), Color.Transparent, .0f)));
+            Image<Rgba32> frame = animations.Frames[j].Image.Clone(c => c
+                .Fill(options, new RecolorBrush(Color.FromRgb(0x00, 0xff, 0x0), Color.Transparent, .0f))
+                .Fill(options, new RecolorBrush(Color.FromRgb(0x00, 0xf7, 0x0), Color.Transparent, .0f)));
 
             frames[j] = ImageResource.FromImage(frame);
         }

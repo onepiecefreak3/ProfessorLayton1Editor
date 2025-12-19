@@ -39,6 +39,8 @@
   "Puzzle.Language.Japanese.Text": "Japanese",
 
   // Puzzle Info
+  "Puzzle.Add.Caption": "Add Puzzle",
+  "Puzzle.Add.Shortcut": "Ctrl+Alt+A",
   "Puzzle.Info.InternalId.Text": "ID",
   "Puzzle.Info.Number.Text": "Number",
   "Puzzle.Info.Title.Text": "Title",
@@ -51,11 +53,24 @@
   "Puzzle.Info.Hints.Text": "Hints",
 
   // Room Info
-  "Room.Flag.Text": "Flag {0}",
+  "Room.Add.Caption": "Add Room",
+  "Room.Add.Shortcut": "Ctrl+Alt+A",
   "Room.Render.TextBoxes": "Show Text Areas",
   "Room.Render.HintBoxes": "Show Hint Coins",
   "Room.Render.ObjectBoxes": "Show Event Triggers",
   "Room.Render.MovementArrows": "Show Movements",
+
+  // Script Info
+  "Script.Return.Text": "Returned To Script",
+  "Script.Solved.Text": "Puzzle Just Solved",
+  "Script.State.Text": "State",
+  "Script.Puzzle.Solved.Count.Text": "Nr Solved",
+  "Script.Dialog.Index.Text": "Dialog Index",
+  "Script.Puzzle.Caption": "Puzzle {0}",
+  "Script.Puzzle.Seen.Text": "Seen",
+  "Script.Puzzle.Solved.Text": "Solved",
+  "Script.Puzzle.FinalSolved.Text": "Prev Solved",
+  "Script.Flag.Text": "Flag {0}",
 
   // Dialog
   "Dialog.File.Nds.Open.Caption": "Select a NDS ROM...",

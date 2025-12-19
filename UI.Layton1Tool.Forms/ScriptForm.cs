@@ -1,7 +1,7 @@
 ﻿using ImGui.Forms.Controls.Text.Editor;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Scripts;
-using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
+using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Layton1;
 using Logic.Domain.CodeAnalysisManagement.Contract.Level5;
 using Logic.Domain.Level5Management.Contract.DataClasses.Script.Gds;
 using UI.Layton1Tool.Forms.Contract;
@@ -17,12 +17,12 @@ internal abstract partial class ScriptForm
     private readonly ILayton1ScriptInstructionManager _instructionManager;
     private readonly ILayton1ScriptCodeUnitConverter _codeUnitConverter;
     private readonly ILayton1ScriptFileConverter _scriptFileConverter;
-    private readonly ILevel5ScriptParser _scriptParser;
-    private readonly ILevel5ScriptComposer _scriptComposer;
-    private readonly ILevel5ScriptWhitespaceNormalizer _whitespaceNormalizer;
+    private readonly ILayton1ScriptParser _scriptParser;
+    private readonly ILayton1ScriptComposer _scriptComposer;
+    private readonly ILayton1ScriptWhitespaceNormalizer _whitespaceNormalizer;
     private readonly IPositionManager _positionManager;
 
-    private MethodInvocationStatementSyntax? _selectedInvocation;
+    private MethodInvocationExpressionSyntax? _selectedInvocation;
     private int _selectedParameterIndex = -1;
 
     private CodeUnitSyntax? _codeUnit;
@@ -30,8 +30,8 @@ internal abstract partial class ScriptForm
     protected GdsScriptFile? Script { get; private set; }
 
     public ScriptForm(Layton1NdsInfo ndsInfo, ILayton1ScriptInstructionManager instructionManager, ILayton1ScriptCodeUnitConverter codeUnitConverter,
-        ILayton1ScriptFileConverter scriptFileConverter, ILevel5ScriptParser scriptParser, ILevel5ScriptComposer scriptComposer,
-        ILevel5ScriptWhitespaceNormalizer whitespaceNormalizer, IPositionManager positionManager)
+        ILayton1ScriptFileConverter scriptFileConverter, ILayton1ScriptParser scriptParser, ILayton1ScriptComposer scriptComposer,
+        ILayton1ScriptWhitespaceNormalizer whitespaceNormalizer, IPositionManager positionManager)
     {
         InitializeComponent();
 
@@ -118,7 +118,7 @@ internal abstract partial class ScriptForm
     {
         var hasInstructionInfoChanged = false;
 
-        MethodInvocationStatementSyntax? selectedInvocation = GetSelectedMethodInvocation(coordinate);
+        MethodInvocationExpressionSyntax? selectedInvocation = GetSelectedMethodInvocation(coordinate);
 
         if (_selectedInvocation != selectedInvocation)
         {
@@ -138,7 +138,7 @@ internal abstract partial class ScriptForm
             UpdateSelectedInstruction(selectedInvocation, selectedParameterIndex);
     }
 
-    private void UpdateSelectedInstruction(MethodInvocationStatementSyntax? invocation, int parameterIndex)
+    private void UpdateSelectedInstruction(MethodInvocationExpressionSyntax? invocation, int parameterIndex)
     {
         if (invocation is null)
         {
@@ -175,14 +175,13 @@ internal abstract partial class ScriptForm
         ToggleInstructionInfo(true);
     }
 
-    private MethodInvocationStatementSyntax? GetSelectedMethodInvocation(Coordinate coordinate)
+    private MethodInvocationExpressionSyntax? GetSelectedMethodInvocation(Coordinate coordinate)
     {
-        if (_codeUnit is null)
-            return null;
+        return _codeUnit?.MethodDeclaration is null ? null : GetSelectedMethodInvocation(coordinate, _codeUnit.MethodDeclaration.Body.Statements);
+    }
 
-        MethodDeclarationBodySyntax body = _codeUnit.MethodDeclarations[0].Body;
-
-        IReadOnlyList<StatementSyntax> statements = body.Expressions;
+    private MethodInvocationExpressionSyntax? GetSelectedMethodInvocation(Coordinate coordinate, IReadOnlyList<StatementSyntax> statements)
+    {
         if (statements.Count <= 0)
             return null;
 
@@ -191,24 +190,79 @@ internal abstract partial class ScriptForm
 
         foreach (StatementSyntax statement in statements)
         {
-            if (statement is not MethodInvocationStatementSyntax invocation)
-                continue;
+            MethodInvocationExpressionSyntax? foundInvocation;
+            switch (statement)
+            {
+                case WhileStatementSyntax whileStatement:
+                    foundInvocation = GetSelectedMethodInvocation(coordinate, whileStatement.Expression) ??
+                                      GetSelectedMethodInvocation(coordinate, whileStatement.Body.Statements);
+                    break;
 
-            Coordinate startCoordinate = _scriptEditor.GetCharacterCoordinates(invocation.Span.Position);
-            if (_positionManager.Compare(coordinate, startCoordinate, PositionComparison.SmallerThan))
-                continue;
+                case IfStatementSyntax ifStatement:
+                    foundInvocation = GetSelectedMethodInvocation(coordinate, ifStatement.Expression) ??
+                                      GetSelectedMethodInvocation(coordinate, ifStatement.Body.Statements);
+                    break;
 
-            Coordinate endCoordinate = _scriptEditor.GetCharacterCoordinates(invocation.Span.EndPosition);
-            if (_positionManager.Compare(coordinate, endCoordinate, PositionComparison.GreaterThan))
-                continue;
+                case IfElseStatementSyntax ifElseStatement:
+                    foundInvocation = GetSelectedMethodInvocation(coordinate, ifElseStatement.Expression) ??
+                                      GetSelectedMethodInvocation(coordinate, ifElseStatement.Body.Statements) ??
+                                      GetSelectedMethodInvocation(coordinate, ifElseStatement.Else);
+                    break;
 
-            return invocation;
+                case MethodInvocationStatementSyntax invocation:
+                    foundInvocation = IsSelectedMethodInvocation(coordinate, invocation.Invocation) ? invocation.Invocation : null;
+                    break;
+
+                default:
+                    continue;
+            }
+
+            if (foundInvocation is not null)
+                return foundInvocation;
         }
 
         return null;
     }
 
-    private int GetSelectedParameterIndex(MethodInvocationStatementSyntax invocation, Coordinate coordinate)
+    private MethodInvocationExpressionSyntax? GetSelectedMethodInvocation(Coordinate coordinate, ElseSyntax elseSyntax)
+    {
+        return elseSyntax switch
+        {
+            ElseBodySyntax elseBody => GetSelectedMethodInvocation(coordinate, elseBody.Body.Statements),
+            ElseIfBodySyntax elseIfBody => GetSelectedMethodInvocation(coordinate, [elseIfBody.If]),
+            _ => null
+        };
+    }
+
+    private MethodInvocationExpressionSyntax? GetSelectedMethodInvocation(Coordinate coordinate, ExpressionSyntax conditionalExpression)
+    {
+        if (conditionalExpression is UnaryExpressionSyntax unaryExpression)
+            return GetSelectedMethodInvocation(coordinate, unaryExpression.Value);
+
+        if (conditionalExpression is MethodInvocationExpressionSyntax invocation)
+            return IsSelectedMethodInvocation(coordinate, invocation) ? invocation : null;
+
+        if (conditionalExpression is LogicalExpressionSyntax logicalExpression)
+            return GetSelectedMethodInvocation(coordinate, logicalExpression.Left) ??
+                   GetSelectedMethodInvocation(coordinate, logicalExpression.Right);
+
+        return null;
+    }
+
+    private bool IsSelectedMethodInvocation(Coordinate coordinate, MethodInvocationExpressionSyntax invocation)
+    {
+        Coordinate startCoordinate = _scriptEditor.GetCharacterCoordinates(invocation.Span.Position);
+        if (_positionManager.Compare(coordinate, startCoordinate, PositionComparison.SmallerThan))
+            return false;
+
+        Coordinate endCoordinate = _scriptEditor.GetCharacterCoordinates(invocation.Span.EndPosition);
+        if (_positionManager.Compare(coordinate, endCoordinate, PositionComparison.GreaterThan))
+            return false;
+
+        return true;
+    }
+
+    private int GetSelectedParameterIndex(MethodInvocationExpressionSyntax invocation, Coordinate coordinate)
     {
         if (invocation.Parameters.ParameterList is null)
             return 0;
@@ -218,7 +272,7 @@ internal abstract partial class ScriptForm
 
         for (var i = 0; i < invocation.Parameters.ParameterList.Elements.Count; i++)
         {
-            ValueExpressionSyntax parameter = invocation.Parameters.ParameterList.Elements[i];
+            LiteralExpressionSyntax parameter = invocation.Parameters.ParameterList.Elements[i];
 
             Coordinate startCoordinate = _scriptEditor.GetCharacterCoordinates(parameter.Span.Position);
             if (_positionManager.Compare(coordinate, startCoordinate, PositionComparison.SmallerThan))

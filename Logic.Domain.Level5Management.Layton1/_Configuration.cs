@@ -1,0 +1,3 @@
+﻿namespace Logic.Domain.Level5Management.Layton1;
+
+public class Level5ManagementLayton1Configuration;

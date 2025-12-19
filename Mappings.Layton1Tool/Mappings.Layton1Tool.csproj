@@ -18,6 +18,7 @@
     <ProjectReference Include="..\CrossCutting.Core.Settings\CrossCutting.Core.Settings.csproj" />
     <ProjectReference Include="..\Logic.Business.Layton1ToolManagement\Logic.Business.Layton1ToolManagement.csproj" />
     <ProjectReference Include="..\Logic.Domain.CodeAnalysisManagement\Logic.Domain.CodeAnalysisManagement.csproj" />
+    <ProjectReference Include="..\Logic.Domain.Level5Management.Layton1\Logic.Domain.Level5Management.Layton1.csproj" />
     <ProjectReference Include="..\Logic.Domain.Level5Management\Logic.Domain.Level5Management.csproj" />
     <ProjectReference Include="..\Logic.Domain.NintendoManagement\Logic.Domain.NintendoManagement.csproj" />
     <ProjectReference Include="..\UI.Layton1Tool.Components\UI.Layton1Tool.Components.csproj" />

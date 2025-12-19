@@ -56,6 +56,10 @@ public class Layton1ToolManagementActivator : IComponentActivator
         kernel.Register<ILayton1ScriptInstructionDescriptionProvider, Layton1ScriptInstructionDescriptionProvider>(ActivationScope.Unique);
         kernel.Register<ILayton1ScriptInstructionManager, Layton1ScriptInstructionManager>(ActivationScope.Unique);
 
+        kernel.Register<ILayton1ScriptReducer, Layton1ScriptReducer>(ActivationScope.Unique);
+        kernel.Register<ILayton1GdsFileBlockParser, Layton1GdsFileBlockParser>(ActivationScope.Unique);
+        kernel.Register<ILayton1CodeUnitBlockParser, Layton1CodeUnitBlockParser>(ActivationScope.Unique);
+
         kernel.Register<ILayton1PuzzleIdProvider, Layton1PuzzleIdProvider>(ActivationScope.Unique);
         kernel.Register<ILayton1PathProvider, Layton1PathProvider>(ActivationScope.Unique);
 

@@ -5,8 +5,8 @@ using CrossCutting.Core.Contract.DependencyInjection.DataClasses;
 using CrossCutting.Core.Contract.EventBrokerage;
 using Logic.Domain.CodeAnalysisManagement.Contract;
 using Logic.Domain.CodeAnalysisManagement.Contract.Level5;
-using Logic.Domain.CodeAnalysisManagement.Level5;
-using Logic.Domain.CodeAnalysisManagement.Level5.InternalContract.DataClasses;
+using Logic.Domain.CodeAnalysisManagement.Layton1;
+using Logic.Domain.CodeAnalysisManagement.Layton1.InternalContract.DataClasses;
 
 namespace Logic.Domain.CodeAnalysisManagement;
 
@@ -30,16 +30,16 @@ public class CodeAnalysisManagementActivator : IComponentActivator
 
     public void Register(ICoCoKernel kernel)
     {
-        kernel.Register<ITokenFactory<Level5SyntaxToken>, Level5ScriptFactory>(ActivationScope.Unique);
-        kernel.Register<ILexer<Level5SyntaxToken>, Level5ScriptLexer>();
-        kernel.Register<IBuffer<Level5SyntaxToken>, TokenBuffer<Level5SyntaxToken>>();
+        kernel.Register<ITokenFactory<Layton1SyntaxToken>, Layton1ScriptFactory>(ActivationScope.Unique);
+        kernel.Register<ILexer<Layton1SyntaxToken>, Layton1ScriptLexer>();
+        kernel.Register<IBuffer<Layton1SyntaxToken>, TokenBuffer<Layton1SyntaxToken>>();
         kernel.Register<IBuffer<int>, StringBuffer>();
 
-        kernel.Register<ILevel5ScriptParser, Level5ScriptParser>(ActivationScope.Unique);
-        kernel.Register<ILevel5ScriptComposer, Level5ScriptComposer>(ActivationScope.Unique);
-        kernel.Register<ILevel5ScriptWhitespaceNormalizer, Level5ScriptWhitespaceNormalizer>(ActivationScope.Unique);
+        kernel.Register<ILayton1ScriptParser, Layton1ScriptParser>(ActivationScope.Unique);
+        kernel.Register<ILayton1ScriptComposer, Layton1ScriptComposer>(ActivationScope.Unique);
+        kernel.Register<ILayton1ScriptWhitespaceNormalizer, Layton1ScriptWhitespaceNormalizer>(ActivationScope.Unique);
 
-        kernel.Register<ILevel5SyntaxFactory, Level5SyntaxFactory>();
+        kernel.Register<ILayton1SyntaxFactory, Layton1SyntaxFactory>();
 
         kernel.RegisterConfiguration<CodeAnalysisManagementConfiguration>();
     }

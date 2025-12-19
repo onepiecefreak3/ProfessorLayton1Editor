@@ -36,8 +36,6 @@ public class Level5ManagementActivator : IComponentActivator
     public void Register(ICoCoKernel kernel)
     {
         kernel.Register<IGdsScriptReader, GdsScriptReader>(ActivationScope.Unique);
-        kernel.Register<IGdsScriptParser, GdsScriptParser>(ActivationScope.Unique);
-        kernel.Register<IGdsScriptComposer, GdsScriptComposer>(ActivationScope.Unique);
         kernel.Register<IGdsScriptWriter, GdsScriptWriter>(ActivationScope.Unique);
 
         kernel.Register<IBgxReader, BgxReader>(ActivationScope.Unique);

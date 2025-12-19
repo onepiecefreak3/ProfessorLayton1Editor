@@ -20,8 +20,8 @@ internal class GdsForm : ScriptForm
     private Layton1NdsFile? _selectedFile;
 
     public GdsForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1NdsFileManager fileManager, ILayton1ScriptInstructionManager instructionManager,
-        ILayton1ScriptCodeUnitConverter codeUnitConverter, ILayton1ScriptFileConverter scriptFileConverter, ILevel5ScriptParser scriptParser,
-        ILevel5ScriptComposer scriptComposer, ILevel5ScriptWhitespaceNormalizer whitespaceNormalizer, IPositionManager positionManager)
+        ILayton1ScriptCodeUnitConverter codeUnitConverter, ILayton1ScriptFileConverter scriptFileConverter, ILayton1ScriptParser scriptParser,
+        ILayton1ScriptComposer scriptComposer, ILayton1ScriptWhitespaceNormalizer whitespaceNormalizer, IPositionManager positionManager)
         : base(ndsInfo, instructionManager, codeUnitConverter, scriptFileConverter, scriptParser, scriptComposer, whitespaceNormalizer, positionManager)
     {
         _ndsInfo = ndsInfo;

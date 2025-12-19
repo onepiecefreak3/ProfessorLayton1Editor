@@ -5,11 +5,13 @@ using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
 using Logic.Business.Layton1ToolManagement.Contract.Enums.Texts;
 using Logic.Business.Layton1ToolManagement.Contract.Files;
+using Logic.Business.Layton1ToolManagement.Contract.Scripts;
+using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Layton1;
+using Logic.Domain.CodeAnalysisManagement.Contract.Level5;
 using Logic.Domain.Level5Management.Contract.DataClasses.Script.Gds;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Messages;
-using UI.Layton1Tool.Messages.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
 
 namespace UI.Layton1Tool.Forms.Rooms;
@@ -25,9 +27,9 @@ internal partial class RoomForm
 
     private readonly HashSet<int> _changedRooms = [];
 
-    private int[]? _roomIds;
+    private List<int>? _roomIds;
     private int? _selectedRoomId;
-    private RoomFlagStates? _roomStates;
+    private GameState? _roomStates;
 
     public RoomForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1NdsFileManager fileManager, ILayton1PathProvider pathProvider,
         IFormFactory forms, IImageProvider images, ILocalizationProvider localizations, IColorProvider colors)
@@ -42,6 +44,7 @@ internal partial class RoomForm
 
         _saveButton!.Clicked += _saveButton_Clicked;
         _saveAsButton!.Clicked += _saveAsButton_Clicked;
+        _addButton!.Clicked += _addButton_Clicked;
         _roomTree!.SelectedNodeChanged += _roomTree_SelectedNodeChanged;
         _languageCombo!.SelectedItemChanged += _languageCombo_SelectedItemChanged;
 
@@ -55,6 +58,8 @@ internal partial class RoomForm
 
     public override void Destroy()
     {
+        _eventBroker.Unsubscribe<FileContentModifiedMessage>(ProcessFileContentModified);
+        _eventBroker.Unsubscribe<SelectedRoomParamsModifiedMessage>(ProcessSelectedRoomParamsModified);
         _eventBroker.Unsubscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
     }
 
@@ -66,6 +71,49 @@ internal partial class RoomForm
     private async void _saveButton_Clicked(object? sender, EventArgs e)
     {
         await Save(false);
+    }
+
+    private void _addButton_Clicked(object? sender, EventArgs e)
+    {
+        if (_roomIds is null)
+            return;
+
+        int newRoomId = _roomIds.Max() + 1;
+
+        string paramScriptPath = GetRoomParamsScriptPath(newRoomId);
+        string inScriptPath = _pathProvider.GetFullDirectory($"script/rooms/room{newRoomId}_in.gds", _ndsInfo.Rom.Version);
+        string outScriptPath = _pathProvider.GetFullDirectory($"script/rooms/room{newRoomId}_out.gds", _ndsInfo.Rom.Version);
+
+        GdsScriptFile script = CreateEmptyScript();
+
+        if (!_fileManager.TryGet(_ndsInfo.Rom, paramScriptPath, out _))
+        {
+            Layton1NdsFile newFile = _fileManager.Add(_ndsInfo.Rom, paramScriptPath, script, FileType.Gds, CompressionType.None);
+            RaiseFileAdded(newFile);
+        }
+
+        if (!_fileManager.TryGet(_ndsInfo.Rom, inScriptPath, out _))
+        {
+            Layton1NdsFile newFile = _fileManager.Add(_ndsInfo.Rom, inScriptPath, script, FileType.Gds, CompressionType.None);
+            RaiseFileAdded(newFile);
+        }
+
+        if (!_fileManager.TryGet(_ndsInfo.Rom, outScriptPath, out _))
+        {
+            Layton1NdsFile newFile = _fileManager.Add(_ndsInfo.Rom, outScriptPath, script, FileType.Gds, CompressionType.None);
+            RaiseFileAdded(newFile);
+        }
+
+        _roomIds.Add(newRoomId);
+        _changedRooms.Add(newRoomId);
+
+        _roomTree.Nodes.Add(new TreeNode<int>
+        {
+            Text = $"Room {newRoomId}",
+            Data = newRoomId
+        });
+
+        UpdateRoomList();
     }
 
     private void _roomTree_SelectedNodeChanged(object? sender, EventArgs e)
@@ -151,12 +199,12 @@ internal partial class RoomForm
         _eventBroker.Raise(new SelectedRoomLanguageChangedMessage(_ndsInfo.Rom, language));
     }
 
-    private void RaiseRoomScriptUpdated(int room, GdsScriptFile script, RoomFlagStates states)
+    private void RaiseRoomScriptUpdated(int room, GdsScriptFile script, GameState states)
     {
         _eventBroker.Raise(new RoomScriptUpdatedMessage(_roomParamForm, _ndsInfo.Rom, room, _languageCombo.SelectedItem.Content, script, states));
     }
 
-    private void RaiseSelectedRoomFlagsUpdated(int room, RoomFlagStates states)
+    private void RaiseSelectedRoomFlagsUpdated(int room, GameState states)
     {
         _eventBroker.Raise(new SelectedRoomFlagsUpdatedMessage(_ndsInfo.Rom, room, states));
     }
@@ -164,6 +212,11 @@ internal partial class RoomForm
     private void RaiseFileContentModified(Layton1NdsFile file, object? content)
     {
         _eventBroker.Raise(new FileContentModifiedMessage(this, file, content));
+    }
+
+    private void RaiseFileAdded(Layton1NdsFile file)
+    {
+        _eventBroker.Raise(new FileAddedMessage(this, file));
     }
 
     private async Task Save(bool saveAs)
@@ -200,7 +253,7 @@ internal partial class RoomForm
             roomIds.Add(roomId);
         }
 
-        _roomIds = roomIds.Order().ToArray();
+        _roomIds = roomIds.Order().ToList();
 
         foreach (int roomId in _roomIds)
         {
@@ -224,13 +277,13 @@ internal partial class RoomForm
         }
     }
 
-    private RoomFlagStates CreateFlagStates(GdsScriptFile script)
+    private GameState CreateFlagStates(GdsScriptFile script)
     {
-        var states = new RoomFlagStates
+        var states = new GameState
         {
-            Flags1 = new Dictionary<int, bool>(),
-            Flags2 = new Dictionary<int, bool>(),
-            State = 1
+            State = 1,
+            DialogIndex = 1,
+            SolvedCount = 0
         };
 
         foreach (GdsScriptInstruction instruction in script.Instructions)
@@ -243,25 +296,53 @@ internal partial class RoomForm
 
             switch (instruction.Arguments[0].Value)
             {
-                case 88:
+                case 72:
                     if (instruction.Arguments[1].Value is not int flag1)
                         break;
 
-                    states.Flags1[flag1] = false;
+                    states.Puzzles[flag1] = (false, false, false);
                     break;
 
-                case 141:
+                case 84:
+                    if (instruction.Arguments[1].Value is not int flag4)
+                        break;
+
+                    states.Puzzles[flag4] = (false, false, false);
+                    break;
+
+                case 119:
+                    if (instruction.Arguments[1].Value is not int solved)
+                        break;
+
+                    states.SolvedCount = solved;
+                    break;
+
+                case 88:
                     if (instruction.Arguments[1].Value is not int flag2)
                         break;
 
-                    states.Flags2[flag2] = false;
+                    states.ByteFlags[flag2] = false;
+                    break;
+
+                case 141:
+                    if (instruction.Arguments[1].Value is not int flag3)
+                        break;
+
+                    states.BitFlags[flag3] = false;
                     break;
 
                 case 99:
-                    if (instruction.Arguments[1].Value is not int state)
+                    if (instruction.Arguments[1].Value is not int state1)
                         break;
 
-                    states.State = state;
+                    states.State = state1;
+                    break;
+
+                case 218:
+                    if (instruction.Arguments[1].Value is not int state2)
+                        break;
+
+                    states.DialogIndex = state2;
                     break;
             }
         }
@@ -269,13 +350,16 @@ internal partial class RoomForm
         return states;
     }
 
-    private RoomFlagStates UpdateFlagStates(GdsScriptFile script, RoomFlagStates oldStates)
+    private GameState UpdateFlagStates(GdsScriptFile script, GameState oldStates)
     {
-        var states = new RoomFlagStates
+        var states = new GameState
         {
-            Flags1 = new Dictionary<int, bool>(),
-            Flags2 = new Dictionary<int, bool>(),
-            State = oldStates.State
+            IsScriptReturn = oldStates.IsScriptReturn,
+            IsScriptSolved = oldStates.IsScriptSolved,
+            ReceivedUserInput = oldStates.ReceivedUserInput,
+            State = oldStates.State,
+            DialogIndex = oldStates.DialogIndex,
+            SolvedCount = oldStates.SolvedCount
         };
 
         foreach (GdsScriptInstruction instruction in script.Instructions)
@@ -288,24 +372,44 @@ internal partial class RoomForm
 
             switch (instruction.Arguments[0].Value)
             {
-                case 88:
-                    if (instruction.Arguments[1].Value is not int flag1)
+                case 72:
+                    if (instruction.Arguments[1].Value is not int flag4)
                         break;
 
-                    if (oldStates.Flags1.TryGetValue(flag1, out bool oldFlag1))
-                        states.Flags1[flag1] = oldFlag1;
+                    if (oldStates.Puzzles.TryGetValue(flag4, out (bool Seen, bool Solved, bool FinalSolved) oldFlag4))
+                        states.Puzzles[flag4] = oldFlag4;
                     else
-                        states.Flags1[flag1] = false;
+                        states.Puzzles[flag4] = (false, false, false);
                     break;
 
-                case 141:
+                case 84:
+                    if (instruction.Arguments[1].Value is not int flag5)
+                        break;
+
+                    if (oldStates.Puzzles.TryGetValue(flag5, out (bool Seen, bool Solved, bool FinalSolved) oldFlag5))
+                        states.Puzzles[flag5] = oldFlag5;
+                    else
+                        states.Puzzles[flag5] = (false, false, false);
+                    break;
+
+                case 88:
                     if (instruction.Arguments[1].Value is not int flag2)
                         break;
 
-                    if (oldStates.Flags2.TryGetValue(flag2, out bool oldFlag2))
-                        states.Flags2[flag2] = oldFlag2;
+                    if (oldStates.ByteFlags.TryGetValue(flag2, out bool oldFlag2))
+                        states.ByteFlags[flag2] = oldFlag2;
                     else
-                        states.Flags2[flag2] = false;
+                        states.ByteFlags[flag2] = false;
+                    break;
+
+                case 141:
+                    if (instruction.Arguments[1].Value is not int flag3)
+                        break;
+
+                    if (oldStates.BitFlags.TryGetValue(flag3, out bool oldFlag3))
+                        states.BitFlags[flag3] = oldFlag3;
+                    else
+                        states.BitFlags[flag3] = false;
                     break;
             }
         }
@@ -336,6 +440,14 @@ internal partial class RoomForm
     private void UpdateSaveButtons()
     {
         _saveButton.Enabled = _saveAsButton.Enabled = _ndsInfo.Rom.Files.Any(f => f.IsChanged);
+    }
+
+    private static GdsScriptFile CreateEmptyScript()
+    {
+        return new GdsScriptFile
+        {
+            Instructions = [new GdsScriptInstruction { Type = 12 }]
+        };
     }
 
     private string GetRoomParamsScriptPath(int roomId)

@@ -9,6 +9,7 @@
   <ItemGroup>
     <None Remove="resources\fonts\notoko.ttf" />
     <None Remove="resources\fonts\roboto.ttf" />
+    <None Remove="resources\images\add.png" />
     <None Remove="resources\images\close.png" />
     <None Remove="resources\images\font_edit.png" />
     <None Remove="resources\images\font_remap.png" />
@@ -46,6 +47,7 @@
     <EmbeddedResource Include="resources\images\layton1tool.png" />
     <EmbeddedResource Include="resources\images\pause.png" />
     <EmbeddedResource Include="resources\images\play.png" />
+    <EmbeddedResource Include="resources\images\add.png" />
     <EmbeddedResource Include="resources\images\save.png" />
     <EmbeddedResource Include="resources\images\save_as.png" />
     <EmbeddedResource Include="resources\images\settings.png" />

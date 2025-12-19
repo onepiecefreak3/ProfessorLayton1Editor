@@ -18,8 +18,8 @@ internal class PuzzleScriptForm : ScriptForm
     private Layton1PuzzleId? _puzzleId;
 
     public PuzzleScriptForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1ScriptInstructionManager instructionManager, ILayton1ScriptCodeUnitConverter codeUnitConverter,
-        ILayton1ScriptFileConverter scriptFileConverter, ILevel5ScriptParser scriptParser, ILevel5ScriptComposer scriptComposer,
-        ILevel5ScriptWhitespaceNormalizer whitespaceNormalizer, IPositionManager positionManager)
+        ILayton1ScriptFileConverter scriptFileConverter, ILayton1ScriptParser scriptParser, ILayton1ScriptComposer scriptComposer,
+        ILayton1ScriptWhitespaceNormalizer whitespaceNormalizer, IPositionManager positionManager)
         : base(ndsInfo, instructionManager, codeUnitConverter, scriptFileConverter, scriptParser, scriptComposer, whitespaceNormalizer, positionManager)
     {
         _ndsInfo = ndsInfo;

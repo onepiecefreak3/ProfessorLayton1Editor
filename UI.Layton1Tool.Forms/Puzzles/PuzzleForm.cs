@@ -59,6 +59,16 @@ partial class PuzzleForm
         UpdateSaveButtons();
     }
 
+    public override void Destroy()
+    {
+        _eventBroker.Unsubscribe<FileContentModifiedMessage>(ProcessFileContentModified);
+        _eventBroker.Unsubscribe<FileAddedMessage>(ProcessFileAdded);
+        _eventBroker.Unsubscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
+        _eventBroker.Unsubscribe<SelectedPuzzleIdModifiedMessage>(ProcessPuzzleIdModified);
+        _eventBroker.Unsubscribe<SelectedPuzzleModifiedMessage>(ProcessPuzzleModified);
+        _eventBroker.Unsubscribe<SelectedPuzzleScriptModifiedMessage>(ProcessPuzzleScriptModified);
+    }
+
     private void _nextButton_Clicked(object? sender, EventArgs e)
     {
         _layoutIndex = Math.Min(_layoutIndex + 1, 3);
@@ -73,16 +83,6 @@ partial class PuzzleForm
 
         UpdateLayout();
         UpdateButtons();
-    }
-
-    public override void Destroy()
-    {
-        _eventBroker.Unsubscribe<FileContentModifiedMessage>(ProcessFileContentModified);
-        _eventBroker.Unsubscribe<FileAddedMessage>(ProcessFileAdded);
-        _eventBroker.Unsubscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
-        _eventBroker.Unsubscribe<SelectedPuzzleIdModifiedMessage>(ProcessPuzzleIdModified);
-        _eventBroker.Unsubscribe<SelectedPuzzleModifiedMessage>(ProcessPuzzleModified);
-        _eventBroker.Unsubscribe<SelectedPuzzleScriptModifiedMessage>(ProcessPuzzleScriptModified);
     }
 
     private async void _saveAsButton_Clicked(object? sender, EventArgs e)

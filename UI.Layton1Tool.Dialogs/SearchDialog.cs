@@ -8,7 +8,7 @@ using Logic.Domain.CodeAnalysisManagement.Contract.Level5;
 using Logic.Domain.Level5Management.Contract.DataClasses.Archives;
 using Logic.Domain.Level5Management.Contract.DataClasses.Script.Gds;
 using System.Text.RegularExpressions;
-using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Level5;
+using Logic.Domain.CodeAnalysisManagement.Contract.DataClasses.Layton1;
 using UI.Layton1Tool.Dialogs.DataClasses;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Resources.Contract;
@@ -25,13 +25,14 @@ partial class SearchDialog
     private readonly ILayton1NdsFileManager _fileManager;
     private readonly ILayton1PcmFileManager _pcmManager;
     private readonly ILayton1ScriptFileConverter _scriptFileConverter;
-    private readonly ILevel5ScriptWhitespaceNormalizer _whitespaceNormalizer;
-    private readonly ILevel5ScriptComposer _scriptComposer;
+    private readonly ILayton1ScriptWhitespaceNormalizer _whitespaceNormalizer;
+    private readonly ILayton1ScriptComposer _scriptComposer;
     private readonly ILocalizationProvider _localizations;
+    private readonly ILayton1ScriptReducer _rscriptReducer;
 
     public SearchDialog(Layton1NdsRom ndsRom, IEventBroker eventBroker, ILayton1NdsFileManager fileManager, ILayton1PcmFileManager pcmManager,
-        ILayton1ScriptFileConverter scriptFileConverter, ILevel5ScriptWhitespaceNormalizer whitespaceNormalizer, ILevel5ScriptComposer scriptComposer,
-        ILocalizationProvider localizations, IColorProvider colors)
+        ILayton1ScriptFileConverter scriptFileConverter, ILayton1ScriptWhitespaceNormalizer whitespaceNormalizer, ILayton1ScriptComposer scriptComposer,
+        ILocalizationProvider localizations, IColorProvider colors, ILayton1ScriptReducer rscriptReducer)
     {
         InitializeComponent(localizations, colors);
 
@@ -44,6 +45,7 @@ partial class SearchDialog
         _whitespaceNormalizer = whitespaceNormalizer;
         _scriptComposer = scriptComposer;
         _localizations = localizations;
+        _rscriptReducer = rscriptReducer;
 
         _inputText!.TextChanged += _inputText_TextChanged;
         _searchButton!.Clicked += _searchButton_Clicked;
@@ -189,12 +191,12 @@ partial class SearchDialog
         _progressBar.Text = _localizations.DialogSearchProgress(completion);
     }
 
-    private Regex? GetSearchTerm()
+    private Regex GetSearchTerm()
     {
         if (string.IsNullOrEmpty(_inputText.Text))
             return new(".*");
 
-        string escapedSearchTerm = _inputText.Text.Replace("(","\\(").Replace(")", "\\)").Replace(".", "\\.").Replace("*", ".*");
+        string escapedSearchTerm = _inputText.Text.Replace("(", "\\(").Replace(")", "\\)").Replace(".", "\\.").Replace("*", ".*");
         return new Regex(escapedSearchTerm);
     }
 }

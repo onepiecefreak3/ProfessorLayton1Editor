@@ -17,6 +17,7 @@ using CrossCutting.Core.Settings;
 using Logic.Business.Layton1ToolManagement;
 using Logic.Domain.CodeAnalysisManagement;
 using Logic.Domain.Level5Management;
+using Logic.Domain.Level5Management.Layton1;
 using Logic.Domain.NintendoManagement;
 using UI.Layton1Tool.Components;
 using UI.Layton1Tool.Dialogs;
@@ -61,6 +62,7 @@ public class KernelInitializer : IKernelInitializer
         kernel.RegisterComponent<Layton1ToolManagementActivator>();
         kernel.RegisterComponent<CodeAnalysisManagementActivator>();
         kernel.RegisterComponent<Level5ManagementActivator>();
+        kernel.RegisterComponent<Level5ManagementLayton1Activator>();
         kernel.RegisterComponent<NintendoManagementActivator>();
         kernel.RegisterComponent<Layton1ToolFormsActivator>();
         kernel.RegisterComponent<Layton1ToolDialogsActivator>();
