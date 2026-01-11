@@ -18,6 +18,7 @@ public interface ILocalizationProvider
     LocalizedString MenuFileViewFilesCaption { get; }
     LocalizedString MenuFileViewPuzzlesCaption { get; }
     LocalizedString MenuFileViewRoomsCaption { get; }
+    LocalizedString MenuFileViewEventsCaption { get; }
     LocalizedString MenuFileValidateCaption { get; }
     LocalizedString MenuFileSearchCaption { get; }
     LocalizedString MenuFileExtractCaption { get; }
@@ -37,8 +38,6 @@ public interface ILocalizationProvider
     LocalizedString PuzzleLanguageKoreanText { get; }
     LocalizedString PuzzleLanguageJapaneseText { get; }
 
-    LocalizedString PuzzleAddCaption { get; }
-    LocalizedString PuzzleAddShortcut { get; }
     LocalizedString PuzzleInfoInternalIdText { get; }
     LocalizedString PuzzleInfoNumberText { get; }
     LocalizedString PuzzleInfoTitleText { get; }
@@ -56,6 +55,9 @@ public interface ILocalizationProvider
     LocalizedString RoomRenderHintBoxes { get; }
     LocalizedString RoomRenderObjectBoxes { get; }
     LocalizedString RoomRenderMovementArrows { get; }
+
+    LocalizedString EventAddCaption { get; }
+    LocalizedString EventAddShortcut { get; }
 
     LocalizedString ScriptReturnText { get; }
     LocalizedString ScriptSolvedText { get; }

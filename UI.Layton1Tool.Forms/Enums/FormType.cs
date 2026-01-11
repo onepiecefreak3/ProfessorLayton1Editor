@@ -4,5 +4,6 @@ enum FormType
 {
     Nds,
     Puzzle,
-    Room
+    Room,
+    Event
 }

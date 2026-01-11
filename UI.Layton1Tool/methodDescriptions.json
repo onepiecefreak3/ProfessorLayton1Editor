@@ -344,6 +344,32 @@
         }
       ]
     },
+    "123": {
+      "Name": "drawColorBottom",
+      "Description": "Draws a color over both screens.",
+      "Parameters": [
+        {
+          "Name": "red",
+          "Type": "int",
+          "Description": "The red component."
+        },
+        {
+          "Name": "green",
+          "Type": "int",
+          "Description": "The green component."
+        },
+        {
+          "Name": "blue",
+          "Type": "int",
+          "Description": "The blue component."
+        },
+        {
+          "Name": "alpha",
+          "Type": "int",
+          "Description": "The alpha component."
+        }
+      ]
+    },
     "141": {
       "Name": "isFlag2Unset",
       "Description": "If the given flag is not set.",

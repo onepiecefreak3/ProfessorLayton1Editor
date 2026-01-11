@@ -4,6 +4,8 @@ using ImGui.Forms;
 using ImGui.Forms.Controls.Base;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
+using UI.Layton1Tool.Forms.Events;
+using UI.Layton1Tool.Forms.Events.Views;
 using UI.Layton1Tool.Forms.Files;
 using UI.Layton1Tool.Forms.Puzzles;
 using UI.Layton1Tool.Forms.Puzzles.Views;
@@ -142,5 +144,30 @@ class FormFactory(ICoCoKernel kernel) : IFormFactory
     public Component CreateRoomView(Layton1NdsInfo ndsInfo)
     {
         return kernel.Get<RoomView>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateEventForm(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<EventForm>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateEventScriptForm(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<EventScriptForm>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateEventFlagsForm(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<EventFlagsForm>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateEventTextControl(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<EventTextControl>(new ConstructorParameter("ndsInfo", ndsInfo));
+    }
+
+    public Component CreateEventView(Layton1NdsInfo ndsInfo)
+    {
+        return kernel.Get<EventView>(new ConstructorParameter("ndsInfo", ndsInfo));
     }
 }

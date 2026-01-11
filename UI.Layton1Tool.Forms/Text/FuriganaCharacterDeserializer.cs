@@ -1,9 +1,8 @@
 ﻿using Kaligraphy.DataClasses.Parsing;
-using Kaligraphy.Parsing;
 
 namespace UI.Layton1Tool.Forms.Text;
 
-internal class FuriganaCharacterDeserializer : CharacterDeserializer<FuriganaCharacterDeserializerContext>
+internal class FuriganaCharacterDeserializer : BaseCharacterDeserializer<FuriganaCharacterDeserializerContext>
 {
     private readonly bool _ignoreFurigana;
 

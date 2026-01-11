@@ -11,9 +11,9 @@ using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Resources.Contract;
 
-namespace UI.Layton1Tool.Forms.Rooms;
+namespace UI.Layton1Tool.Forms.Events;
 
-internal partial class RoomForm
+internal partial class EventForm
 {
     private readonly Layton1NdsInfo _ndsInfo;
 
@@ -22,13 +22,13 @@ internal partial class RoomForm
     private readonly ILayton1PathProvider _pathProvider;
     private readonly IColorProvider _colors;
 
-    private readonly HashSet<int> _changedRooms = [];
+    private readonly HashSet<int> _changedEvents = [];
 
-    private List<int>? _roomIds;
-    private int? _selectedRoomId;
-    private GameState? _roomStates;
+    private List<int>? _eventIds;
+    private int? _selectedEventId;
+    private GameState? _eventStates;
 
-    public RoomForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1NdsFileManager fileManager, ILayton1PathProvider pathProvider,
+    public EventForm(Layton1NdsInfo ndsInfo, IEventBroker eventBroker, ILayton1NdsFileManager fileManager, ILayton1PathProvider pathProvider,
         IFormFactory forms, IImageProvider images, ILocalizationProvider localizations, IColorProvider colors)
     {
         InitializeComponent(ndsInfo, forms, images, localizations);
@@ -42,21 +42,21 @@ internal partial class RoomForm
         _saveButton!.Clicked += _saveButton_Clicked;
         _saveAsButton!.Clicked += _saveAsButton_Clicked;
         _addButton!.Clicked += _addButton_Clicked;
-        _roomTree!.SelectedNodeChanged += _roomTree_SelectedNodeChanged;
+        _eventTree!.SelectedNodeChanged += EventTreeSelectedNodeChanged;
         _languageCombo!.SelectedItemChanged += _languageCombo_SelectedItemChanged;
 
         eventBroker.Subscribe<FileContentModifiedMessage>(ProcessFileContentModified);
-        eventBroker.Subscribe<SelectedRoomParamsModifiedMessage>(ProcessSelectedRoomParamsModified);
+        eventBroker.Subscribe<SelectedEventModifiedMessage>(ProcessSelectedEventModified);
         eventBroker.Subscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
 
-        InitializeRoomList();
+        InitializeEventList();
         UpdateSaveButtons();
     }
 
     public override void Destroy()
     {
         _eventBroker.Unsubscribe<FileContentModifiedMessage>(ProcessFileContentModified);
-        _eventBroker.Unsubscribe<SelectedRoomParamsModifiedMessage>(ProcessSelectedRoomParamsModified);
+        _eventBroker.Unsubscribe<SelectedEventModifiedMessage>(ProcessSelectedEventModified);
         _eventBroker.Unsubscribe<NdsFileSavedMessage>(ProcessNdsFileSaved);
     }
 
@@ -72,60 +72,46 @@ internal partial class RoomForm
 
     private void _addButton_Clicked(object? sender, EventArgs e)
     {
-        if (_roomIds is null)
+        if (_eventIds is null)
             return;
 
-        int newRoomId = _roomIds.Max() + 1;
+        int newEventId = _eventIds.Max() + 1;
 
-        string paramScriptPath = GetRoomParamsScriptPath(newRoomId);
-        string inScriptPath = _pathProvider.GetFullDirectory($"script/rooms/room{newRoomId}_in.gds", _ndsInfo.Rom.Version);
-        string outScriptPath = _pathProvider.GetFullDirectory($"script/rooms/room{newRoomId}_out.gds", _ndsInfo.Rom.Version);
+        string scriptPath = GetEventScriptPath(newEventId);
 
         GdsScriptFile script = CreateEmptyScript();
 
-        if (!_fileManager.TryGet(_ndsInfo.Rom, paramScriptPath, out _))
+        if (!_fileManager.TryGet(_ndsInfo.Rom, scriptPath, out _))
         {
-            Layton1NdsFile newFile = _fileManager.Add(_ndsInfo.Rom, paramScriptPath, script, FileType.Gds, CompressionType.None);
+            Layton1NdsFile newFile = _fileManager.Add(_ndsInfo.Rom, scriptPath, script, FileType.Gds, CompressionType.None);
             RaiseFileAdded(newFile);
         }
 
-        if (!_fileManager.TryGet(_ndsInfo.Rom, inScriptPath, out _))
-        {
-            Layton1NdsFile newFile = _fileManager.Add(_ndsInfo.Rom, inScriptPath, script, FileType.Gds, CompressionType.None);
-            RaiseFileAdded(newFile);
-        }
+        _eventIds.Add(newEventId);
+        _changedEvents.Add(newEventId);
 
-        if (!_fileManager.TryGet(_ndsInfo.Rom, outScriptPath, out _))
+        _eventTree.Nodes.Add(new TreeNode<int>
         {
-            Layton1NdsFile newFile = _fileManager.Add(_ndsInfo.Rom, outScriptPath, script, FileType.Gds, CompressionType.None);
-            RaiseFileAdded(newFile);
-        }
-
-        _roomIds.Add(newRoomId);
-        _changedRooms.Add(newRoomId);
-
-        _roomTree.Nodes.Add(new TreeNode<int>
-        {
-            Text = $"Room {newRoomId}",
-            Data = newRoomId
+            Text = $"Event {newEventId}",
+            Data = newEventId
         });
 
-        UpdateRoomList();
+        UpdateEventList();
     }
 
-    private void _roomTree_SelectedNodeChanged(object? sender, EventArgs e)
+    private void EventTreeSelectedNodeChanged(object? sender, EventArgs e)
     {
-        if (_roomTree.SelectedNode is null)
+        if (_eventTree.SelectedNode is null)
             return;
 
-        _selectedRoomId = _roomTree.SelectedNode.Data;
+        _selectedEventId = _eventTree.SelectedNode.Data;
 
-        UpdateRoomScript(_roomTree.SelectedNode.Data);
+        UpdateEventScript(_eventTree.SelectedNode.Data);
     }
 
     private void _languageCombo_SelectedItemChanged(object? sender, EventArgs e)
     {
-        RaiseSelectedRoomLanguageChanged(_languageCombo.SelectedItem.Content);
+        RaiseSelectedEventLanguageChanged(_languageCombo.SelectedItem.Content);
     }
 
     private void ProcessFileContentModified(FileContentModifiedMessage message)
@@ -133,57 +119,57 @@ internal partial class RoomForm
         if (message.Source == this)
             return;
 
-        if (!_selectedRoomId.HasValue)
+        if (!_selectedEventId.HasValue)
             return;
 
         if (message.File.Rom != _ndsInfo.Rom)
             return;
 
-        if (message.File.Path == GetRoomParamsScriptPath(_selectedRoomId.Value))
+        if (message.File.Path == GetEventScriptPath(_selectedEventId.Value))
         {
-            _changedRooms.Add(_selectedRoomId.Value);
+            _changedEvents.Add(_selectedEventId.Value);
 
-            UpdateRoomScript(_selectedRoomId.Value);
+            UpdateEventScript(_selectedEventId.Value);
         }
     }
 
-    private void ProcessSelectedRoomParamsModified(SelectedRoomParamsModifiedMessage message)
+    private void ProcessSelectedEventModified(SelectedEventModifiedMessage message)
     {
-        if (!_selectedRoomId.HasValue || _roomStates is null)
+        if (!_selectedEventId.HasValue || _eventStates is null)
             return;
 
         if (message.Rom != _ndsInfo.Rom)
             return;
 
-        string paramsScriptPath = GetRoomParamsScriptPath(_selectedRoomId.Value);
+        string paramsScriptPath = GetEventScriptPath(_selectedEventId.Value);
         if (_fileManager.TryGet(_ndsInfo.Rom, paramsScriptPath, out Layton1NdsFile? paramsScript))
         {
             _fileManager.Compose(paramsScript, message.Script, FileType.Gds);
             RaiseFileContentModified(paramsScript, message.Script);
         }
 
-        _changedRooms.Add(message.Room);
+        _changedEvents.Add(message.Event);
 
-        _roomStates = UpdateFlagStates(message.Script, _roomStates);
-        RaiseSelectedRoomFlagsUpdated(_selectedRoomId.Value, _roomStates);
+        _eventStates = UpdateFlagStates(message.Script, _eventStates);
+        RaiseSelectedEventFlagsUpdated(_selectedEventId.Value, _eventStates);
 
         UpdateSaveButtons();
-        UpdateRoomList();
+        UpdateEventList();
     }
 
     private void ProcessNdsFileSaved(NdsFileSavedMessage message)
     {
-        if (!_selectedRoomId.HasValue)
+        if (!_selectedEventId.HasValue)
             return;
 
         if (message.Rom != _ndsInfo.Rom)
             return;
 
-        _changedRooms.Clear();
+        _changedEvents.Clear();
 
-        UpdateRoomScript(_selectedRoomId.Value);
+        UpdateEventScript(_selectedEventId.Value);
         UpdateSaveButtons();
-        UpdateRoomList();
+        UpdateEventList();
     }
 
     private async Task RaiseNdsFileSaveRequested(bool saveAs)
@@ -191,19 +177,19 @@ internal partial class RoomForm
         await _eventBroker.RaiseAsync(new NdsFileSaveRequestedMessage(_ndsInfo.Path, saveAs));
     }
 
-    private void RaiseSelectedRoomLanguageChanged(TextLanguage language)
+    private void RaiseSelectedEventLanguageChanged(TextLanguage language)
     {
-        _eventBroker.Raise(new SelectedRoomLanguageChangedMessage(_ndsInfo.Rom, language));
+        _eventBroker.Raise(new SelectedEventLanguageChangedMessage(_ndsInfo.Rom, language));
     }
 
-    private void RaiseRoomScriptUpdated(int room, GdsScriptFile script, GameState states)
+    private void RaiseEventScriptUpdated(int eventId, GdsScriptFile script, GameState states)
     {
-        _eventBroker.Raise(new RoomScriptUpdatedMessage(_roomParamForm, _ndsInfo.Rom, room, _languageCombo.SelectedItem.Content, script, states));
+        _eventBroker.Raise(new EventScriptUpdatedMessage(_eventScriptForm, _ndsInfo.Rom, eventId, _languageCombo.SelectedItem.Content, script, states));
     }
 
-    private void RaiseSelectedRoomFlagsUpdated(int room, GameState states)
+    private void RaiseSelectedEventFlagsUpdated(int eventId, GameState states)
     {
-        _eventBroker.Raise(new SelectedRoomFlagsUpdatedMessage(_ndsInfo.Rom, room, states));
+        _eventBroker.Raise(new SelectedEventFlagsUpdatedMessage(_ndsInfo.Rom, eventId, states));
     }
 
     private void RaiseFileContentModified(Layton1NdsFile file, object? content)
@@ -224,52 +210,46 @@ internal partial class RoomForm
         await RaiseNdsFileSaveRequested(saveAs);
     }
 
-    private void InitializeRoomList()
+    private void InitializeEventList()
     {
-        string roomDirectory = _pathProvider.GetFullDirectory("script/rooms/", _ndsInfo.Rom.Version);
+        string eventDirectory = _pathProvider.GetFullDirectory("script/event/", _ndsInfo.Rom.Version);
 
-        if (!_fileManager.TryGetDirectory(_ndsInfo.Rom, roomDirectory, out Layton1NdsFile[]? roomScripts))
+        if (!_fileManager.TryGetDirectory(_ndsInfo.Rom, eventDirectory, out Layton1NdsFile[]? eventScripts))
             return;
 
-        var roomIds = new HashSet<int>();
+        var eventIds = new HashSet<int>();
 
-        foreach (Layton1NdsFile roomScript in roomScripts)
+        foreach (Layton1NdsFile eventScript in eventScripts)
         {
-            string fileName = Path.GetRelativePath(roomDirectory, roomScript.Path);
-            if (!fileName.StartsWith("room", StringComparison.InvariantCulture))
+            string fileName = Path.GetRelativePath(eventDirectory, eventScript.Path);
+            if (!fileName.StartsWith('e'))
                 continue;
 
-            int endIndex = fileName.IndexOf('_', 4);
+            int endIndex = fileName.IndexOf('.', 1);
             if (endIndex < 0)
                 continue;
 
-            string roomIdText = fileName[4..endIndex];
-            if (!int.TryParse(roomIdText, out int roomId))
+            string eventIdText = fileName[1..endIndex];
+            if (!int.TryParse(eventIdText, out int eventId))
                 continue;
 
-            roomIds.Add(roomId);
+            eventIds.Add(eventId);
         }
 
-        _roomIds = roomIds.Order().ToList();
+        _eventIds = eventIds.Order().ToList();
 
-        foreach (int roomId in _roomIds)
+        foreach (int eventId in _eventIds)
         {
-            string inScriptPath = _pathProvider.GetFullDirectory($"script/rooms/room{roomId}_in.gds", _ndsInfo.Rom.Version);
-            _ = _fileManager.TryGet(_ndsInfo.Rom, inScriptPath, out Layton1NdsFile? inScript);
+            string scriptPath = GetEventScriptPath(eventId);
+            _ = _fileManager.TryGet(_ndsInfo.Rom, scriptPath, out Layton1NdsFile? script);
 
-            string outScriptPath = _pathProvider.GetFullDirectory($"script/rooms/room{roomId}_out.gds", _ndsInfo.Rom.Version);
-            _ = _fileManager.TryGet(_ndsInfo.Rom, outScriptPath, out Layton1NdsFile? outScript);
-
-            string paramsScriptPath = GetRoomParamsScriptPath(roomId);
-            _ = _fileManager.TryGet(_ndsInfo.Rom, paramsScriptPath, out Layton1NdsFile? paramsScript);
-
-            if (inScript is null && outScript is null && paramsScript is null)
+            if (script is null)
                 continue;
 
-            _roomTree.Nodes.Add(new TreeNode<int>
+            _eventTree.Nodes.Add(new TreeNode<int>
             {
-                Text = $"Room {roomId}",
-                Data = roomId
+                Text = $"Event {eventId}",
+                Data = eventId
             });
         }
     }
@@ -414,24 +394,24 @@ internal partial class RoomForm
         return states;
     }
 
-    private void UpdateRoomScript(int roomId)
+    private void UpdateEventScript(int eventId)
     {
-        string paramsScriptPath = GetRoomParamsScriptPath(roomId);
+        string paramsScriptPath = GetEventScriptPath(eventId);
         if (!_fileManager.TryGet(_ndsInfo.Rom, paramsScriptPath, out Layton1NdsFile? paramsScriptFile))
             return;
 
         if (_fileManager.Parse(paramsScriptFile, FileType.Gds) is not GdsScriptFile paramsScript)
             return;
 
-        _roomStates = CreateFlagStates(paramsScript);
+        _eventStates = CreateFlagStates(paramsScript);
 
-        RaiseRoomScriptUpdated(roomId, paramsScript, _roomStates);
+        RaiseEventScriptUpdated(eventId, paramsScript, _eventStates);
     }
 
-    private void UpdateRoomList()
+    private void UpdateEventList()
     {
-        foreach (TreeNode<int> node in _roomTree.Nodes)
-            node.TextColor = _changedRooms.Contains(node.Data) ? _colors.Changed : _colors.Default;
+        foreach (TreeNode<int> node in _eventTree.Nodes)
+            node.TextColor = _changedEvents.Contains(node.Data) ? _colors.Changed : _colors.Default;
     }
 
     private void UpdateSaveButtons()
@@ -447,12 +427,8 @@ internal partial class RoomForm
         };
     }
 
-    private string GetRoomParamsScriptPath(int roomId)
+    private string GetEventScriptPath(int eventId)
     {
-        string filePath = _ndsInfo.Rom.Version is not GameVersion.Usa
-            ? _pathProvider.GetFullDirectory($"script/rooms/room{roomId}_param.gds", _ndsInfo.Rom.Version)
-            : _pathProvider.GetFullDirectory("script/rooms/", _ndsInfo.Rom.Version, TextLanguage.English) + $"room{roomId}_param.gds";
-
-        return filePath;
+        return _pathProvider.GetFullDirectory($"script/event/e{eventId}.gds", _ndsInfo.Rom.Version);
     }
 }

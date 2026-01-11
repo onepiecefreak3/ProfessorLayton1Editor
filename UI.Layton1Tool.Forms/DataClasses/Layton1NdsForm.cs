@@ -9,4 +9,5 @@ class Layton1NdsForm
     public Component? NdsForm { get; set; }
     public Component? PuzzleForm { get; set; }
     public Component? RoomForm { get; set; }
+    public Component? EventForm { get; set; }
 }

@@ -4,6 +4,8 @@ using CrossCutting.Core.Contract.DependencyInjection;
 using CrossCutting.Core.Contract.DependencyInjection.DataClasses;
 using CrossCutting.Core.Contract.EventBrokerage;
 using UI.Layton1Tool.Forms.Contract;
+using UI.Layton1Tool.Forms.Events;
+using UI.Layton1Tool.Forms.Events.Views;
 using UI.Layton1Tool.Forms.Files;
 using UI.Layton1Tool.Forms.InternalContract;
 using UI.Layton1Tool.Forms.Puzzles;
@@ -68,6 +70,12 @@ public class Layton1ToolFormsActivator : IComponentActivator
         kernel.RegisterToSelf<RoomFlagsForm>();
         kernel.RegisterToSelf<RoomRenderForm>();
         kernel.RegisterToSelf<RoomView>();
+
+        kernel.RegisterToSelf<EventForm>();
+        kernel.RegisterToSelf<EventScriptForm>();
+        kernel.RegisterToSelf<EventFlagsForm>();
+        kernel.RegisterToSelf<EventTextControl>();
+        kernel.RegisterToSelf<EventView>();
 
         kernel.RegisterConfiguration<Layton1ToolFormsConfiguration>();
     }

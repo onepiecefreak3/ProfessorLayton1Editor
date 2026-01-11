@@ -19,6 +19,7 @@ internal class LocalizationProvider : ILocalizationProvider
     public LocalizedString MenuFileViewFilesCaption => LocalizedString.FromId("Menu.File.View.Files.Caption");
     public LocalizedString MenuFileViewPuzzlesCaption => LocalizedString.FromId("Menu.File.View.Puzzles.Caption");
     public LocalizedString MenuFileViewRoomsCaption => LocalizedString.FromId("Menu.File.View.Rooms.Caption");
+    public LocalizedString MenuFileViewEventsCaption => LocalizedString.FromId("Menu.File.View.Events.Caption");
     public LocalizedString MenuFileValidateCaption => LocalizedString.FromId("Menu.File.Validate.Caption");
     public LocalizedString MenuFileSearchCaption => LocalizedString.FromId("Menu.File.Search.Caption");
     public LocalizedString MenuFileExtractCaption => LocalizedString.FromId("Menu.File.Extract.Caption");
@@ -38,8 +39,6 @@ internal class LocalizationProvider : ILocalizationProvider
     public LocalizedString PuzzleLanguageKoreanText => LocalizedString.FromId("Puzzle.Language.Korean.Text");
     public LocalizedString PuzzleLanguageJapaneseText => LocalizedString.FromId("Puzzle.Language.Japanese.Text");
 
-    public LocalizedString PuzzleAddCaption => LocalizedString.FromId("Puzzle.Add.Caption");
-    public LocalizedString PuzzleAddShortcut => LocalizedString.FromId("Puzzle.Add.Shortcut");
     public LocalizedString PuzzleInfoInternalIdText => LocalizedString.FromId("Puzzle.Info.InternalId.Text");
     public LocalizedString PuzzleInfoNumberText => LocalizedString.FromId("Puzzle.Info.Number.Text");
     public LocalizedString PuzzleInfoTitleText => LocalizedString.FromId("Puzzle.Info.Title.Text");
@@ -57,6 +56,9 @@ internal class LocalizationProvider : ILocalizationProvider
     public LocalizedString RoomRenderHintBoxes => LocalizedString.FromId("Room.Render.HintBoxes");
     public LocalizedString RoomRenderObjectBoxes => LocalizedString.FromId("Room.Render.ObjectBoxes");
     public LocalizedString RoomRenderMovementArrows => LocalizedString.FromId("Room.Render.MovementArrows");
+
+    public LocalizedString EventAddCaption => LocalizedString.FromId("Room.Add.Caption");
+    public LocalizedString EventAddShortcut => LocalizedString.FromId("Room.Add.Shortcut");
 
     public LocalizedString ScriptReturnText => LocalizedString.FromId("Script.Return.Text");
     public LocalizedString ScriptSolvedText => LocalizedString.FromId("Script.Solved.Text");

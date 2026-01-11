@@ -16,6 +16,7 @@
   "Menu.File.View.Files.Caption": "Files",
   "Menu.File.View.Puzzles.Caption": "Puzzles",
   "Menu.File.View.Rooms.Caption": "Rooms",
+  "Menu.File.View.Events.Caption": "Events",
   "Menu.File.Validate.Caption": "Validate",
   "Menu.File.Search.Caption": "Search",
   "Menu.File.Extract.Caption": "Export",
@@ -39,8 +40,6 @@
   "Puzzle.Language.Japanese.Text": "Japanese",
 
   // Puzzle Info
-  "Puzzle.Add.Caption": "Add Puzzle",
-  "Puzzle.Add.Shortcut": "Ctrl+Alt+A",
   "Puzzle.Info.InternalId.Text": "ID",
   "Puzzle.Info.Number.Text": "Number",
   "Puzzle.Info.Title.Text": "Title",
@@ -59,6 +58,10 @@
   "Room.Render.HintBoxes": "Show Hint Coins",
   "Room.Render.ObjectBoxes": "Show Event Triggers",
   "Room.Render.MovementArrows": "Show Movements",
+
+  // Event Info
+  "Event.Add.Caption": "Add Event",
+  "Event.Add.Shortcut": "Ctrl+Alt+A",
 
   // Script Info
   "Script.Return.Text": "Returned To Script",

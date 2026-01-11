@@ -6,9 +6,9 @@ using ImGui.Forms.Models;
 using UI.Layton1Tool.Resources.Contract;
 using Veldrid;
 
-namespace UI.Layton1Tool.Forms.Rooms;
+namespace UI.Layton1Tool.Forms;
 
-internal partial class RoomFlagsForm : Component
+internal abstract partial class FlagsForm : Component
 {
     private StackLayout _mainLayout;
 

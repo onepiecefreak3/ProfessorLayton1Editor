@@ -35,4 +35,10 @@ public interface IFormFactory
     Component CreateRoomFlagsForm(Layton1NdsInfo ndsInfo);
     Component CreateRoomRenderForm(Layton1NdsInfo ndsInfo);
     Component CreateRoomView(Layton1NdsInfo ndsInfo);
+
+    Component CreateEventForm(Layton1NdsInfo ndsInfo);
+    Component CreateEventScriptForm(Layton1NdsInfo ndsInfo);
+    Component CreateEventFlagsForm(Layton1NdsInfo ndsInfo);
+    Component CreateEventTextControl(Layton1NdsInfo ndsInfo);
+    Component CreateEventView(Layton1NdsInfo ndsInfo);
 }

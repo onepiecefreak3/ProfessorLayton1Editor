@@ -1,9 +1,8 @@
 ﻿using Kaligraphy.DataClasses.Parsing;
-using Kaligraphy.Parsing;
 
 namespace UI.Layton1Tool.Forms.Text;
 
-internal class DiacriticCharacterDeserializer : CharacterDeserializer
+internal class DiacriticCharacterDeserializer : BaseCharacterDeserializer<CharacterDeserializerContext>
 {
     protected override bool TryDeserializeCharacter(CharacterDeserializerContext context, int position, out int length,
         out TextCharacterData? textCharacter)

@@ -2,7 +2,6 @@
 using Kaligraphy.Contract.Rendering;
 using Kaligraphy.DataClasses.Layout;
 using Kaligraphy.Layout;
-using SixLabors.ImageSharp;
 
 namespace UI.Layton1Tool.Forms.Text;
 
@@ -87,7 +86,6 @@ internal class FuriganaTextLayouter : TextLayouter<FuriganaLayoutContext, Furiga
 class FuriganaLayoutOptions : LayoutOptions
 {
     public int FuriganaLineSpacing { get; set; }
-    public Color FuriganaTextColor { get; set; }
 }
 
 class FuriganaLayoutContext : LayoutContext
