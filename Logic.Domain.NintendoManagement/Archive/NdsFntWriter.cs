@@ -47,7 +47,7 @@ class NdsFntWriter : INdsFntWriter
 
         foreach (NdsContentFile file in entry.Files)
         {
-            bw.WriteString(Path.GetFileName(file.Path), Encoding.ASCII, true, false);
+            bw.WriteString(Path.GetFileName(file.Path), true, false);
             file.FileId = fileId++;
         }
         contentOffset = (int)bw.BaseStream.Position;
@@ -61,7 +61,7 @@ class NdsFntWriter : INdsFntWriter
             bw.BaseStream.Position = contentOffset;
 
             bw.Write((byte)(dir.Name.Length + 0x80));
-            bw.WriteString(dir.Name, Encoding.ASCII, false, false);
+            bw.WriteString(dir.Name, false, false);
             bw.Write((ushort)(0xF000 + ++dirId));
 
             contentOffset = (int)bw.BaseStream.Position;

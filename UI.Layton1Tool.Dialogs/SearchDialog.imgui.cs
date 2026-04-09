@@ -1,4 +1,5 @@
-﻿using ImGui.Forms.Controls;
+﻿using Hexa.NET.ImGui;
+using ImGui.Forms.Controls;
 using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Controls.Lists;
 using ImGui.Forms.Controls.Text;
@@ -7,7 +8,6 @@ using ImGui.Forms.Models;
 using ImGui.Forms.Models.IO;
 using UI.Layton1Tool.Dialogs.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
-using Veldrid;
 
 namespace UI.Layton1Tool.Dialogs;
 
@@ -32,7 +32,7 @@ partial class SearchDialog : Modal
         {
             Text = localizations.DialogSearchExecuteCaption,
             Enabled = false,
-            KeyAction = new KeyCommand(Key.Enter)
+            KeyAction = new KeyCommand(ImGuiKey.Enter)
         };
 
         _progressBar = new ProgressBar

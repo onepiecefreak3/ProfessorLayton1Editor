@@ -7,10 +7,11 @@ using ImGui.Forms.Models.IO;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
 using Logic.Business.Layton1ToolManagement.Contract.Enums.Texts;
 using System.Numerics;
+using Hexa.NET.ImGui;
+using ImGui.Forms.Support;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
-using Veldrid;
 
 namespace UI.Layton1Tool.Forms.Rooms;
 
@@ -51,19 +52,19 @@ internal partial class RoomForm : Component
         {
             ImageSize = new Vector2(16),
             Tooltip = localizations.RoomAddCaption,
-            KeyAction = new KeyCommand(ModifierKeys.Control | ModifierKeys.Shift, Key.A, localizations.RoomAddShortcut)
+            KeyAction = new KeyCommand(ImGuiKey.ModCtrl | ImGuiKey.ModShift, ImGuiKey.A, localizations.RoomAddShortcut)
         };
         _saveButton = new ImageButton(images.Save)
         {
             ImageSize = new Vector2(16),
             Tooltip = localizations.MenuFileSaveCaption,
-            KeyAction = new KeyCommand(ModifierKeys.Control, Key.S, localizations.MenuFileSaveShortcut)
+            KeyAction = new KeyCommand(ImGuiKey.ModCtrl, ImGuiKey.S, localizations.MenuFileSaveShortcut)
         };
         _saveAsButton = new ImageButton(images.SaveAs)
         {
             ImageSize = new Vector2(16),
             Tooltip = localizations.MenuFileSaveAsCaption,
-            KeyAction = new KeyCommand(Key.F12, localizations.MenuFileSaveAsShortcut)
+            KeyAction = new KeyCommand(ImGuiKey.F12, localizations.MenuFileSaveAsShortcut)
         };
 
         _mainLayout = new StackLayout

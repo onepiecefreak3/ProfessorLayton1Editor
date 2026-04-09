@@ -2,9 +2,9 @@
 using ImGui.Forms.Controls.Base;
 using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Resources;
+using ImGui.Forms.Support;
 using UI.Layton1Tool.Components.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
-using Rectangle = Veldrid.Rectangle;
 using Size = ImGui.Forms.Models.Size;
 
 namespace UI.Layton1Tool.Components;

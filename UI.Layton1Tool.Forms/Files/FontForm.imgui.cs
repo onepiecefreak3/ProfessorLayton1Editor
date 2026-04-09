@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Hexa.NET.ImGui;
 using ImGui.Forms.Controls;
 using ImGui.Forms.Controls.Base;
 using ImGui.Forms.Controls.Layouts;
@@ -7,21 +8,20 @@ using ImGui.Forms.Controls.Text.Editor;
 using ImGui.Forms.Modals;
 using ImGui.Forms.Models;
 using ImGui.Forms.Models.IO;
+using ImGui.Forms.Support;
 using Konnect.Contract.DataClasses.Plugin.File.Font;
 using UI.Layton1Tool.Components.Contract;
 using UI.Layton1Tool.Dialogs.Contract;
 using UI.Layton1Tool.Dialogs.Contract.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
-using Veldrid;
-using Rectangle = Veldrid.Rectangle;
 using Size = ImGui.Forms.Models.Size;
 
 namespace UI.Layton1Tool.Forms.Files;
 
 partial class FontForm
 {
-    private static readonly KeyCommand SelectMultipleGlyphsCommand = new(ModifierKeys.Control, MouseButton.Left);
-    private static readonly KeyCommand SelectGlyphRangeCommand = new(ModifierKeys.Shift, MouseButton.Left);
+    private static readonly KeyCommand SelectMultipleGlyphsCommand = new(ImGuiKey.ModCtrl, ImGuiMouseButton.Left);
+    private static readonly KeyCommand SelectGlyphRangeCommand = new(ImGuiKey.ModShift, ImGuiMouseButton.Left);
 
     private readonly Dictionary<CharacterInfo, Component> _infoLookup = new();
     private readonly Dictionary<char, Component> _charLookup = new();

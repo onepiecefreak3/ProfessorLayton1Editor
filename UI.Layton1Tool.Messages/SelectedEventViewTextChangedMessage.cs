@@ -4,4 +4,4 @@ using UI.Layton1Tool.Messages.DataClasses;
 
 namespace UI.Layton1Tool.Messages;
 
-public record SelectedEventViewTextChangedMessage(Component Target, Layton1NdsRom Rom, TextElement Text, int TextIndex);
+public record SelectedEventViewTextChangedMessage(Component Target, Layton1NdsRom Rom, TextElement? Text, int TextIndex);

@@ -37,7 +37,7 @@ partial class AnimationViewer
         if (message.Rom != _ndsInfo.Rom)
             return;
 
-        if (message.SequenceId < 0 && message.SequenceId >= message.AnimationSequences.Sequences.Length)
+        if (message.SequenceId < 0 || message.SequenceId >= message.AnimationSequences.Sequences.Length)
             return;
 
         AnimationSequence activeAnimation = message.AnimationSequences.Sequences[message.SequenceId];

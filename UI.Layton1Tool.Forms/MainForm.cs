@@ -16,7 +16,6 @@ using UI.Layton1Tool.Forms.InternalContract;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.Enums;
 using UI.Layton1Tool.Resources.Contract;
-using Veldrid.Sdl2;
 
 namespace UI.Layton1Tool.Forms;
 
@@ -264,10 +263,10 @@ partial class MainForm
         loadedPage.Page.Content.Destroy();
     }
 
-    private void MainForm_DragDrop(object? sender, DragDropEvent[] e)
+    private void MainForm_DragDrop(object? sender, string[] e)
     {
-        foreach (DragDropEvent evt in e)
-            OpenNdsFile(evt.File);
+        foreach (string evt in e)
+            OpenNdsFile(evt);
     }
 
     private async void _fileOpenButton_Clicked(object? sender, EventArgs e)
@@ -398,7 +397,7 @@ partial class MainForm
 
     private async Task SaveAll()
     {
-        foreach (Layton1NdsTabPage tabPage in _loadedFiles.Values)
+        foreach (Layton1NdsTabPage tabPage in _loadedFiles.Values.ToArray())
             await Save(tabPage, false);
     }
 

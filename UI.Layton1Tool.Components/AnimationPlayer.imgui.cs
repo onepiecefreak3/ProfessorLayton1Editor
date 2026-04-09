@@ -1,15 +1,15 @@
 ﻿using System.Numerics;
+using Hexa.NET.ImGui;
 using ImGui.Forms.Controls;
 using ImGui.Forms.Controls.Base;
 using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Controls.Text;
 using ImGui.Forms.Models;
 using ImGui.Forms.Models.IO;
-using ImGuiNET;
+using ImGui.Forms.Support;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
 using UI.Layton1Tool.Components.Contract.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
-using Veldrid;
 
 namespace UI.Layton1Tool.Components;
 
@@ -32,11 +32,11 @@ partial class AnimationPlayer : Component
     private void InitializeComponent(ILocalizationProvider localizations, IImageProvider images)
     {
         _speedInput = new TextBox { Placeholder = localizations.AnimationSpeedInputCaption, Enabled = true };
-        _stepBackButton = new ImageButton(images.StepBack) { Enabled = false, Padding = new Vector2(4, 4), KeyAction = new KeyCommand(ModifierKeys.Shift, Key.Left) };
-        _frameBackButton = new ImageButton(images.FrameBack) { Enabled = false, Padding = new Vector2(4, 4), KeyAction = new KeyCommand(Key.Left) };
-        _playButton = new ImageButton(images.Pause) { Padding = new Vector2(10, 10), KeyAction = new KeyCommand(Key.Space) };
-        _frameForwardButton = new ImageButton(images.FrameForward) { Enabled = false, Padding = new Vector2(4, 4), KeyAction = new KeyCommand(Key.Right) };
-        _stepForwardButton = new ImageButton(images.StepForward) { Enabled = false, Padding = new Vector2(4, 4), KeyAction = new KeyCommand(ModifierKeys.Shift, Key.Right) };
+        _stepBackButton = new ImageButton(images.StepBack) { Enabled = false, Padding = new Vector2(4, 4), KeyAction = new KeyCommand(ImGuiKey.ModShift, ImGuiKey.LeftArrow) };
+        _frameBackButton = new ImageButton(images.FrameBack) { Enabled = false, Padding = new Vector2(4, 4), KeyAction = new KeyCommand(ImGuiKey.LeftArrow) };
+        _playButton = new ImageButton(images.Pause) { Padding = new Vector2(10, 10), KeyAction = new KeyCommand(ImGuiKey.Space) };
+        _frameForwardButton = new ImageButton(images.FrameForward) { Enabled = false, Padding = new Vector2(4, 4), KeyAction = new KeyCommand(ImGuiKey.RightArrow) };
+        _stepForwardButton = new ImageButton(images.StepForward) { Enabled = false, Padding = new Vector2(4, 4), KeyAction = new KeyCommand(ImGuiKey.ModShift, ImGuiKey.RightArrow) };
         _frameCounterLabel = new Label();
 
         _controlLayout = new StackLayout
@@ -62,11 +62,11 @@ partial class AnimationPlayer : Component
         if (!TryGetAnimationState(out AnimationState? animationState))
             return;
 
-        int controlWidth = _controlLayout.GetWidth(contentRect.Width - 2, contentRect.Height);
-        int controlHeight = _controlLayout.GetHeight(contentRect.Width, contentRect.Height);
+        int controlWidth = _controlLayout.GetWidth((int)contentRect.Width - 2, (int)contentRect.Height);
+        int controlHeight = _controlLayout.GetHeight((int)contentRect.Width, (int)contentRect.Height);
 
-        ImGuiNET.ImGui.SetCursorPos(ImGuiNET.ImGui.GetCursorPos() + new Vector2(5, 26));
-        _controlLayout.Update(new Rectangle(contentRect.X, contentRect.Y + 26, controlWidth, controlHeight));
+        Hexa.NET.ImGui.ImGui.SetCursorPos(Hexa.NET.ImGui.ImGui.GetCursorPos() + new Vector2(5, 26));
+        _controlLayout.Update(new Rectangle(contentRect.Position + new Vector2(0, 26), new Vector2(controlWidth, controlHeight)));
 
         RenderPlayer(contentRect, animationState);
 
@@ -95,9 +95,9 @@ partial class AnimationPlayer : Component
 
         float x = contentRect.Position.X + 5;
         float y = contentRect.Position.Y + 5;
-        int barWidth = contentRect.Width - 10;
+        float barWidth = contentRect.Width - 10;
 
-        float frameDistance = barWidth / (float)Math.Max(totalFrames - 1, 1);
+        float frameDistance = barWidth / Math.Max(totalFrames - 1, 1);
         float cursorDistance = (int)animationState.TotalFrameCounter * frameDistance;
 
         var barPosition = new Vector2(x, y);
@@ -114,12 +114,12 @@ partial class AnimationPlayer : Component
         barPosition += new Vector2(0, 3);
         Vector2 barEndPosition = barPosition + new Vector2(barWidth, 4);
 
-        ImGuiNET.ImGui.GetWindowDrawList().AddRectFilled(barPosition, barEndPosition, ImGuiNET.ImGui.GetColorU32(ImGuiCol.ScrollbarBg));
+        Hexa.NET.ImGui.ImGui.GetWindowDrawList().AddRectFilled(barPosition, barEndPosition, Hexa.NET.ImGui.ImGui.GetColorU32(ImGuiCol.ScrollbarBg));
     }
 
     private static void DrawBarMarkers(Vector2 barPosition, float markerStep, int count, AnimationStep[] steps)
     {
-        uint frameColor = ImGuiNET.ImGui.GetColorU32(ImGuiCol.Button);
+        uint frameColor = Hexa.NET.ImGui.ImGui.GetColorU32(ImGuiCol.Button);
         var stepColor = 0xFFBF40BFu;
 
         Vector2 markerPos = barPosition + new Vector2(0, 7);
@@ -154,28 +154,28 @@ partial class AnimationPlayer : Component
                     deltaPos -= new Vector2(1, 0);
             }
 
-            ImGuiNET.ImGui.GetWindowDrawList().AddLine(markerPos + deltaPos, markerEndPos + deltaPos, markerColor, thickness);
+            Hexa.NET.ImGui.ImGui.GetWindowDrawList().AddLine(markerPos + deltaPos, markerEndPos + deltaPos, markerColor, thickness);
         }
 
         if (count == 1)
         {
             var deltaPos = new Vector2(markerStep - 1, 0);
-            ImGuiNET.ImGui.GetWindowDrawList().AddLine(markerPos + deltaPos, markerEndPos + deltaPos, frameColor, 1);
+            Hexa.NET.ImGui.ImGui.GetWindowDrawList().AddLine(markerPos + deltaPos, markerEndPos + deltaPos, frameColor, 1);
         }
     }
 
     private static void DrawCursor(Vector2 barPosition, float cursorX)
     {
-        uint cursorColor = ImGuiNET.ImGui.GetColorU32(ImGuiCol.Button) | 0xFF000000;
+        uint cursorColor = Hexa.NET.ImGui.ImGui.GetColorU32(ImGuiCol.Button) | 0xFF000000;
 
         Vector2 cursorPos = barPosition + new Vector2(cursorX - 5, 0);
         Vector2 cursorEndPos = cursorPos + new Vector2(10);
 
-        ImGuiNET.ImGui.GetWindowDrawList().AddRectFilled(cursorPos, cursorEndPos, cursorColor);
+        Hexa.NET.ImGui.ImGui.GetWindowDrawList().AddRectFilled(cursorPos, cursorEndPos, cursorColor);
 
         Vector2 cursorTriPos = cursorPos + new Vector2(0, 10);
         Vector2 cursorTriMidPos = cursorPos + new Vector2(5, 13);
 
-        ImGuiNET.ImGui.GetWindowDrawList().AddTriangleFilled(cursorTriPos, cursorEndPos, cursorTriMidPos, cursorColor);
+        Hexa.NET.ImGui.ImGui.GetWindowDrawList().AddTriangleFilled(cursorTriPos, cursorEndPos, cursorTriMidPos, cursorColor);
     }
 }

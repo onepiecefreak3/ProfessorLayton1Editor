@@ -3,7 +3,6 @@ using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Messages;
 using UI.Layton1Tool.Messages.DataClasses;
-using Vortice.Direct3D11.Debug;
 
 namespace UI.Layton1Tool.Forms.Events.Views;
 
@@ -85,7 +84,7 @@ internal partial class EventTextControl
         if (_eventView != message.Source)
             return;
 
-        if (message.KeepIndex)
+        if (message is { KeepIndex: true, Texts.Length: > 0 })
         {
             int oldTextIndex = _textIndex;
 
@@ -99,13 +98,13 @@ internal partial class EventTextControl
         }
 
         _texts = message.Texts;
-        
+
         UpdateButtons();
 
-        RaiseSelectedEventViewTextChanged(_texts[_textIndex], _subTextIndex);
+        RaiseSelectedEventViewTextChanged(_texts.Length <= 0 ? null : _texts[_textIndex], _subTextIndex);
     }
 
-    private void RaiseSelectedEventViewTextChanged(TextElement text, int textIndex)
+    private void RaiseSelectedEventViewTextChanged(TextElement? text, int textIndex)
     {
         _eventBroker.Raise(new SelectedEventViewTextChangedMessage(_eventView, _ndsInfo.Rom, text, textIndex));
     }
@@ -116,6 +115,6 @@ internal partial class EventTextControl
             return;
 
         _prevButton.Enabled = _textIndex > 0 || _subTextIndex > 0;
-        _nextButton.Enabled = _textIndex < _texts.Length - 1 || _subTextIndex < _texts[_textIndex].Texts.Length - 1;
+        _nextButton.Enabled = _texts.Length > 0 && (_textIndex < _texts.Length - 1 || _subTextIndex < _texts[_textIndex].Texts.Length - 1);
     }
 }

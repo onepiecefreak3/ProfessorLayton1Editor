@@ -3,11 +3,11 @@ using ImGui.Forms.Controls.Base;
 using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Controls.Tree;
 using ImGui.Forms.Models;
+using ImGui.Forms.Support;
 using Logic.Domain.Level5Management.Contract.DataClasses.Animations;
 using UI.Layton1Tool.Components.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
-using Rectangle = Veldrid.Rectangle;
 using Size = ImGui.Forms.Models.Size;
 
 namespace UI.Layton1Tool.Forms.Files;

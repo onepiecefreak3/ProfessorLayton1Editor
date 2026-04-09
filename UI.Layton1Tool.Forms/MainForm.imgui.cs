@@ -1,11 +1,11 @@
 ﻿using System.Numerics;
+using Hexa.NET.ImGui;
 using ImGui.Forms;
 using ImGui.Forms.Controls;
 using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Controls.Menu;
 using ImGui.Forms.Models.IO;
 using UI.Layton1Tool.Resources.Contract;
-using Veldrid;
 
 namespace UI.Layton1Tool.Forms;
 
@@ -36,7 +36,7 @@ partial class MainForm : Form
         _fileOpenButton = new MenuBarButton
         {
             Text = localizations.MenuFileOpenCaption,
-            KeyAction = new KeyCommand(ModifierKeys.Control, Key.O, localizations.MenuFileOpenShortcut)
+            KeyAction = new KeyCommand(ImGuiKey.ModCtrl, ImGuiKey.O, localizations.MenuFileOpenShortcut)
         };
 
         _filesViewButton = new MenuBarCheckBox(localizations.MenuFileViewFilesCaption);

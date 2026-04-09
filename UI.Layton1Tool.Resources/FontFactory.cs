@@ -8,9 +8,9 @@ class FontFactory : IFontFactory
 {
     public void RegisterFonts()
     {
-        ImGui.Forms.Factories.FontFactory.RegisterFromResource("NotoJp", "notojp.ttf", FontGlyphRange.ChineseJapanese);
-        ImGui.Forms.Factories.FontFactory.RegisterFromResource("NotoKo", "notoko.ttf", FontGlyphRange.Korean);
-        ImGui.Forms.Factories.FontFactory.RegisterFromResource("Roboto", "roboto.ttf", FontGlyphRange.Latin);
+        ImGui.Forms.Factories.FontFactory.RegisterFromResource("NotoJp", "notojp.ttf");
+        ImGui.Forms.Factories.FontFactory.RegisterFromResource("NotoKo", "notoko.ttf");
+        ImGui.Forms.Factories.FontFactory.RegisterFromResource("Roboto", "roboto.ttf");
     }
 
     public FontResource GetApplicationFont(int size)

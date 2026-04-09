@@ -1,18 +1,18 @@
 ﻿using System.Numerics;
+using Hexa.NET.ImGui;
 using ImGui.Forms.Controls;
 using ImGui.Forms.Controls.Base;
 using ImGui.Forms.Controls.Layouts;
 using ImGui.Forms.Controls.Tree;
 using ImGui.Forms.Models;
 using ImGui.Forms.Models.IO;
-using ImGuiNET;
+using ImGui.Forms.Support;
 using Logic.Business.Layton1ToolManagement.Contract.DataClasses;
 using Logic.Business.Layton1ToolManagement.Contract.Enums;
 using Logic.Business.Layton1ToolManagement.Contract.Enums.Texts;
 using UI.Layton1Tool.Forms.Contract;
 using UI.Layton1Tool.Forms.Contract.DataClasses;
 using UI.Layton1Tool.Resources.Contract;
-using Veldrid;
 
 namespace UI.Layton1Tool.Forms.Puzzles;
 
@@ -63,13 +63,13 @@ partial class PuzzleForm : Component
         {
             ImageSize = new Vector2(16),
             Tooltip = localizations.MenuFileSaveCaption,
-            KeyAction = new KeyCommand(ModifierKeys.Control, Key.S, localizations.MenuFileSaveShortcut)
+            KeyAction = new KeyCommand(ImGuiKey.ModCtrl, ImGuiKey.S, localizations.MenuFileSaveShortcut)
         };
         _saveAsButton = new ImageButton(images.SaveAs)
         {
             ImageSize = new Vector2(16),
             Tooltip = localizations.MenuFileSaveAsCaption,
-            KeyAction = new KeyCommand(Key.F12, localizations.MenuFileSaveAsShortcut)
+            KeyAction = new KeyCommand(ImGuiKey.F12, localizations.MenuFileSaveAsShortcut)
         };
 
         _mainLayout = new StackLayout

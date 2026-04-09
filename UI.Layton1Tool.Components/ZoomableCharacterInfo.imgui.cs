@@ -4,7 +4,7 @@ using System.Numerics;
 using ImGui.Forms.Extensions;
 using Konnect.Contract.DataClasses.Plugin.File.Font;
 using SixLabors.ImageSharp;
-using Rectangle = Veldrid.Rectangle;
+using Rectangle = ImGui.Forms.Support.Rectangle;
 using Size = ImGui.Forms.Models.Size;
 
 namespace UI.Layton1Tool.Components;
@@ -25,7 +25,7 @@ partial class ZoomableCharacterInfo : ZoomableComponent
         int boundingWidth = Math.Max(charInfo.GlyphPosition.X, 0) + Math.Max(charInfo.Glyph?.Width ?? 0, charInfo.BoundingBox.Width);
         int boundingHeight = Math.Max(charInfo.GlyphPosition.Y, 0) + Math.Max(charInfo.Glyph?.Height ?? 0, charInfo.BoundingBox.Height);
 
-        var totalBoundingBox = new Rectangle(boundingX, boundingY, boundingWidth - boundingX, boundingHeight - boundingY);
+        var totalBoundingBox = new Rectangle(new Vector2(boundingX, boundingY), new Vector2(boundingWidth - boundingX, boundingHeight - boundingY));
 
         DrawBackground(contentRect);
 
@@ -36,7 +36,7 @@ partial class ZoomableCharacterInfo : ZoomableComponent
 
     private static void DrawBackground(Rectangle contentRect)
     {
-        ImGuiNET.ImGui.GetWindowDrawList().AddRect(contentRect.Position, contentRect.Position + contentRect.Size, Color.Transparent.ToUInt32());
+        Hexa.NET.ImGui.ImGui.GetWindowDrawList().AddRect(contentRect.Position, contentRect.Position + contentRect.Size, Color.Transparent.ToUInt32());
     }
 
     private void DrawGlyph(CharacterInfo charInfo, Rectangle contentRect, Rectangle totalBoundingBox)
@@ -45,28 +45,28 @@ partial class ZoomableCharacterInfo : ZoomableComponent
             return;
 
         Vector2 boundingStartPosition = -(new Vector2(totalBoundingBox.Width, totalBoundingBox.Height) / 2) + new Vector2(Math.Max(charInfo.GlyphPosition.X, 0), Math.Max(charInfo.GlyphPosition.Y, 0));
-        var imageRect = new Rectangle((int)boundingStartPosition.X, (int)boundingStartPosition.Y, _glyphResource.Width, _glyphResource.Height);
+        var imageRect = new Rectangle(boundingStartPosition, _glyphResource.Size);
         imageRect = Transform(contentRect, imageRect);
 
-        ImGuiNET.ImGui.GetWindowDrawList().AddImage((nint)_glyphResource, imageRect.Position, imageRect.Position + imageRect.Size);
+        Hexa.NET.ImGui.ImGui.GetWindowDrawList().AddImage(_glyphResource.GetTextureRef(), imageRect.Position, imageRect.Position + imageRect.Size);
     }
 
     private void DrawBoundingBox(CharacterInfo charInfo, Rectangle contentRect, Rectangle totalBoundingBox)
     {
         Vector2 boundingStartPosition = -(new Vector2(totalBoundingBox.Width, totalBoundingBox.Height) / 2) + new Vector2(Math.Max(charInfo.GlyphPosition.X, 0), Math.Max(charInfo.GlyphPosition.Y, 0));
-        var imageRect = new Rectangle((int)boundingStartPosition.X, (int)boundingStartPosition.Y, charInfo.BoundingBox.Width, charInfo.BoundingBox.Height);
+        var imageRect = new Rectangle(boundingStartPosition, new Vector2(charInfo.BoundingBox.Width, charInfo.BoundingBox.Height));
         imageRect = Transform(contentRect, imageRect);
 
-        ImGuiNET.ImGui.GetWindowDrawList().AddRect(imageRect.Position, imageRect.Position + imageRect.Size, Color.OrangeRed.ToUInt32());
+        Hexa.NET.ImGui.ImGui.GetWindowDrawList().AddRect(imageRect.Position, imageRect.Position + imageRect.Size, Color.OrangeRed.ToUInt32());
     }
 
     private void DrawTotalBoundingBox(Rectangle contentRect, Rectangle totalBoundingBox)
     {
         Vector2 boundingStartPosition = -(new Vector2(totalBoundingBox.Width, totalBoundingBox.Height) / 2);
-        var imageRect = new Rectangle((int)boundingStartPosition.X, (int)boundingStartPosition.Y, totalBoundingBox.Width, totalBoundingBox.Height);
+        var imageRect = new Rectangle(boundingStartPosition, totalBoundingBox.Size);
         imageRect = Transform(contentRect, imageRect);
 
-        ImGuiNET.ImGui.GetWindowDrawList().AddRect(imageRect.Position, imageRect.Position + imageRect.Size, Color.Gold.ToUInt32());
+        Hexa.NET.ImGui.ImGui.GetWindowDrawList().AddRect(imageRect.Position, imageRect.Position + imageRect.Size, Color.Gold.ToUInt32());
     }
 
     private void UpdateGlyphImage(CharacterInfo charInfo)

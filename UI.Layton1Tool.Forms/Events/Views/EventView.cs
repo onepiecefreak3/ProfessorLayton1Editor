@@ -194,7 +194,11 @@ internal partial class EventView
     private void LoadTextWindow()
     {
         if (_selectedText is null)
+        {
+            _eventWindowAnimation = null;
+            _eventCursorAnimation = null;
             return;
+        }
 
         LoadEventWindows();
         if (_eventWindowAnimations is not null)
@@ -285,7 +289,7 @@ internal partial class EventView
         _selectedText = message.Text;
         _selectedTextIndex = message.TextIndex;
 
-        RenderText(message.Text.Texts[message.TextIndex]);
+        RenderText(message.Text?.Texts[message.TextIndex]);
 
         LoadTextWindow();
     }
@@ -299,6 +303,7 @@ internal partial class EventView
     {
         var hasTopImage = false;
         var hasBottomImage = false;
+        var hasBottomColor = false;
 
         var texts = new List<TextElement>();
         var personObjectPaths = new List<string>();
@@ -346,7 +351,11 @@ internal partial class EventView
             {
                 if (instruction.Arguments[1].Value is int red && instruction.Arguments[2].Value is int green &&
                     instruction.Arguments[3].Value is int blue && instruction.Arguments[4].Value is int alpha)
+                {
+                    hasBottomColor = true;
+
                     _bottomColor = new Rgba32((byte)red, (byte)green, (byte)blue, (byte)alpha);
+                }
             }
             else if (instruction.Arguments.Length > 2 && instruction.Arguments[0].Value is 156 or 157)
             {
@@ -410,9 +419,19 @@ internal partial class EventView
         }
 
         if (!hasBottomImage)
+        {
             _bottomPath = null;
+            _bottomBg = null;
+        }
+
         if (!hasTopImage)
+        {
             _topPath = null;
+            _topBg = null;
+        }
+
+        if (!hasBottomColor)
+            _bottomColor = null;
 
         _texts = [.. texts];
         _personObjectPaths = personObjectPaths;
@@ -423,8 +442,14 @@ internal partial class EventView
         LoadTextWindow();
     }
 
-    private void RenderText(IList<CharacterData> text)
+    private void RenderText(IList<CharacterData>? text)
     {
+        if (text is null)
+        {
+            _textImage = null;
+            return;
+        }
+
         IGlyphProvider? font = _fontProvider.GetEventFont(_ndsInfo.Rom);
         if (font is null)
             return;
